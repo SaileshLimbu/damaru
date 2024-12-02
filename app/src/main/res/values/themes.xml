@@ -18,5 +18,8 @@
         <item name="buttonStyle">@style/Widget.MaterialComponents.Button</item>
 
         <item name="floatingActionButtonStyle">@style/Widget.MaterialComponents.FloatingActionButton</item>
+
+        <item name="android:windowTranslucentStatus">true</item>
+        <item name="android:windowLightStatusBar">true</item>
     </style>
 </resources>

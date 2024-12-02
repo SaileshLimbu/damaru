@@ -1,3 +1,9 @@
 <resources>
-    <string name="app_name">ProjectZ</string>
+    <string name="app_name">Damaru</string>
+    <string name="text_expired">Expired</string>
+    <string name="text_device_name">Samsung s20</string>
+    <string name="text_remaining_days">28 days</string>
+    <string name="text_nav_home">Home</string>
+    <string name="text_nav_more">More</string>
+    <string name="text_add_device">Add Device</string>
 </resources>

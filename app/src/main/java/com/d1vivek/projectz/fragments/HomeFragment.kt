@@ -12,11 +12,23 @@ import com.d1vivek.projectz.DeviceUsersActivity
 import com.d1vivek.projectz.R
 import com.d1vivek.projectz.adapters.MyDevicesAdapter
 import com.d1vivek.projectz.databinding.FragmentHomeBinding
+import com.d1vivek.projectz.models.Device
 import com.d1vivek.projectz.utils.GridSpacingItemDecoration
 
 class HomeFragment : Fragment(R.layout.fragment_home) {
     private var _binding: FragmentHomeBinding? = null
     private val b get() = _binding!!
+    private lateinit var deviceAdapter: MyDevicesAdapter
+
+    private val dummyDevices = listOf(
+        Device("Samsung Galaxy s20 Ultra", R.drawable.screenshot1, 28),
+        Device("Xiomi Redmi Note 8", R.drawable.screenshot2, 28),
+        Device("Motorola Xr 250", R.drawable.screenshot3, 15),
+        Device("Nokia 2200", R.drawable.screenshot1, 0),
+        Device("Motorola GT", R.drawable.screenshot3, 3),
+        Device("Samsung Galaxy s22", R.drawable.screenshot1, 5),
+        Device("Xiomi Redmi Note 9 Pro", R.drawable.screenshot2, 7)
+    )
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -34,13 +46,12 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val layoutManager = GridLayoutManager(requireContext(), 2)
+        deviceAdapter = MyDevicesAdapter(dummyDevices)
 
-        val spacing = resources.getDimensionPixelSize(R.dimen.grid_item_spacing)
-        b.recyclerView.addItemDecoration(GridSpacingItemDecoration(spacing))
-
-        b.recyclerView.layoutManager = layoutManager
-        b.recyclerView.adapter = MyDevicesAdapter(getDummyData())
+        b.recyclerView.apply {
+            adapter = deviceAdapter
+            layoutManager = GridLayoutManager(requireContext(), 2)
+        }
 
         b.recyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
@@ -57,9 +68,5 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
             startActivity(Intent(context, DeviceUsersActivity::class.java))
         }
 
-    }
-
-    private fun getDummyData(): List<String> {
-        return List(7) { "Item ${it + 1}" }
     }
 }
