@@ -2,7 +2,9 @@ package com.d1vivek.projectz.adapters
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
+import com.d1vivek.projectz.R
 import com.d1vivek.projectz.databinding.ItemDeviceUsersBinding
 
 data class User(val name: String, val profileImage: Int)
@@ -11,8 +13,17 @@ class DeviceUserAdapter(private val users: List<User>, private val onClick: (Use
 
     inner class ViewHolder(private val binding: ItemDeviceUsersBinding) : RecyclerView.ViewHolder(binding.root) {
         fun bind(user: User) {
-            binding.userName.text = user.name
-            binding.userImage.setImageResource(user.profileImage)
+            if (user.name.isEmpty() && user.profileImage == -1) {
+                binding.userName.setTextColor(ContextCompat.getColor(binding.root.context, R.color.colorPrimaryVariant))
+                binding.userImage.setColorFilter(ContextCompat.getColor(binding.root.context, R.color.colorPrimaryVariant))
+                binding.userName.text = "Add User"
+                binding.userImage.setImageResource(R.drawable.ic_add_user)
+            } else {
+                binding.userName.setTextColor(ContextCompat.getColor(binding.root.context, R.color.colorPrimaryDark))
+                binding.userImage.colorFilter = null
+                binding.userName.text = user.name
+                binding.userImage.setImageResource(user.profileImage)
+            }
             binding.root.setOnClickListener { onClick(user) }
         }
     }

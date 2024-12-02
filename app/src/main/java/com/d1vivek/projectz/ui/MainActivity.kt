@@ -1,10 +1,11 @@
-package com.d1vivek.projectz
+package com.d1vivek.projectz.ui
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import androidx.viewpager2.widget.ViewPager2
+import com.d1vivek.projectz.R
 import com.d1vivek.projectz.databinding.ActivityMainBinding
 import com.d1vivek.projectz.fragments.HomeFragment
 import com.d1vivek.projectz.fragments.MoreFragment

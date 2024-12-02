@@ -1,4 +1,4 @@
-package com.d1vivek.projectz
+package com.d1vivek.projectz.ui
 
 import android.content.Intent
 import android.os.Bundle

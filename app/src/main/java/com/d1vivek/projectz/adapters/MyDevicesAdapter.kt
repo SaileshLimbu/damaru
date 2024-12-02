@@ -7,10 +7,9 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
-import com.d1vivek.projectz.DeviceUsersActivity
+import com.d1vivek.projectz.ui.DeviceUsersActivity
 import com.d1vivek.projectz.R
 import com.d1vivek.projectz.databinding.ItemDeviceBinding
-import com.d1vivek.projectz.databinding.ItemMyDevicesBinding
 import com.d1vivek.projectz.models.Device
 
 class MyDevicesAdapter(

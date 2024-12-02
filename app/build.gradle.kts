@@ -1,18 +1,19 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
-//    alias(libs.plugins.hilt)
-//    id("kotlin-kapt")
+    alias(libs.plugins.ksp)
+    alias(libs.plugins.hilt)
+    id("kotlin-kapt")
 }
 
 android {
     namespace = "com.d1vivek.projectz"
-    compileSdk = 34
+    compileSdk = 35
 
     defaultConfig {
         applicationId = "com.d1vivek.projectz"
         minSdk = 24
-        targetSdk = 34
+        targetSdk = 35
         versionCode = 1
         versionName = "1.0"
 
@@ -45,6 +46,8 @@ dependencies {
     implementation(libs.material)
     implementation(libs.androidx.activity)
     implementation(libs.androidx.constraintlayout)
+    implementation(libs.androidx.navigation.fragment.ktx)
+    implementation(libs.androidx.navigation.ui.ktx)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -54,8 +57,12 @@ dependencies {
     implementation(libs.activity.ktx)
     implementation(libs.fragment.ktx)
 
-//    implementation(libs.hilt.android)
-//    kapt(libs.hilt.compiler)
-//    implementation(libs.hilt.lifecycle.viewModel)
+    implementation(libs.hilt.android)
+    ksp(libs.hilt.compiler)
+//    implementation(libs.hilt.lifecycle.viewmodel)
 //    implementation(libs.hilt.work)
+
+    implementation(libs.webrtc)
+    implementation(libs.websocket)
+    implementation(libs.gson)
 }

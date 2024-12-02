@@ -8,12 +8,11 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.d1vivek.projectz.DeviceUsersActivity
+import com.d1vivek.projectz.ui.DeviceUsersActivity
 import com.d1vivek.projectz.R
 import com.d1vivek.projectz.adapters.MyDevicesAdapter
 import com.d1vivek.projectz.databinding.FragmentHomeBinding
 import com.d1vivek.projectz.models.Device
-import com.d1vivek.projectz.utils.GridSpacingItemDecoration
 
 class HomeFragment : Fragment(R.layout.fragment_home) {
     private var _binding: FragmentHomeBinding? = null
