@@ -46,6 +46,7 @@
         <activity android:name=".ui.DeviceUsersActivity" />
         <activity android:name=".ui.DeviceControlActivity" />
         <activity android:name="com.d1vivek.projectz.ui.AddUserActivity" />
+        <activity android:name="com.d1vivek.projectz.ui.EmulatorSetupActivity" />
 
         <meta-data
             android:name="preloaded_fonts"

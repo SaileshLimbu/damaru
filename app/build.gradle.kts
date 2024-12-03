@@ -6,18 +6,22 @@ plugins {
     id("kotlin-kapt")
 }
 
+val emulatorBuild = false
+
 android {
     namespace = "com.d1vivek.projectz"
     compileSdk = 35
 
     defaultConfig {
-        applicationId = "com.d1vivek.projectz"
+        applicationId = if (emulatorBuild) "com.d1vivek.projectz.emulator" else "com.d1vivek.projectz"
         minSdk = 24
         targetSdk = 35
         versionCode = 1
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+        resValue("string", "app_name", if (emulatorBuild) "E-Damaru" else "Damaru")
     }
 
     buildTypes {
@@ -36,6 +40,7 @@ android {
 
     buildFeatures {
         viewBinding = true
+        buildConfig = true
     }
 }
 
@@ -48,6 +53,7 @@ dependencies {
     implementation(libs.androidx.constraintlayout)
     implementation(libs.androidx.navigation.fragment.ktx)
     implementation(libs.androidx.navigation.ui.ktx)
+    implementation(libs.googleid)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -59,10 +65,15 @@ dependencies {
 
     implementation(libs.hilt.android)
     ksp(libs.hilt.compiler)
-//    implementation(libs.hilt.lifecycle.viewmodel)
-//    implementation(libs.hilt.work)
 
     implementation(libs.webrtc)
     implementation(libs.websocket)
     implementation(libs.gson)
+    implementation(libs.security.crypto)
+
+    implementation(libs.androidx.credentials)
+    implementation(libs.androidx.credentials.playservice.auth)
+    implementation(libs.identity.googleid)
+    implementation(libs.coroutine.core)
+    implementation(libs.coroutine.android)
 }

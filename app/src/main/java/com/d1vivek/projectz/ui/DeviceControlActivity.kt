@@ -22,6 +22,10 @@ class DeviceControlActivity : AppCompatActivity(), MainRepository.Listener {
     private lateinit var binding: ActivityDeviceControlBinding
     private lateinit var screenCaptureLauncher: ActivityResultLauncher<Intent>
 
+    companion object{
+        const val USER_NAME = "username"
+    }
+
     @Inject
     lateinit var webrtcServiceRepository: WebrtcServiceRepository
 

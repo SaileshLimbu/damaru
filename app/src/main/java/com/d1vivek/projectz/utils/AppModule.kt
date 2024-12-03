@@ -7,6 +7,7 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
+import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
@@ -17,5 +18,11 @@ class AppModule {
 
     @Provides
     fun provideGson(): Gson = Gson()
+
+    @Provides
+    @Singleton
+    fun providePrefsHelper(context: Context): PrefsHelper {
+        return PrefsHelper(context)
+    }
 
 }
