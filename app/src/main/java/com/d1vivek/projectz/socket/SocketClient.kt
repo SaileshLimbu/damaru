@@ -28,8 +28,8 @@ class SocketClient @Inject constructor(
     fun init(username: String) {
         this.username = username
 
-//        webSocket= object : WebSocketClient(URI("ws://10.0.2.2:3000")){
-        webSocket = object : WebSocketClient(URI("ws://13.201.152.191:3000")) {
+        webSocket= object : WebSocketClient(URI("ws://192.168.68.106:3000")){
+//        webSocket = object : WebSocketClient(URI("ws://13.201.152.191:3000")) {
             override fun onOpen(handshakedata: ServerHandshake?) {
                 sendMessageToSocket(
                     DataModel(

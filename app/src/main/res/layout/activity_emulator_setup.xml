@@ -65,6 +65,7 @@
         android:paddingStart="48dp"
         android:paddingEnd="48dp"
         android:text="Next"
+        app:iconTint="@color/white"
         android:textColor="@color/white"
         app:cornerRadius="32dp"
         app:icon="@drawable/ic_forward_dot"

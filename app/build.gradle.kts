@@ -53,7 +53,6 @@ dependencies {
     implementation(libs.androidx.constraintlayout)
     implementation(libs.androidx.navigation.fragment.ktx)
     implementation(libs.androidx.navigation.ui.ktx)
-    implementation(libs.googleid)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -71,9 +70,6 @@ dependencies {
     implementation(libs.gson)
     implementation(libs.security.crypto)
 
-    implementation(libs.androidx.credentials)
-    implementation(libs.androidx.credentials.playservice.auth)
-    implementation(libs.identity.googleid)
     implementation(libs.coroutine.core)
     implementation(libs.coroutine.android)
 }

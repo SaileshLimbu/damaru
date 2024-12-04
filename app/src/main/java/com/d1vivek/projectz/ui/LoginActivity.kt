@@ -4,11 +4,14 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import com.d1vivek.projectz.BuildConfig
 import com.d1vivek.projectz.databinding.ActivityLoginBinding
 import com.d1vivek.projectz.viewmodels.LoginViewModel
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class LoginActivity : AppCompatActivity() {
-    lateinit var b: ActivityLoginBinding
+    private lateinit var b: ActivityLoginBinding
     private val loginViewModel: LoginViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -18,8 +21,15 @@ class LoginActivity : AppCompatActivity() {
         setContentView(b.root)
 
         b.btnLogin.setOnClickListener {
-//            startActivity(Intent(applicationContext, MainActivity::class.java))
-            loginViewModel.startLoginFlow()
+            loginViewModel.login(b.etUsername.text.toString(), b.etPassword.text.toString()) {
+                startActivity(Intent(applicationContext, MainActivity::class.java))
+            }
+        }
+
+        if(BuildConfig.DEBUG){
+            b.etUsername.setText("admin")
+            b.etPassword.setText("pass")
+            b.btnLogin.performClick()
         }
     }
 }

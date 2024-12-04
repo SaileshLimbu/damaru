@@ -34,8 +34,8 @@ class SplashActivity : AppCompatActivity() {
                 "emulator" -> {
                     val deviceId = Settings.Secure.getString(applicationContext.contentResolver, Settings.Secure.ANDROID_ID)
                     startActivity(
-                        Intent(this@SplashActivity, DeviceControlActivity::class.java)
-                            .putExtra(DeviceControlActivity.USER_NAME, deviceId)
+                        Intent(this@SplashActivity, DeviceShareActivity::class.java)
+                            .putExtra(DeviceShareActivity.USER_NAME, deviceId)
                     )
                     finish()
                 }
@@ -46,12 +46,16 @@ class SplashActivity : AppCompatActivity() {
                 }
 
                 "userPin" -> {
-//                    startActivity(Intent(this@SplashActivity, LoginPinActivity::class.java))
+                    startActivity(Intent(this@SplashActivity, PinActivity::class.java))
                     finish()
                 }
 
                 else -> {
-                    startActivity(Intent(this@SplashActivity, LoginActivity::class.java))
+                    startActivity(
+                        Intent(this@SplashActivity, DeviceControlActivity::class.java)
+                            .putExtra(DeviceControlActivity.USER_NAME, "theone")
+                    )
+//                    startActivity(Intent(this@SplashActivity, LoginActivity::class.java))
                     finish()
                 }
             }
