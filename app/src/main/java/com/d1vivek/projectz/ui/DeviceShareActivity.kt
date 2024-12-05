@@ -4,31 +4,43 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.media.projection.MediaProjectionManager
+import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.util.Log
 import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
-import com.d1vivek.projectz.databinding.ActivityDeviceControlBinding
-import com.d1vivek.projectz.repository.MainRepository
-import com.d1vivek.projectz.service.WebrtcService
-import com.d1vivek.projectz.service.WebrtcServiceRepository
+import com.d1vivek.projectz.service.ShareService
+import com.d1vivek.projectz.socket.SocketClient
+import com.d1vivek.projectz.utils.DataModel
+import com.d1vivek.projectz.utils.DataModelType
+import com.d1vivek.projectz.webrtc.MyPeerObserver
+import com.d1vivek.projectz.webrtc.WebrtcClient
+import com.google.gson.Gson
 import dagger.hilt.android.AndroidEntryPoint
+import org.webrtc.IceCandidate
 import org.webrtc.MediaStream
+import org.webrtc.PeerConnection
+import org.webrtc.SessionDescription
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class DeviceShareActivity : AppCompatActivity(), MainRepository.Listener {
+class DeviceShareActivity : AppCompatActivity(), SocketClient.Listener, WebrtcClient.Listener {
+    @Inject lateinit var socketClient: SocketClient
+    @Inject lateinit var webrtcClient: WebrtcClient
+    @Inject lateinit var gson: Gson
+
     private lateinit var screenCaptureLauncher: ActivityResultLauncher<Intent>
+    private var username: String? = null
+    private var targetUsername: String? = null
 
     companion object {
         const val USER_NAME = "username"
+        const val TARGET_USER_NAME = "targetUser"
     }
-
-    @Inject
-    lateinit var webrtcServiceRepository: WebrtcServiceRepository
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -37,13 +49,18 @@ class DeviceShareActivity : AppCompatActivity(), MainRepository.Listener {
     }
 
     private fun init() {
-//        WebrtcService.surfaceView = binding.surfaceView
-        WebrtcService.listener = this
-//        webrtcServiceRepository.startIntent(username!!)
-//        views.requestBtn.setOnClickListener {
-//            startScreenCapture()
-//        }
-
+        username = intent.getStringExtra(USER_NAME)
+        targetUsername = intent.getStringExtra(TARGET_USER_NAME)
+        if (username.isNullOrEmpty()) {
+            Toast.makeText(applicationContext, "No Username", Toast.LENGTH_SHORT).show()
+            finish()
+            return
+        }
+        if (targetUsername.isNullOrEmpty()) {
+            Toast.makeText(applicationContext, "No target Username", Toast.LENGTH_SHORT).show()
+            finish()
+            return
+        }
         screenCaptureLauncher = registerForActivityResult(
             ActivityResultContracts.StartActivityForResult()
         ) { result ->
@@ -60,75 +77,98 @@ class DeviceShareActivity : AppCompatActivity(), MainRepository.Listener {
 
     private fun handleScreenCaptureResult(resultCode: Int, data: Intent?) {
         if (resultCode == Activity.RESULT_OK && data != null) {
-            WebrtcService.screenPermissionIntent = data
-            intent.getStringExtra(USER_NAME)?.let { webrtcServiceRepository.startIntent(it) }
+            socketClient.listener = this
+            socketClient.init(username!!)
 
-            if (applicationContext.packageName.contains("emulator")) {
-                webrtcServiceRepository.acceptCAll("theone")
-            } else {
-                Handler(Looper.getMainLooper()).postDelayed({
-                    webrtcServiceRepository.requestConnection("fe4d330b43e16775")
-                }, 1000)
+            webrtcClient.listener = this
+            webrtcClient.setPermissionIntent(data)
+            webrtcClient.initializeWebrtcClient(username!!, null,
+                object : MyPeerObserver() {
+                    override fun onIceCandidate(p0: IceCandidate?) {
+                        super.onIceCandidate(p0)
+                        p0?.let { webrtcClient.sendIceCandidate(it, targetUsername!!) }
+                    }
+
+                    override fun onConnectionChange(newState: PeerConnection.PeerConnectionState?) {
+                        super.onConnectionChange(newState)
+                        Log.d("TAG", "onConnectionChange: $newState")
+                        if (newState == PeerConnection.PeerConnectionState.CONNECTED){
+                        }
+                    }
+
+                    override fun onAddStream(p0: MediaStream?) {
+                        super.onAddStream(p0)
+                        Log.d("TAG", "onAddStream: $p0")
+                    }
+                })
+
+            val thread = Thread {
+                val startIntent = Intent(applicationContext, ShareService::class.java)
+                startIntent.action = "StartIntent"
+                startIntent.putExtra("username",username)
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
+                    startForegroundService(startIntent)
+                } else {
+                    startService(startIntent)
+                }
             }
-//            binding.requestBtn.setOnClickListener {
-//                webrtcServiceRepository.requestConnection(
-//                    binding.targetEt.text.toString()
-//                )
-//            }
+            thread.start()
+
+            webrtcClient.call(targetUsername!!)
         } else {
             Toast.makeText(applicationContext, "Permission Denied", Toast.LENGTH_SHORT).show()
             finish()
         }
     }
 
-    override fun onConnectionRequestReceived(target: String) {
-//        runOnUiThread{
-//            views.apply {
-//                notificationTitle.text = "$target is requesting for connection"
-//                notificationLayout.isVisible = true
-//                notificationAcceptBtn.setOnClickListener {
-//                    webrtcServiceRepository.acceptCAll(target)
-//                    notificationLayout.isVisible = false
-//                }
-//                notificationDeclineBtn.setOnClickListener {
-//                    notificationLayout.isVisible = false
-//                }
-//            }
-//        }
+    private fun endScreenShare(){
+        socketClient.sendMessageToSocket(
+            DataModel(
+                type = DataModelType.EndCall,
+                username = username!!,
+                target = targetUsername!!,
+                null
+            )
+        )
     }
 
-    override fun onConnectionConnected() {
-//        runOnUiThread {
-//            views.apply {
-//                requestLayout.isVisible = false
-//                disconnectBtn.isVisible = true
-//                disconnectBtn.setOnClickListener {
-//                    webrtcServiceRepository.endCallIntent()
-//                    restartUi()
-//                }
-//            }
-//        }
+    override fun onNewMessageReceived(model: DataModel) {
+        when (model.type) {
+            DataModelType.StartStreaming -> {
+            }
+            DataModelType.EndCall -> {
+                finish()
+            }
+            DataModelType.Offer -> {
+                webrtcClient.onRemoteSessionReceived(
+                    SessionDescription(
+                        SessionDescription.Type.OFFER, model.data
+                            .toString()
+                    )
+                )
+                webrtcClient.answer(targetUsername!!)
+            }
+            DataModelType.Answer -> {
+                webrtcClient.onRemoteSessionReceived(
+                    SessionDescription(SessionDescription.Type.ANSWER, model.data.toString())
+                )
+            }
+            DataModelType.IceCandidates -> {
+                val candidate = try {
+                    gson.fromJson(model.data.toString(), IceCandidate::class.java)
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                    null
+                }
+                candidate?.let {
+                    webrtcClient.addIceCandidate(it)
+                }
+            }
+            else -> Unit
+        }
     }
 
-    override fun onCallEndReceived() {
-//        runOnUiThread {
-//            restartUi()
-//        }
-    }
-
-    override fun onRemoteStreamAdded(stream: MediaStream) {
-//        runOnUiThread {
-//            views.surfaceView.isVisible = true
-//            stream.videoTracks[0].addSink(views.surfaceView)
-//        }
-    }
-
-    private fun restartUi() {
-//        views.apply {
-//            disconnectBtn.isVisible=false
-//            requestLayout.isVisible = true
-//            notificationLayout.isVisible = false
-//            surfaceView.isVisible = false
-//        }
+    override fun onTransferEventToSocket(data: DataModel) {
+        socketClient.sendMessageToSocket(data)
     }
 }

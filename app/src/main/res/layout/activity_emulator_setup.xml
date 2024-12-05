@@ -54,6 +54,20 @@
         android:textColor="@color/colorPrimaryDark"
         android:textSize="16sp" />
 
+    <EditText
+        android:id="@+id/targetUserId"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="12dp"
+        android:layout_marginTop="12dp"
+        android:layout_marginEnd="12dp"
+        android:layout_marginBottom="16dp"
+        android:background="@drawable/edit_text_background"
+        android:hint="Target User Id"
+        android:padding="12dp"
+        android:textColor="@color/colorPrimaryDark"
+        android:textSize="16sp" />
+
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/btnNext"
@@ -65,10 +79,10 @@
         android:paddingStart="48dp"
         android:paddingEnd="48dp"
         android:text="Next"
-        app:iconTint="@color/white"
         android:textColor="@color/white"
         app:cornerRadius="32dp"
         app:icon="@drawable/ic_forward_dot"
         app:iconGravity="textEnd"
-        app:iconPadding="12dp" />
+        app:iconPadding="12dp"
+        app:iconTint="@color/white" />
 </LinearLayout>

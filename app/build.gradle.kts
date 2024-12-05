@@ -22,6 +22,7 @@ android {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
         resValue("string", "app_name", if (emulatorBuild) "E-Damaru" else "Damaru")
+        buildConfigField("boolean", "emulatorBuild", "$emulatorBuild")
     }
 
     buildTypes {

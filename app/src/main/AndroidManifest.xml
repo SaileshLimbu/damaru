@@ -19,18 +19,13 @@
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
         android:icon="@mipmap/ic_launcher"
-        android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/Theme.ProjectZ"
         tools:targetApi="31" >
         <activity
-            android:name=".ui.PinActivity"
-            android:exported="false"
-            android:theme="@style/Theme.ProjectZ" />
-        <activity
             android:name=".ui.SplashActivity"
             android:exported="true"
-            android:label=""
+            android:label="@string/app_name"
             android:screenOrientation="portrait"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar"
             android:windowSoftInputMode="adjustResize"
@@ -41,19 +36,24 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity
+            android:name=".ui.PinActivity"
+            android:exported="false"
+            android:theme="@style/Theme.ProjectZ" />
         <activity android:name=".ui.MainActivity" />
         <activity android:name=".ui.LoginActivity" />
         <activity android:name=".ui.DeviceUsersActivity" />
         <activity android:name=".ui.DeviceControlActivity" />
         <activity android:name="com.d1vivek.projectz.ui.AddUserActivity" />
         <activity android:name="com.d1vivek.projectz.ui.EmulatorSetupActivity" />
+        <activity android:name="com.d1vivek.projectz.ui.DeviceShareActivity" />
 
         <meta-data
             android:name="preloaded_fonts"
             android:resource="@array/preloaded_fonts" />
 
         <service
-            android:name=".service.WebrtcService"
+            android:name=".service.ShareService"
             android:exported="false"
             android:foregroundServiceType="mediaProjection" />
     </application>

@@ -9,8 +9,21 @@ import android.view.WindowManager
 import com.d1vivek.projectz.utils.DataModel
 import com.d1vivek.projectz.utils.DataModelType
 import com.google.gson.Gson
-import org.webrtc.*
+import org.webrtc.DefaultVideoDecoderFactory
+import org.webrtc.DefaultVideoEncoderFactory
+import org.webrtc.EglBase
+import org.webrtc.IceCandidate
+import org.webrtc.MediaConstraints
+import org.webrtc.MediaStream
+import org.webrtc.PeerConnection
 import org.webrtc.PeerConnection.Observer
+import org.webrtc.PeerConnectionFactory
+import org.webrtc.ScreenCapturerAndroid
+import org.webrtc.SessionDescription
+import org.webrtc.SurfaceTextureHelper
+import org.webrtc.SurfaceViewRenderer
+import org.webrtc.VideoCapturer
+import org.webrtc.VideoTrack
 import javax.inject.Inject
 
 class WebrtcClient @Inject constructor(
@@ -21,7 +34,7 @@ class WebrtcClient @Inject constructor(
     private lateinit var observer: Observer
     private lateinit var localSurfaceView: SurfaceViewRenderer
     var listener: Listener? = null
-    private var permissionIntent:Intent?=null
+    private var permissionIntent: Intent? = null
 
     private var peerConnection: PeerConnection? = null
     private val eglBaseContext = EglBase.create().eglBaseContext
@@ -35,42 +48,43 @@ class WebrtcClient @Inject constructor(
         )
     )
 
-    private var screenCapturer : VideoCapturer?=null
+    private var screenCapturer: VideoCapturer? = null
     private val localVideoSource by lazy { peerConnectionFactory.createVideoSource(false) }
-    private val localTrackId="local_track"
-    private val localStreamId="local_stream"
-    private var localVideoTrack:VideoTrack?=null
-    private var localStream: MediaStream?=null
+    private val localTrackId = "local_track"
+    private val localStreamId = "local_stream"
+    private var localVideoTrack: VideoTrack? = null
+    private var localStream: MediaStream? = null
 
-    
+
     init {
         initPeerConnectionFactory(context)
     }
 
     fun initializeWebrtcClient(
-        username: String, view: SurfaceViewRenderer, observer: Observer
+        username: String, view: SurfaceViewRenderer?, observer: Observer
     ) {
 
         this.username = username
         this.observer = observer
         peerConnection = createPeerConnection(observer)
-        initSurfaceView(view)
+        if (view != null)
+            initSurfaceView(view)
     }
 
     fun setPermissionIntent(intent: Intent) {
         this.permissionIntent = intent
     }
 
-    private fun initSurfaceView(view: SurfaceViewRenderer){
+    private fun initSurfaceView(view: SurfaceViewRenderer) {
         this.localSurfaceView = view
         view.run {
             setMirror(false)
             setEnableHardwareScaler(true)
-            init(eglBaseContext,null)
+            init(eglBaseContext, null)
         }
     }
 
-    fun startScreenCapturing(view:SurfaceViewRenderer){
+    fun startScreenCapturing(view: SurfaceViewRenderer) {
         val displayMetrics = DisplayMetrics()
         val windowsManager = context.getSystemService(Context.WINDOW_SERVICE) as WindowManager
         windowsManager.defaultDisplay.getMetrics(displayMetrics)
@@ -79,19 +93,18 @@ class WebrtcClient @Inject constructor(
         val screenHeightPixels = displayMetrics.heightPixels
 
         val surfaceTextureHelper = SurfaceTextureHelper.create(
-            Thread.currentThread().name,eglBaseContext
+            Thread.currentThread().name, eglBaseContext
         )
 
         screenCapturer = createScreenCapturer()
-        screenCapturer!!.initialize(surfaceTextureHelper,context,localVideoSource.capturerObserver)
-        screenCapturer!!.startCapture(screenWidthPixels,screenHeightPixels,15)
+        screenCapturer!!.initialize(surfaceTextureHelper, context, localVideoSource.capturerObserver)
+        screenCapturer!!.startCapture(screenWidthPixels, screenHeightPixels, 15)
 
-        localVideoTrack = peerConnectionFactory.createVideoTrack(localTrackId+"_video",localVideoSource)
+        localVideoTrack = peerConnectionFactory.createVideoTrack(localTrackId + "_video", localVideoSource)
         localVideoTrack?.addSink(view)
         localStream = peerConnectionFactory.createLocalMediaStream(localStreamId)
         localStream?.addTrack(localVideoTrack)
         peerConnection?.addStream(localStream)
-
     }
 
     private fun createScreenCapturer(): VideoCapturer {
@@ -112,15 +125,15 @@ class WebrtcClient @Inject constructor(
 
     private fun createPeerConnectionFactory(): PeerConnectionFactory {
         return PeerConnectionFactory.builder().setVideoDecoderFactory(
-                DefaultVideoDecoderFactory(eglBaseContext)
-            ).setVideoEncoderFactory(
-                DefaultVideoEncoderFactory(
-                    eglBaseContext, true, true
-                )
-            ).setOptions(PeerConnectionFactory.Options().apply {
-                disableEncryption = false
-                disableNetworkMonitor = false
-            }).createPeerConnectionFactory()
+            DefaultVideoDecoderFactory(eglBaseContext)
+        ).setVideoEncoderFactory(
+            DefaultVideoEncoderFactory(
+                eglBaseContext, true, true
+            )
+        ).setOptions(PeerConnectionFactory.Options().apply {
+            disableEncryption = false
+            disableNetworkMonitor = false
+        }).createPeerConnectionFactory()
     }
 
     private fun createPeerConnection(observer: Observer): PeerConnection? {
@@ -168,15 +181,15 @@ class WebrtcClient @Inject constructor(
         }, mediaConstraint)
     }
 
-    fun onRemoteSessionReceived(sessionDescription: SessionDescription){
-        peerConnection?.setRemoteDescription(MySdpObserver(),sessionDescription)
+    fun onRemoteSessionReceived(sessionDescription: SessionDescription) {
+        peerConnection?.setRemoteDescription(MySdpObserver(), sessionDescription)
     }
 
-    fun addIceCandidate(iceCandidate: IceCandidate){
+    fun addIceCandidate(iceCandidate: IceCandidate) {
         peerConnection?.addIceCandidate(iceCandidate)
     }
 
-    fun sendIceCandidate(candidate: IceCandidate,target: String){
+    fun sendIceCandidate(candidate: IceCandidate, target: String) {
         addIceCandidate(candidate)
         listener?.onTransferEventToSocket(
             DataModel(
@@ -188,27 +201,25 @@ class WebrtcClient @Inject constructor(
         )
     }
 
-    fun closeConnection(){
+    fun closeConnection() {
         try {
             screenCapturer?.stopCapture()
             screenCapturer?.dispose()
             localStream?.dispose()
             peerConnection?.close()
-        }catch (e:Exception){
+        } catch (e: Exception) {
             e.printStackTrace()
         }
     }
 
-    fun restart(){
+    fun restart() {
         closeConnection()
         localSurfaceView.let {
             it.clearImage()
             it.release()
-            initializeWebrtcClient(username,it,observer)
+            initializeWebrtcClient(username, it, observer)
         }
     }
-
-
 
 
     interface Listener {

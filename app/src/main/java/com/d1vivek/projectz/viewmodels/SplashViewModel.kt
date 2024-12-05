@@ -15,13 +15,12 @@ class SplashViewModel @Inject constructor(
     prefsHelper: PrefsHelper
 ) : ViewModel() {
 
-    var isEmulatorBuild = false
     private val _navigateToMain = MutableLiveData<String>()
     val navigateToMain: LiveData<String> get() = _navigateToMain
 
     init {
         Handler(Looper.getMainLooper()).postDelayed({
-            if (isEmulatorBuild) {
+            if (BuildConfig.emulatorBuild) {
                 val emulatorId = prefsHelper.getString(PrefsHelper.EMULATOR_ID)
                 if (emulatorId.isNullOrEmpty()) {
                     _navigateToMain.value = "emulatorSetup"

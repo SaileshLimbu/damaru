@@ -28,7 +28,6 @@ class SplashActivity : AppCompatActivity() {
         val fadeInAnimation = AnimationUtils.loadAnimation(this, R.anim.splash_animation)
         b.splashImage.startAnimation(fadeInAnimation)
 
-        splashViewModel.isEmulatorBuild = applicationContext.packageName.contains("emulator")
         splashViewModel.navigateToMain.observe(this) { navigateTo ->
             when (navigateTo) {
                 "emulator" -> {
@@ -54,6 +53,7 @@ class SplashActivity : AppCompatActivity() {
                     startActivity(
                         Intent(this@SplashActivity, DeviceControlActivity::class.java)
                             .putExtra(DeviceControlActivity.USER_NAME, "theone")
+                            .putExtra(DeviceControlActivity.TARGET_USER_NAME, "fe4d330b43e16775")
                     )
 //                    startActivity(Intent(this@SplashActivity, LoginActivity::class.java))
                     finish()
