@@ -111,7 +111,7 @@ class WebrtcClient @Inject constructor(
         return ScreenCapturerAndroid(permissionIntent, object : MediaProjection.Callback() {
             override fun onStop() {
                 super.onStop()
-                Log.d("TAG", "onStop: stopped screen casting permission")
+                Log.d("damaru ", "onStop: stopped screen casting permission")
             }
         })
     }
@@ -177,6 +177,12 @@ class WebrtcClient @Inject constructor(
                         )
                     }
                 }, desc)
+            }
+
+            override fun onCreateFailure(p0: String?) {
+                super.onCreateFailure(p0)
+
+                Log.e("damaru", "onCreateFailure >>>> $p0")
             }
         }, mediaConstraint)
     }

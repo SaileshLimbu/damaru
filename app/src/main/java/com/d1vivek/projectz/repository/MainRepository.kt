@@ -90,7 +90,7 @@
 //
 //                override fun onConnectionChange(newState: PeerConnection.PeerConnectionState?) {
 //                    super.onConnectionChange(newState)
-//                    Log.d("TAG", "onConnectionChange: $newState")
+//                    Log.d("damaru ", "onConnectionChange: $newState")
 //                    if (newState == PeerConnection.PeerConnectionState.CONNECTED){
 //                        listener?.onConnectionConnected()
 //                    }
@@ -98,7 +98,7 @@
 //
 //                override fun onAddStream(p0: MediaStream?) {
 //                    super.onAddStream(p0)
-//                    Log.d("TAG", "onAddStream: $p0")
+//                    Log.d("damaru ", "onAddStream: $p0")
 //                    p0?.let { listener?.onRemoteStreamAdded(it) }
 //                }
 //            })

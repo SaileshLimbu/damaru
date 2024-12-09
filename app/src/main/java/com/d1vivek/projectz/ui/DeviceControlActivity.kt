@@ -42,6 +42,10 @@ class DeviceControlActivity : AppCompatActivity(), SocketClient.Listener, Webrtc
         setContentView(binding.root)
 
         init()
+
+        binding.btnCheck.setOnClickListener{
+            webrtcClient.call(targetUsername!!)
+        }
     }
 
     private fun init() {
@@ -66,34 +70,29 @@ class DeviceControlActivity : AppCompatActivity(), SocketClient.Listener, Webrtc
                 override fun onIceCandidate(p0: IceCandidate?) {
                     super.onIceCandidate(p0)
                     p0?.let { webrtcClient.sendIceCandidate(it, targetUsername!!) }
+                    Log.d("damaru", "onIceCandidate: ${p0.toString()}")
                 }
 
                 override fun onConnectionChange(newState: PeerConnection.PeerConnectionState?) {
                     super.onConnectionChange(newState)
-                    Log.d("TAG", "onConnectionChange: $newState")
+                    Log.d("damaru", "onConnectionChange: $newState")
                     if (newState == PeerConnection.PeerConnectionState.CONNECTED){
                         //show disconnect view here
+
+
                     }
                 }
 
                 override fun onAddStream(stream: MediaStream?) {
                     super.onAddStream(stream)
-                    Log.d("TAG", "onAddStream: $stream")
+                    Log.d("damaru", "onAddStream: $stream")
                     stream?.videoTracks?.get(0)?.addSink(binding.surfaceView)
                 }
             })
-
-//        webrtcClient.startScreenCapturing(binding.surfaceView)
-//        socketClient.sendMessageToSocket(
-//            DataModel(
-//                type = DataModelType.StartStreaming,
-//                username = username!!,
-//                target = targetUsername,
-//                null
-//            ))
     }
 
     override fun onNewMessageReceived(model: DataModel) {
+        Log.d("damaru", "onNewMessageReceived: $model")
         when (model.type) {
             DataModelType.StartStreaming -> {
             }
@@ -101,13 +100,6 @@ class DeviceControlActivity : AppCompatActivity(), SocketClient.Listener, Webrtc
                 finish()
             }
             DataModelType.Offer -> {
-                webrtcClient.onRemoteSessionReceived(
-                    SessionDescription(
-                        SessionDescription.Type.OFFER, model.data
-                            .toString()
-                    )
-                )
-                webrtcClient.answer(targetUsername!!)
             }
             DataModelType.Answer -> {
                 webrtcClient.onRemoteSessionReceived(

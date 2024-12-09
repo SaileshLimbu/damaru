@@ -6,7 +6,7 @@ plugins {
     id("kotlin-kapt")
 }
 
-val emulatorBuild = false
+val emulatorBuild = true
 
 android {
     namespace = "com.d1vivek.projectz"

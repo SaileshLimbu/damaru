@@ -8,8 +8,8 @@ import android.os.Build
 import android.os.IBinder
 import androidx.core.app.NotificationCompat
 import com.d1vivek.projectz.R
+import com.d1vivek.projectz.webrtc.WebrtcClient
 import dagger.hilt.android.AndroidEntryPoint
-import org.webrtc.MediaStream
 import org.webrtc.SurfaceViewRenderer
 import javax.inject.Inject
 
@@ -18,12 +18,11 @@ class ShareService @Inject constructor() : Service() {
 
 
     companion object {
-        var screenPermissionIntent : Intent ?= null
-        var surfaceView:SurfaceViewRenderer?=null
+        var webrtcClient : WebrtcClient? = null
+        var  surfaceView: SurfaceViewRenderer? = null
     }
 
     private lateinit var notificationManager: NotificationManager
-    private lateinit var username:String
 
     override fun onCreate() {
         super.onCreate()
@@ -34,22 +33,7 @@ class ShareService @Inject constructor() : Service() {
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        if (intent!=null){
-            when(intent.action){
-                "StopIntent"->{
-                    stopMyService()
-                }
-                "EndCallIntent"->{
-                    stopMyService()
-                }
-                "AcceptCallIntent"->{
-                }
-                "RequestConnectionIntent"->{
-                }
-                else ->{}
-            }
-        }
-
+        webrtcClient?.startScreenCapturing(surfaceView!!)
         return START_STICKY
     }
 
@@ -71,24 +55,6 @@ class ShareService @Inject constructor() : Service() {
         }
 
     }
-//
-//    override fun onConnectionRequestReceived(target: String) {
-//        listener?.onConnectionRequestReceived(target)
-//    }
-//
-//    override fun onConnectionConnected() {
-//        listener?.onConnectionConnected()
-//    }
-//
-//    override fun onCallEndReceived() {
-//        listener?.onCallEndReceived()
-//        stopMyService()
-//    }
-//
-//    override fun onRemoteStreamAdded(stream: MediaStream) {
-//        listener?.onRemoteStreamAdded(stream)
-//    }
-
     override fun onBind(intent: Intent?): IBinder? {
         return null
     }

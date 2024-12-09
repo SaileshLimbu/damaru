@@ -6,13 +6,13 @@ import android.content.Intent
 import android.media.projection.MediaProjectionManager
 import android.os.Build
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
 import android.util.Log
 import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
+import com.d1vivek.projectz.R
+import com.d1vivek.projectz.databinding.ActivityDeviceShareBinding
 import com.d1vivek.projectz.service.ShareService
 import com.d1vivek.projectz.socket.SocketClient
 import com.d1vivek.projectz.utils.DataModel
@@ -25,6 +25,7 @@ import org.webrtc.IceCandidate
 import org.webrtc.MediaStream
 import org.webrtc.PeerConnection
 import org.webrtc.SessionDescription
+import org.webrtc.SurfaceViewRenderer
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -37,6 +38,8 @@ class DeviceShareActivity : AppCompatActivity(), SocketClient.Listener, WebrtcCl
     private var username: String? = null
     private var targetUsername: String? = null
 
+    private lateinit var b : ActivityDeviceShareBinding
+
     companion object {
         const val USER_NAME = "username"
         const val TARGET_USER_NAME = "targetUser"
@@ -45,19 +48,15 @@ class DeviceShareActivity : AppCompatActivity(), SocketClient.Listener, WebrtcCl
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        b = ActivityDeviceShareBinding.inflate(layoutInflater)
+        setContentView(b.root)
         init()
     }
 
     private fun init() {
         username = intent.getStringExtra(USER_NAME)
-        targetUsername = intent.getStringExtra(TARGET_USER_NAME)
         if (username.isNullOrEmpty()) {
             Toast.makeText(applicationContext, "No Username", Toast.LENGTH_SHORT).show()
-            finish()
-            return
-        }
-        if (targetUsername.isNullOrEmpty()) {
-            Toast.makeText(applicationContext, "No target Username", Toast.LENGTH_SHORT).show()
             finish()
             return
         }
@@ -82,39 +81,26 @@ class DeviceShareActivity : AppCompatActivity(), SocketClient.Listener, WebrtcCl
 
             webrtcClient.listener = this
             webrtcClient.setPermissionIntent(data)
-            webrtcClient.initializeWebrtcClient(username!!, null,
+            webrtcClient.initializeWebrtcClient(username!!, b.surface,
                 object : MyPeerObserver() {
                     override fun onIceCandidate(p0: IceCandidate?) {
                         super.onIceCandidate(p0)
                         p0?.let { webrtcClient.sendIceCandidate(it, targetUsername!!) }
+                        Log.d("damaru", "onIceCandidate: ${p0.toString()}")
                     }
 
                     override fun onConnectionChange(newState: PeerConnection.PeerConnectionState?) {
                         super.onConnectionChange(newState)
-                        Log.d("TAG", "onConnectionChange: $newState")
+                        Log.d("damaru", "onConnectionChange: $newState")
                         if (newState == PeerConnection.PeerConnectionState.CONNECTED){
                         }
                     }
 
                     override fun onAddStream(p0: MediaStream?) {
                         super.onAddStream(p0)
-                        Log.d("TAG", "onAddStream: $p0")
+                        Log.d("damaru", "onAddStream: $p0")
                     }
                 })
-
-            val thread = Thread {
-                val startIntent = Intent(applicationContext, ShareService::class.java)
-                startIntent.action = "StartIntent"
-                startIntent.putExtra("username",username)
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
-                    startForegroundService(startIntent)
-                } else {
-                    startService(startIntent)
-                }
-            }
-            thread.start()
-
-            webrtcClient.call(targetUsername!!)
         } else {
             Toast.makeText(applicationContext, "Permission Denied", Toast.LENGTH_SHORT).show()
             finish()
@@ -126,13 +112,14 @@ class DeviceShareActivity : AppCompatActivity(), SocketClient.Listener, WebrtcCl
             DataModel(
                 type = DataModelType.EndCall,
                 username = username!!,
-                target = targetUsername!!,
+                target = null,
                 null
             )
         )
     }
 
     override fun onNewMessageReceived(model: DataModel) {
+        Log.d("damaru", "onNewMessageReceived: $model")
         when (model.type) {
             DataModelType.StartStreaming -> {
             }
@@ -146,12 +133,10 @@ class DeviceShareActivity : AppCompatActivity(), SocketClient.Listener, WebrtcCl
                             .toString()
                     )
                 )
-                webrtcClient.answer(targetUsername!!)
+                targetUsername = model.username
+                webrtcClient.answer(model.username)
             }
             DataModelType.Answer -> {
-                webrtcClient.onRemoteSessionReceived(
-                    SessionDescription(SessionDescription.Type.ANSWER, model.data.toString())
-                )
             }
             DataModelType.IceCandidates -> {
                 val candidate = try {
@@ -170,5 +155,17 @@ class DeviceShareActivity : AppCompatActivity(), SocketClient.Listener, WebrtcCl
 
     override fun onTransferEventToSocket(data: DataModel) {
         socketClient.sendMessageToSocket(data)
+
+        if(data.type == DataModelType.Answer){
+            //start streaming
+            ShareService.webrtcClient = webrtcClient
+            ShareService.surfaceView = b.surface
+            val startIntent = Intent(this@DeviceShareActivity, ShareService::class.java)
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
+                startForegroundService(startIntent)
+            } else {
+                startService(startIntent)
+            }
+        }
     }
 }

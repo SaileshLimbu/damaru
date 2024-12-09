@@ -47,7 +47,6 @@ class SocketClient @Inject constructor(
                 } catch (e: Exception) {
                     null
                 }
-                Log.d("TAG", "onMessage: $model")
                 model?.let {
                     listener?.onNewMessageReceived(it)
                 }
@@ -61,7 +60,7 @@ class SocketClient @Inject constructor(
             }
 
             override fun onError(ex: Exception?) {
-                Log.e("FUCK", ex?.message ?: "no msg")
+                Log.e("damaru FUCK", ex?.message ?: "no msg")
             }
 
         }
