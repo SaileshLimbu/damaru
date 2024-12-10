@@ -11,7 +11,6 @@ import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
-import com.d1vivek.projectz.R
 import com.d1vivek.projectz.databinding.ActivityDeviceShareBinding
 import com.d1vivek.projectz.service.ShareService
 import com.d1vivek.projectz.socket.SocketClient
@@ -51,6 +50,11 @@ class DeviceShareActivity : AppCompatActivity(), SocketClient.Listener, WebrtcCl
         b = ActivityDeviceShareBinding.inflate(layoutInflater)
         setContentView(b.root)
         init()
+
+        targetUsername="theone"
+        b.btnCheck.setOnClickListener {
+            webrtcClient.call(targetUsername!!)
+        }
     }
 
     private fun init() {
@@ -133,10 +137,19 @@ class DeviceShareActivity : AppCompatActivity(), SocketClient.Listener, WebrtcCl
                             .toString()
                     )
                 )
-                targetUsername = model.username
+//                targetUsername = model.username
                 webrtcClient.answer(model.username)
             }
             DataModelType.Answer -> {
+                //start streaming
+//                ShareService.webrtcClient = webrtcClient
+//                ShareService.surfaceView = b.surface
+//                val startIntent = Intent(this@DeviceShareActivity, ShareService::class.java)
+//                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
+//                    startForegroundService(startIntent)
+//                } else {
+//                    startService(startIntent)
+//                }
             }
             DataModelType.IceCandidates -> {
                 val candidate = try {
@@ -154,6 +167,7 @@ class DeviceShareActivity : AppCompatActivity(), SocketClient.Listener, WebrtcCl
     }
 
     override fun onTransferEventToSocket(data: DataModel) {
+        Log.d("damaru", "onTransferEventToSocket: $data")
         socketClient.sendMessageToSocket(data)
 
         if(data.type == DataModelType.Answer){

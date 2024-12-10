@@ -15,6 +15,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import org.webrtc.IceCandidate
 import org.webrtc.MediaStream
 import org.webrtc.PeerConnection
+import org.webrtc.RtpReceiver
 import org.webrtc.SessionDescription
 import javax.inject.Inject
 
@@ -78,15 +79,18 @@ class DeviceControlActivity : AppCompatActivity(), SocketClient.Listener, Webrtc
                     Log.d("damaru", "onConnectionChange: $newState")
                     if (newState == PeerConnection.PeerConnectionState.CONNECTED){
                         //show disconnect view here
-
-
                     }
                 }
 
-                override fun onAddStream(stream: MediaStream?) {
-                    super.onAddStream(stream)
-                    Log.d("damaru", "onAddStream: $stream")
-                    stream?.videoTracks?.get(0)?.addSink(binding.surfaceView)
+                override fun onAddStream(p0: MediaStream?) {
+                    super.onAddStream(p0)
+                    Log.d("damaru", "onAddStream: $p0")
+                    p0?.videoTracks?.get(0)?.addSink(binding.surfaceView)
+                }
+
+                override fun onAddTrack(p0: RtpReceiver?, p1: Array<out MediaStream>?) {
+                    super.onAddTrack(p0, p1)
+                    Log.d("damaru", "onAddTrack: $p1")
                 }
             })
     }
@@ -100,6 +104,14 @@ class DeviceControlActivity : AppCompatActivity(), SocketClient.Listener, Webrtc
                 finish()
             }
             DataModelType.Offer -> {
+                webrtcClient.onRemoteSessionReceived(
+                    SessionDescription(
+                        SessionDescription.Type.OFFER, model.data
+                            .toString()
+                    )
+                )
+                targetUsername = model.username
+                webrtcClient.answer(model.username)
             }
             DataModelType.Answer -> {
                 webrtcClient.onRemoteSessionReceived(
@@ -122,6 +134,7 @@ class DeviceControlActivity : AppCompatActivity(), SocketClient.Listener, Webrtc
     }
 
     override fun onTransferEventToSocket(data: DataModel) {
+        Log.d("damaru", "onTransferEventToSocket: $data")
         socketClient.sendMessageToSocket(data)
     }
 }

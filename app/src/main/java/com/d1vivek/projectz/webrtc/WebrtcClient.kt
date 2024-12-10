@@ -44,7 +44,8 @@ class WebrtcClient @Inject constructor(
     }
     private val iceServer = listOf(
         PeerConnection.IceServer(
-            "turn:openrelay.metered.ca:443?transport=tcp", "openrelayproject", "openrelayproject"
+//            "turn:openrelay.metered.ca:443?transport=tcp", "openrelayproject", "openrelayproject"
+            "stun:stun.l.google.com:19302", "openrelayproject", "openrelayproject"
         )
     )
 
@@ -104,7 +105,12 @@ class WebrtcClient @Inject constructor(
         localVideoTrack?.addSink(view)
         localStream = peerConnectionFactory.createLocalMediaStream(localStreamId)
         localStream?.addTrack(localVideoTrack)
-        peerConnection?.addStream(localStream)
+        if (localStream != null) {
+            peerConnection?.addStream(localStream)
+        } else {
+            Log.e("damaru", " FFFFFUUUUUUCCCCCCCCCCCCCKKKKKKKKKKKKKKKK  Local stream is null")
+        }
+
     }
 
     private fun createScreenCapturer(): VideoCapturer {
@@ -112,6 +118,11 @@ class WebrtcClient @Inject constructor(
             override fun onStop() {
                 super.onStop()
                 Log.d("damaru ", "onStop: stopped screen casting permission")
+            }
+
+            override fun onCapturedContentVisibilityChanged(isVisible: Boolean) {
+                super.onCapturedContentVisibilityChanged(isVisible)
+                Log.d("damaru", "onCapturedContentVisibilityChanged >>$isVisible")
             }
         })
     }
