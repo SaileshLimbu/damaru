@@ -77,26 +77,31 @@ class DeviceControlActivity : AppCompatActivity(), SocketClient.Listener, Webrtc
                 override fun onConnectionChange(newState: PeerConnection.PeerConnectionState?) {
                     super.onConnectionChange(newState)
                     Log.d("damaru", "onConnectionChange: $newState")
-                    if (newState == PeerConnection.PeerConnectionState.CONNECTED){
-                        //show disconnect view here
-                    }
+//                    if (newState == PeerConnection.PeerConnectionState.CONNECTED){
+//                        //show disconnect view here
+//                    }
                 }
 
                 override fun onAddStream(p0: MediaStream?) {
                     super.onAddStream(p0)
                     Log.d("damaru", "onAddStream: $p0")
                     p0?.videoTracks?.get(0)?.addSink(binding.surfaceView)
+                    Log.e("damaru", "onAddStream ${p0?.videoTracks?.get(0)}")
                 }
 
                 override fun onAddTrack(p0: RtpReceiver?, p1: Array<out MediaStream>?) {
                     super.onAddTrack(p0, p1)
                     Log.d("damaru", "onAddTrack: $p1")
+                    p0?.SetObserver {
+                        Log.e("damaru", "rtpReceiver $it")
+                    }
+                    p1?.get(0)?.videoTracks?.get(0)?.addSink(binding.surfaceView)
+                    Log.e("damaru", "onAddStream ${p1?.get(0)?.videoTracks?.get(0)}")
                 }
             })
     }
 
     override fun onNewMessageReceived(model: DataModel) {
-        Log.d("damaru", "onNewMessageReceived: $model")
         when (model.type) {
             DataModelType.StartStreaming -> {
             }
@@ -134,7 +139,6 @@ class DeviceControlActivity : AppCompatActivity(), SocketClient.Listener, Webrtc
     }
 
     override fun onTransferEventToSocket(data: DataModel) {
-        Log.d("damaru", "onTransferEventToSocket: $data")
         socketClient.sendMessageToSocket(data)
     }
 }

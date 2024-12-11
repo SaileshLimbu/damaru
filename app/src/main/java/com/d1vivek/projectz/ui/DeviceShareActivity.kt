@@ -24,20 +24,24 @@ import org.webrtc.IceCandidate
 import org.webrtc.MediaStream
 import org.webrtc.PeerConnection
 import org.webrtc.SessionDescription
-import org.webrtc.SurfaceViewRenderer
 import javax.inject.Inject
 
 @AndroidEntryPoint
 class DeviceShareActivity : AppCompatActivity(), SocketClient.Listener, WebrtcClient.Listener {
-    @Inject lateinit var socketClient: SocketClient
-    @Inject lateinit var webrtcClient: WebrtcClient
-    @Inject lateinit var gson: Gson
+    @Inject
+    lateinit var socketClient: SocketClient
+
+    @Inject
+    lateinit var webrtcClient: WebrtcClient
+
+    @Inject
+    lateinit var gson: Gson
 
     private lateinit var screenCaptureLauncher: ActivityResultLauncher<Intent>
     private var username: String? = null
     private var targetUsername: String? = null
 
-    private lateinit var b : ActivityDeviceShareBinding
+    private lateinit var b: ActivityDeviceShareBinding
 
     companion object {
         const val USER_NAME = "username"
@@ -49,9 +53,9 @@ class DeviceShareActivity : AppCompatActivity(), SocketClient.Listener, WebrtcCl
 
         b = ActivityDeviceShareBinding.inflate(layoutInflater)
         setContentView(b.root)
-        init()
 
-        targetUsername="theone"
+        targetUsername = "theone"
+        init()
         b.btnCheck.setOnClickListener {
             webrtcClient.call(targetUsername!!)
         }
@@ -85,7 +89,7 @@ class DeviceShareActivity : AppCompatActivity(), SocketClient.Listener, WebrtcCl
 
             webrtcClient.listener = this
             webrtcClient.setPermissionIntent(data)
-            webrtcClient.initializeWebrtcClient(username!!, b.surface,
+            webrtcClient.initializeWebrtcClient(username!!, b.surfaceView,
                 object : MyPeerObserver() {
                     override fun onIceCandidate(p0: IceCandidate?) {
                         super.onIceCandidate(p0)
@@ -96,7 +100,7 @@ class DeviceShareActivity : AppCompatActivity(), SocketClient.Listener, WebrtcCl
                     override fun onConnectionChange(newState: PeerConnection.PeerConnectionState?) {
                         super.onConnectionChange(newState)
                         Log.d("damaru", "onConnectionChange: $newState")
-                        if (newState == PeerConnection.PeerConnectionState.CONNECTED){
+                        if (newState == PeerConnection.PeerConnectionState.CONNECTED) {
                         }
                     }
 
@@ -111,7 +115,7 @@ class DeviceShareActivity : AppCompatActivity(), SocketClient.Listener, WebrtcCl
         }
     }
 
-    private fun endScreenShare(){
+    private fun endScreenShare() {
         socketClient.sendMessageToSocket(
             DataModel(
                 type = DataModelType.EndCall,
@@ -123,13 +127,14 @@ class DeviceShareActivity : AppCompatActivity(), SocketClient.Listener, WebrtcCl
     }
 
     override fun onNewMessageReceived(model: DataModel) {
-        Log.d("damaru", "onNewMessageReceived: $model")
         when (model.type) {
             DataModelType.StartStreaming -> {
             }
+
             DataModelType.EndCall -> {
                 finish()
             }
+
             DataModelType.Offer -> {
                 webrtcClient.onRemoteSessionReceived(
                     SessionDescription(
@@ -140,17 +145,25 @@ class DeviceShareActivity : AppCompatActivity(), SocketClient.Listener, WebrtcCl
 //                targetUsername = model.username
                 webrtcClient.answer(model.username)
             }
+
             DataModelType.Answer -> {
-                //start streaming
-//                ShareService.webrtcClient = webrtcClient
-//                ShareService.surfaceView = b.surface
-//                val startIntent = Intent(this@DeviceShareActivity, ShareService::class.java)
-//                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
-//                    startForegroundService(startIntent)
-//                } else {
-//                    startService(startIntent)
-//                }
+                webrtcClient.onRemoteSessionReceived(
+                    SessionDescription(SessionDescription.Type.ANSWER, model.data.toString())
+                )
+
+                if(ShareService.webrtcClient == null) {
+                    //start streaming
+                    ShareService.webrtcClient = webrtcClient
+                    ShareService.surfaceView = b.surfaceView
+                    val startIntent = Intent(this@DeviceShareActivity, ShareService::class.java)
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                        startForegroundService(startIntent)
+                    } else {
+                        startService(startIntent)
+                    }
+                }
             }
+
             DataModelType.IceCandidates -> {
                 val candidate = try {
                     gson.fromJson(model.data.toString(), IceCandidate::class.java)
@@ -162,24 +175,24 @@ class DeviceShareActivity : AppCompatActivity(), SocketClient.Listener, WebrtcCl
                     webrtcClient.addIceCandidate(it)
                 }
             }
+
             else -> Unit
         }
     }
 
     override fun onTransferEventToSocket(data: DataModel) {
-        Log.d("damaru", "onTransferEventToSocket: $data")
         socketClient.sendMessageToSocket(data)
 
-        if(data.type == DataModelType.Answer){
-            //start streaming
-            ShareService.webrtcClient = webrtcClient
-            ShareService.surfaceView = b.surface
-            val startIntent = Intent(this@DeviceShareActivity, ShareService::class.java)
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
-                startForegroundService(startIntent)
-            } else {
-                startService(startIntent)
-            }
-        }
+//        if (data.type == DataModelType.Answer) {
+//            //start streaming
+//            ShareService.webrtcClient = webrtcClient
+//            ShareService.surfaceView = b.surfaceView
+//            val startIntent = Intent(this@DeviceShareActivity, ShareService::class.java)
+//            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+//                startForegroundService(startIntent)
+//            } else {
+//                startService(startIntent)
+//            }
+//        }
     }
 }

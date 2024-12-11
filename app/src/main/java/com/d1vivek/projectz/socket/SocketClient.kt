@@ -42,6 +42,7 @@ class SocketClient @Inject constructor(
             }
 
             override fun onMessage(message: String?) {
+                Log.e("damaru", "onMessage ($username): ${message ?: "fuck no msg"}")
                 val model = try {
                     gson.fromJson(message.toString(), DataModel::class.java)
                 } catch (e: Exception) {
@@ -69,6 +70,7 @@ class SocketClient @Inject constructor(
 
 
     fun sendMessageToSocket(message: Any?) {
+        Log.e("damaru", "sendMessageToSocket ($username) : $message")
         try {
             webSocket?.send(gson.toJson(message))
         } catch (e: Exception) {
