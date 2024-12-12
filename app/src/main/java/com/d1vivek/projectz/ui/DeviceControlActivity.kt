@@ -1,7 +1,9 @@
 package com.d1vivek.projectz.ui
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import android.util.Log
+import android.view.MotionEvent
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.d1vivek.projectz.databinding.ActivityDeviceControlBinding
@@ -35,6 +37,7 @@ class DeviceControlActivity : AppCompatActivity(), SocketClient.Listener, Webrtc
         const val TARGET_USER_NAME = "targetUser"
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -44,8 +47,21 @@ class DeviceControlActivity : AppCompatActivity(), SocketClient.Listener, Webrtc
 
         init()
 
-        binding.btnCheck.setOnClickListener{
+        binding.btnCheck.setOnClickListener {
             webrtcClient.call(targetUsername!!)
+        }
+
+        binding.surfaceView.setOnTouchListener { view, event ->
+            when (event.action) {
+                MotionEvent.ACTION_DOWN -> {
+                    webrtcClient.sendDataMessage("down")
+                }
+
+                MotionEvent.ACTION_UP -> {
+                    webrtcClient.sendDataMessage("up")
+                }
+            }
+            true
         }
     }
 
@@ -77,9 +93,9 @@ class DeviceControlActivity : AppCompatActivity(), SocketClient.Listener, Webrtc
                 override fun onConnectionChange(newState: PeerConnection.PeerConnectionState?) {
                     super.onConnectionChange(newState)
                     Log.d("damaru", "onConnectionChange: $newState")
-//                    if (newState == PeerConnection.PeerConnectionState.CONNECTED){
-//                        //show disconnect view here
-//                    }
+                    if (newState == PeerConnection.PeerConnectionState.CONNECTED){
+                        webrtcClient.createDataChannel()
+                    }
                 }
 
                 override fun onAddStream(p0: MediaStream?) {

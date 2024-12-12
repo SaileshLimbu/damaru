@@ -24,6 +24,7 @@ import org.webrtc.IceCandidate
 import org.webrtc.MediaStream
 import org.webrtc.PeerConnection
 import org.webrtc.SessionDescription
+import org.webrtc.SurfaceViewRenderer
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -89,7 +90,7 @@ class DeviceShareActivity : AppCompatActivity(), SocketClient.Listener, WebrtcCl
 
             webrtcClient.listener = this
             webrtcClient.setPermissionIntent(data)
-            webrtcClient.initializeWebrtcClient(username!!, b.surfaceView,
+            webrtcClient.initializeWebrtcClient(username!!, SurfaceViewRenderer(this),
                 object : MyPeerObserver() {
                     override fun onIceCandidate(p0: IceCandidate?) {
                         super.onIceCandidate(p0)
@@ -101,6 +102,7 @@ class DeviceShareActivity : AppCompatActivity(), SocketClient.Listener, WebrtcCl
                         super.onConnectionChange(newState)
                         Log.d("damaru", "onConnectionChange: $newState")
                         if (newState == PeerConnection.PeerConnectionState.CONNECTED) {
+                            webrtcClient.createDataChannel()
                         }
                     }
 

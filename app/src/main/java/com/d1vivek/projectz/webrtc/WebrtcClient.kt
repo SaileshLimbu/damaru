@@ -9,6 +9,7 @@ import android.view.WindowManager
 import com.d1vivek.projectz.utils.DataModel
 import com.d1vivek.projectz.utils.DataModelType
 import com.google.gson.Gson
+import org.webrtc.DataChannel
 import org.webrtc.DefaultVideoDecoderFactory
 import org.webrtc.DefaultVideoEncoderFactory
 import org.webrtc.EglBase
@@ -24,6 +25,7 @@ import org.webrtc.SurfaceTextureHelper
 import org.webrtc.SurfaceViewRenderer
 import org.webrtc.VideoCapturer
 import org.webrtc.VideoTrack
+import java.nio.ByteBuffer
 import javax.inject.Inject
 
 class WebrtcClient @Inject constructor(
@@ -35,6 +37,7 @@ class WebrtcClient @Inject constructor(
     private lateinit var localSurfaceView: SurfaceViewRenderer
     var listener: Listener? = null
     private var permissionIntent: Intent? = null
+    private var mDataChannel : DataChannel? = null
 
     private var peerConnection: PeerConnection? = null
     private val eglBaseContext = EglBase.create().eglBaseContext
@@ -84,6 +87,30 @@ class WebrtcClient @Inject constructor(
         }
     }
 
+    fun createDataChannel() {
+        val channelInit = DataChannel.Init()
+        mDataChannel = peerConnection?.createDataChannel("dataChannel", channelInit)
+        mDataChannel?.registerObserver(object : DataChannel.Observer {
+            override fun onBufferedAmountChange(p0: Long) {
+
+            }
+
+            override fun onStateChange() {
+                Log.d("damaru", "onStateChange >> ${mDataChannel?.state()}")
+            }
+
+            override fun onMessage(p0: DataChannel.Buffer?) {
+                Log.d("damaru", "onMessage >> ${p0.toString()}")
+            }
+
+        })
+    }
+
+    fun sendDataMessage(message : String){
+        val buffer = ByteBuffer.wrap(message.toByteArray())
+        mDataChannel?.send(DataChannel.Buffer(buffer, false))
+    }
+
     fun startScreenCapturing(view: SurfaceViewRenderer) {
         val displayMetrics = DisplayMetrics()
         val windowsManager = context.getSystemService(Context.WINDOW_SERVICE) as WindowManager
@@ -105,19 +132,8 @@ class WebrtcClient @Inject constructor(
         localStream = peerConnectionFactory.createLocalMediaStream(localStreamId)
         localStream?.addTrack(localVideoTrack)
         if (localStream != null) {
-            peerConnection?.addStream(localStream)
-        } else {
-            Log.e("damaru", " FFFFFUUUUUUCCCCCCCCCCCCCKKKKKKKKKKKKKKKK  Local stream is null")
+            peerConnection?.addTrack(localVideoTrack, listOf(localStreamId))
         }
-        Log.e("damaru", "fuck you bitch")
-
-
-//        localVideoTrack = peerConnectionFactory.createVideoTrack(localTrackId,
-//            peerConnectionFactory.createVideoSource(true))
-//        localVideoTrack?.addSink(view)
-//        localStream = peerConnectionFactory.createLocalMediaStream(localStreamId)
-//        localStream?.addTrack(localVideoTrack)
-//        peerConnection?.addStream(localStream)
     }
 
     private fun createScreenCapturer(): VideoCapturer {
