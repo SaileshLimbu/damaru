@@ -6,7 +6,9 @@ import android.content.Intent
 import android.media.projection.MediaProjectionManager
 import android.os.Build
 import android.os.Bundle
+import android.os.SystemClock
 import android.util.Log
+import android.view.MotionEvent
 import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
@@ -20,12 +22,20 @@ import com.d1vivek.projectz.webrtc.MyPeerObserver
 import com.d1vivek.projectz.webrtc.WebrtcClient
 import com.google.gson.Gson
 import dagger.hilt.android.AndroidEntryPoint
+import org.json.JSONObject
+import org.webrtc.DataChannel
 import org.webrtc.IceCandidate
 import org.webrtc.MediaStream
 import org.webrtc.PeerConnection
 import org.webrtc.SessionDescription
 import org.webrtc.SurfaceViewRenderer
+import java.io.BufferedReader
+import java.io.IOException
+import java.io.InputStream
+import java.io.InputStreamReader
+import java.io.OutputStream
 import javax.inject.Inject
+
 
 @AndroidEntryPoint
 class DeviceShareActivity : AppCompatActivity(), SocketClient.Listener, WebrtcClient.Listener {
@@ -46,7 +56,6 @@ class DeviceShareActivity : AppCompatActivity(), SocketClient.Listener, WebrtcCl
 
     companion object {
         const val USER_NAME = "username"
-        const val TARGET_USER_NAME = "targetUser"
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -55,10 +64,9 @@ class DeviceShareActivity : AppCompatActivity(), SocketClient.Listener, WebrtcCl
         b = ActivityDeviceShareBinding.inflate(layoutInflater)
         setContentView(b.root)
 
-        targetUsername = "theone"
         init()
         b.btnCheck.setOnClickListener {
-            webrtcClient.call(targetUsername!!)
+            Toast.makeText(applicationContext, "fuck sailesh", Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -101,16 +109,46 @@ class DeviceShareActivity : AppCompatActivity(), SocketClient.Listener, WebrtcCl
                     override fun onConnectionChange(newState: PeerConnection.PeerConnectionState?) {
                         super.onConnectionChange(newState)
                         Log.d("damaru", "onConnectionChange: $newState")
-                        if (newState == PeerConnection.PeerConnectionState.CONNECTED) {
-                            webrtcClient.createDataChannel()
-                        }
+//                        if (newState == PeerConnection.PeerConnectionState.CONNECTED) {
+//                            webrtcClient.createDataChannel()
+//                        }
                     }
 
                     override fun onAddStream(p0: MediaStream?) {
                         super.onAddStream(p0)
                         Log.d("damaru", "onAddStream: $p0")
                     }
+
+                    override fun onDataChannel(p0: DataChannel?) {
+                        super.onDataChannel(p0)
+                        Log.d("damaru", "onDataChannel: $p0")
+
+                        p0?.registerObserver(object : DataChannel.Observer {
+                            override fun onBufferedAmountChange(p0: Long) {
+                            }
+
+                            override fun onStateChange() {
+                            }
+
+                            override fun onMessage(p0: DataChannel.Buffer?) {
+                                Log.d("damaru", "onDataChannel onMessage: ${p0.toString()}")
+                            }
+                        })
+                    }
                 })
+
+            webrtcClient.createDataChannel()
+            //start the service right away
+            if (ShareService.webrtcClient == null) {
+                ShareService.webrtcClient = webrtcClient
+                ShareService.surfaceView = b.surfaceView
+                val startIntent = Intent(this@DeviceShareActivity, ShareService::class.java)
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                    startForegroundService(startIntent)
+                } else {
+                    startService(startIntent)
+                }
+            }
         } else {
             Toast.makeText(applicationContext, "Permission Denied", Toast.LENGTH_SHORT).show()
             finish()
@@ -131,6 +169,8 @@ class DeviceShareActivity : AppCompatActivity(), SocketClient.Listener, WebrtcCl
     override fun onNewMessageReceived(model: DataModel) {
         when (model.type) {
             DataModelType.StartStreaming -> {
+                targetUsername = model.username
+                webrtcClient.call(targetUsername!!)
             }
 
             DataModelType.EndCall -> {
@@ -144,7 +184,6 @@ class DeviceShareActivity : AppCompatActivity(), SocketClient.Listener, WebrtcCl
                             .toString()
                     )
                 )
-//                targetUsername = model.username
                 webrtcClient.answer(model.username)
             }
 
@@ -153,8 +192,7 @@ class DeviceShareActivity : AppCompatActivity(), SocketClient.Listener, WebrtcCl
                     SessionDescription(SessionDescription.Type.ANSWER, model.data.toString())
                 )
 
-                if(ShareService.webrtcClient == null) {
-                    //start streaming
+                if (ShareService.webrtcClient == null) {
                     ShareService.webrtcClient = webrtcClient
                     ShareService.surfaceView = b.surfaceView
                     val startIntent = Intent(this@DeviceShareActivity, ShareService::class.java)
@@ -184,17 +222,87 @@ class DeviceShareActivity : AppCompatActivity(), SocketClient.Listener, WebrtcCl
 
     override fun onTransferEventToSocket(data: DataModel) {
         socketClient.sendMessageToSocket(data)
-
-//        if (data.type == DataModelType.Answer) {
-//            //start streaming
-//            ShareService.webrtcClient = webrtcClient
-//            ShareService.surfaceView = b.surfaceView
-//            val startIntent = Intent(this@DeviceShareActivity, ShareService::class.java)
-//            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-//                startForegroundService(startIntent)
-//            } else {
-//                startService(startIntent)
-//            }
-//        }
     }
+
+    override fun onChannelMessage(message: String) {
+        Log.d("damaru", "onChannelMessage >>>>>>>>>>>>>> $message")
+        dispatchTouches(message)
+
+//        val json = JSONObject(message)
+//        val x = json.getDouble("x")
+//        val y = json.getDouble("y")
+////        runCommand("adb shell input tap $x $y ;")
+//        //runCommand(arrayOf("bash", "-l", "-c", "adb shell input tap $x $y ;"))
+    }
+
+    private fun dispatchTouches(eventJson: String) {
+        val json = JSONObject(eventJson)
+        // Obtain MotionEvent object
+        val downTime = SystemClock.uptimeMillis()
+        val eventTime = SystemClock.uptimeMillis() + 100
+        val x = json.getDouble("x")
+        val y = json.getDouble("y")
+        val action = json.getInt("action")
+        val metaState = json.getInt("metaState")
+
+        val motionEvent = MotionEvent.obtain(
+            downTime,
+            eventTime,
+            action,
+            x.toFloat(),
+            y.toFloat(),
+            metaState
+        )
+
+        // Dispatch touch event to view
+        b.root.post {
+            Log.d("damaru", "button pos >> ${b.btnCheck.x} : ${b.btnCheck.y}")
+            b.root.dispatchTouchEvent(motionEvent)
+        }
+    }
+
+    fun runCommand(command: Array<String>) {
+        // To avoid UI freezes run in thread
+        Thread {
+            var out: OutputStream? = null
+            var `in`: InputStream? = null
+            try {
+                // Send script into runtime process
+                val child = Runtime.getRuntime().exec(command)
+                // Get input and output streams
+                out = child.outputStream
+                `in` = child.inputStream
+                //Input stream can return anything
+                val bufferedReader = BufferedReader(InputStreamReader(`in`))
+                var line: String?
+                var result: String? = ""
+                while ((bufferedReader.readLine().also { line = it }) != null) result += line
+                //Handle input stream returned message
+                handleBashCommandsResult(result)
+            } catch (e: IOException) {
+                e.printStackTrace()
+            } finally {
+                if (`in` != null) {
+                    try {
+                        `in`.close()
+                    } catch (e: IOException) {
+                        e.printStackTrace()
+                    }
+                }
+                if (out != null) {
+                    try {
+                        out.flush()
+                        out.close()
+                    } catch (e: IOException) {
+                        e.printStackTrace()
+                    }
+                }
+            }
+        }.start()
+    }
+
+    private fun handleBashCommandsResult(result: String?) {
+        Log.d("damary", "handleBashCommandResult >>> $result")
+    }
+
 }

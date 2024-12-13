@@ -26,6 +26,7 @@ import org.webrtc.SurfaceViewRenderer
 import org.webrtc.VideoCapturer
 import org.webrtc.VideoTrack
 import java.nio.ByteBuffer
+import java.nio.charset.StandardCharsets
 import javax.inject.Inject
 
 class WebrtcClient @Inject constructor(
@@ -92,7 +93,7 @@ class WebrtcClient @Inject constructor(
         mDataChannel = peerConnection?.createDataChannel("dataChannel", channelInit)
         mDataChannel?.registerObserver(object : DataChannel.Observer {
             override fun onBufferedAmountChange(p0: Long) {
-
+                Log.d("damaru", "onBufferedAmountChange >> ${p0.toString()}")
             }
 
             override fun onStateChange() {
@@ -100,15 +101,27 @@ class WebrtcClient @Inject constructor(
             }
 
             override fun onMessage(p0: DataChannel.Buffer?) {
-                Log.d("damaru", "onMessage >> ${p0.toString()}")
+                p0.let {
+                    val bytes = ByteArray(p0!!.data.remaining())
+                    p0.data.get(bytes)
+                    val message = String(bytes, StandardCharsets.UTF_8)
+                    listener?.onChannelMessage(message)
+                }
             }
-
         })
+        Log.d("damaru", "Data Channel Created !!! $mDataChannel")
     }
 
     fun sendDataMessage(message : String){
         val buffer = ByteBuffer.wrap(message.toByteArray())
         mDataChannel?.send(DataChannel.Buffer(buffer, false))
+        Log.d("damaru", "sendDataMessage >>> $message")
+    }
+
+    fun sendDataMessage(mDataChannel: DataChannel?, message : String){
+        val buffer = ByteBuffer.wrap(message.toByteArray())
+        mDataChannel?.send(DataChannel.Buffer(buffer, false))
+        Log.d("damaru", "sendDataMessage >>> $message")
     }
 
     fun startScreenCapturing(view: SurfaceViewRenderer) {
@@ -264,5 +277,6 @@ class WebrtcClient @Inject constructor(
 
     interface Listener {
         fun onTransferEventToSocket(data: DataModel)
+        fun onChannelMessage(message : String)
     }
 }

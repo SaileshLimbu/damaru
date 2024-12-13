@@ -14,6 +14,8 @@ import com.d1vivek.projectz.webrtc.MyPeerObserver
 import com.d1vivek.projectz.webrtc.WebrtcClient
 import com.google.gson.Gson
 import dagger.hilt.android.AndroidEntryPoint
+import org.json.JSONObject
+import org.webrtc.DataChannel
 import org.webrtc.IceCandidate
 import org.webrtc.MediaStream
 import org.webrtc.PeerConnection
@@ -24,9 +26,12 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class DeviceControlActivity : AppCompatActivity(), SocketClient.Listener, WebrtcClient.Listener {
 
-    @Inject lateinit var socketClient: SocketClient
-    @Inject lateinit var webrtcClient: WebrtcClient
-    @Inject lateinit var gson: Gson
+    @Inject
+    lateinit var socketClient: SocketClient
+    @Inject
+    lateinit var webrtcClient: WebrtcClient
+    @Inject
+    lateinit var gson: Gson
 
     private lateinit var binding: ActivityDeviceControlBinding
     private var username: String? = null
@@ -49,19 +54,6 @@ class DeviceControlActivity : AppCompatActivity(), SocketClient.Listener, Webrtc
 
         binding.btnCheck.setOnClickListener {
             webrtcClient.call(targetUsername!!)
-        }
-
-        binding.surfaceView.setOnTouchListener { view, event ->
-            when (event.action) {
-                MotionEvent.ACTION_DOWN -> {
-                    webrtcClient.sendDataMessage("down")
-                }
-
-                MotionEvent.ACTION_UP -> {
-                    webrtcClient.sendDataMessage("up")
-                }
-            }
-            true
         }
     }
 
@@ -93,9 +85,9 @@ class DeviceControlActivity : AppCompatActivity(), SocketClient.Listener, Webrtc
                 override fun onConnectionChange(newState: PeerConnection.PeerConnectionState?) {
                     super.onConnectionChange(newState)
                     Log.d("damaru", "onConnectionChange: $newState")
-                    if (newState == PeerConnection.PeerConnectionState.CONNECTED){
-                        webrtcClient.createDataChannel()
-                    }
+//                    if (newState == PeerConnection.PeerConnectionState.CONNECTED){
+//                        webrtcClient.createDataChannel()
+//                    }
                 }
 
                 override fun onAddStream(p0: MediaStream?) {
@@ -114,16 +106,66 @@ class DeviceControlActivity : AppCompatActivity(), SocketClient.Listener, Webrtc
                     p1?.get(0)?.videoTracks?.get(0)?.addSink(binding.surfaceView)
                     Log.e("damaru", "onAddStream ${p1?.get(0)?.videoTracks?.get(0)}")
                 }
+
+                @SuppressLint("ClickableViewAccessibility")
+                override fun onDataChannel(p0: DataChannel?) {
+                    super.onDataChannel(p0)
+                    Log.d("damaru", "onDataChannel: $p0")
+
+                    p0?.registerObserver(object : DataChannel.Observer {
+                        override fun onBufferedAmountChange(p0: Long) {
+                        }
+
+                        override fun onStateChange() {
+                        }
+
+                        override fun onMessage(p0: DataChannel.Buffer?) {
+                            Log.d("damaru", "onDataChannel onMessage: ${p0.toString()}")
+                        }
+                    })
+
+                    binding.surfaceView.setOnTouchListener { view, event ->
+                        Log.d("damaru", "onTouch")
+                        val json = JSONObject()
+                        json.put("x", event.x)
+                        json.put("y", event.y)
+                        json.put("action", event.action)
+                        json.put("metaState", event.metaState)
+                        webrtcClient.sendDataMessage(p0, json.toString())
+//                        when (event.action) {
+//                            MotionEvent.ACTION_DOWN -> {
+//                                webrtcClient.sendDataMessage(p0, "down")
+//                            }
+//
+//                            MotionEvent.ACTION_UP -> {
+//                                webrtcClient.sendDataMessage(p0, "up")
+//                            }
+//                        }
+                        true
+                    }
+                }
             })
+
+        //ask emulator to start stream (send offer to me)
+        socketClient.sendMessageToSocket(
+            DataModel(
+                type = DataModelType.StartStreaming,
+                username = username!!,
+                target = targetUsername,
+                null
+            )
+        )
     }
 
     override fun onNewMessageReceived(model: DataModel) {
         when (model.type) {
             DataModelType.StartStreaming -> {
             }
+
             DataModelType.EndCall -> {
                 finish()
             }
+
             DataModelType.Offer -> {
                 webrtcClient.onRemoteSessionReceived(
                     SessionDescription(
@@ -134,11 +176,13 @@ class DeviceControlActivity : AppCompatActivity(), SocketClient.Listener, Webrtc
                 targetUsername = model.username
                 webrtcClient.answer(model.username)
             }
+
             DataModelType.Answer -> {
                 webrtcClient.onRemoteSessionReceived(
                     SessionDescription(SessionDescription.Type.ANSWER, model.data.toString())
                 )
             }
+
             DataModelType.IceCandidates -> {
                 val candidate = try {
                     gson.fromJson(model.data.toString(), IceCandidate::class.java)
@@ -150,11 +194,16 @@ class DeviceControlActivity : AppCompatActivity(), SocketClient.Listener, Webrtc
                     webrtcClient.addIceCandidate(it)
                 }
             }
+
             else -> Unit
         }
     }
 
     override fun onTransferEventToSocket(data: DataModel) {
         socketClient.sendMessageToSocket(data)
+    }
+
+    override fun onChannelMessage(message: String) {
+        // 2 way comm
     }
 }

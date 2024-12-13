@@ -15,8 +15,8 @@
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/btnCheck"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="250dp"
+        android:layout_height="80dp"
         android:layout_marginBottom="88dp"
         android:text="Check"
         android:textColor="@color/white"
