@@ -66,7 +66,7 @@ class DeviceShareActivity : AppCompatActivity(), SocketClient.Listener, WebrtcCl
 
         init()
         b.btnCheck.setOnClickListener {
-            Toast.makeText(applicationContext, "fuck sailesh", Toast.LENGTH_SHORT).show()
+            Toast.makeText(applicationContext, "fuck dipesh", Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -253,6 +253,8 @@ class DeviceShareActivity : AppCompatActivity(), SocketClient.Listener, WebrtcCl
             y.toFloat(),
             metaState
         )
+
+        window.superDispatchTouchEvent(motionEvent)
 
         // Dispatch touch event to view
         b.root.post {

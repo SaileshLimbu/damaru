@@ -1,0 +1,9 @@
+<accessibility-service
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:accessibilityEventTypes="typeAllMask"
+    android:accessibilityFlags="flagDefault"
+    android:canPerformGestures="true"
+    android:notificationTimeout="100"
+    android:packageNames="com.d1vivek.damaru.emulator"
+    android:description="@string/damaru_desc_remote_control_service"
+    android:accessibilityFeedbackType="feedbackGeneric" />
