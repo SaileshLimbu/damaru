@@ -30,19 +30,6 @@ class SplashActivity : AppCompatActivity() {
 
         splashViewModel.navigateToMain.observe(this) { navigateTo ->
             when (navigateTo) {
-                "emulator" -> {
-                    val deviceId = Settings.Secure.getString(applicationContext.contentResolver, Settings.Secure.ANDROID_ID)
-                    startActivity(
-                        Intent(this@SplashActivity, DeviceShareActivity::class.java)
-                            .putExtra(DeviceShareActivity.USER_NAME, deviceId)
-                    )
-                    finish()
-                }
-
-                "emulatorSetup" -> {
-                    startActivity(Intent(this@SplashActivity, EmulatorSetupActivity::class.java))
-                    finish()
-                }
 
                 "userPin" -> {
                     startActivity(Intent(this@SplashActivity, PinActivity::class.java))
@@ -53,7 +40,7 @@ class SplashActivity : AppCompatActivity() {
                     startActivity(
                         Intent(this@SplashActivity, DeviceControlActivity::class.java)
                             .putExtra(DeviceControlActivity.USER_NAME, "theone")
-                            .putExtra(DeviceControlActivity.TARGET_USER_NAME, "fe4d330b43e16775")
+                            .putExtra(DeviceControlActivity.TARGET_USER_NAME, "8b87f7449cc246b9")
                     )
 //                    startActivity(Intent(this@SplashActivity, LoginActivity::class.java))
                     finish()

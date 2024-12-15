@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">Damaru Server</string>
+    <string name="damaru_desc_remote_control_service">Service for remote control</string>
+</resources>

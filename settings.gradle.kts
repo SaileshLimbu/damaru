@@ -21,3 +21,5 @@ dependencyResolutionManagement {
 
 rootProject.name = "ProjectZ"
 include(":app")
+include(":damaruserver")
+include(":common")

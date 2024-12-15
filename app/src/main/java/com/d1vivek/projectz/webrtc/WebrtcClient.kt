@@ -6,9 +6,10 @@ import android.media.projection.MediaProjection
 import android.util.DisplayMetrics
 import android.util.Log
 import android.view.WindowManager
-import com.d1vivek.projectz.utils.DataModel
-import com.d1vivek.projectz.utils.DataModelType
 import com.google.gson.Gson
+import com.powersoft.common.model.DataModel
+import com.powersoft.common.model.DataModelType
+import com.powersoft.common.webrtc.WebRTCListener
 import org.webrtc.DataChannel
 import org.webrtc.DefaultVideoDecoderFactory
 import org.webrtc.DefaultVideoEncoderFactory
@@ -19,6 +20,7 @@ import org.webrtc.MediaStream
 import org.webrtc.PeerConnection
 import org.webrtc.PeerConnection.Observer
 import org.webrtc.PeerConnectionFactory
+import org.webrtc.RendererCommon
 import org.webrtc.ScreenCapturerAndroid
 import org.webrtc.SessionDescription
 import org.webrtc.SurfaceTextureHelper
@@ -36,7 +38,7 @@ class WebrtcClient @Inject constructor(
     private lateinit var username: String
     private lateinit var observer: Observer
     private lateinit var localSurfaceView: SurfaceViewRenderer
-    var listener: Listener? = null
+    private lateinit var listener: WebRTCListener
     private var permissionIntent: Intent? = null
     private var mDataChannel : DataChannel? = null
 
@@ -47,9 +49,7 @@ class WebrtcClient @Inject constructor(
         mandatory.add(MediaConstraints.KeyValuePair("OfferToReceiveVideo", "true"))
     }
     private val iceServer = listOf(
-        PeerConnection.IceServer(
-            "turn:openrelay.metered.ca:443?transport=tcp", "openrelayproject", "openrelayproject"
-        )
+        PeerConnection.IceServer.builder("stun:stun.l.google.com:19302").createIceServer()
     )
 
     private var screenCapturer: VideoCapturer? = null
@@ -59,20 +59,32 @@ class WebrtcClient @Inject constructor(
     private var localVideoTrack: VideoTrack? = null
     private var localStream: MediaStream? = null
 
-
     init {
         initPeerConnectionFactory(context)
     }
 
     fun initializeWebrtcClient(
-        username: String, view: SurfaceViewRenderer?, observer: Observer
+        listener: WebRTCListener,
+        username: String,
+        view: SurfaceViewRenderer,
+        observer: Observer
     ) {
-
+        this.listener = listener
         this.username = username
         this.observer = observer
         peerConnection = createPeerConnection(observer)
-        if (view != null)
-            initSurfaceView(view)
+        initSurfaceView(view)
+    }
+
+    fun initialize(
+        listener: WebRTCListener,
+        username: String,
+        observer: Observer
+    ){
+        this.listener = listener
+        this.username = username
+        this.observer = observer
+        peerConnection = createPeerConnection(observer)
     }
 
     fun setPermissionIntent(intent: Intent) {
@@ -82,9 +94,9 @@ class WebrtcClient @Inject constructor(
     private fun initSurfaceView(view: SurfaceViewRenderer) {
         this.localSurfaceView = view
         view.run {
-            setMirror(false)
-            setEnableHardwareScaler(true)
             init(eglBaseContext, null)
+            setScalingType(RendererCommon.ScalingType.SCALE_ASPECT_FIT)
+            setEnableHardwareScaler(true)
         }
     }
 
@@ -239,11 +251,11 @@ class WebrtcClient @Inject constructor(
     }
 
     fun addIceCandidate(iceCandidate: IceCandidate) {
+        Log.d("damaru", "onIceCandidateAdded (CLIENT): $iceCandidate")
         peerConnection?.addIceCandidate(iceCandidate)
     }
 
     fun sendIceCandidate(candidate: IceCandidate, target: String) {
-        addIceCandidate(candidate)
         listener?.onTransferEventToSocket(
             DataModel(
                 type = DataModelType.IceCandidates,
@@ -260,6 +272,7 @@ class WebrtcClient @Inject constructor(
             screenCapturer?.dispose()
             localStream?.dispose()
             peerConnection?.close()
+            localSurfaceView.clearImage()
         } catch (e: Exception) {
             e.printStackTrace()
         }
@@ -270,13 +283,7 @@ class WebrtcClient @Inject constructor(
         localSurfaceView.let {
             it.clearImage()
             it.release()
-            initializeWebrtcClient(username, it, observer)
+            initializeWebrtcClient(listener, username, it, observer)
         }
-    }
-
-
-    interface Listener {
-        fun onTransferEventToSocket(data: DataModel)
-        fun onChannelMessage(message : String)
     }
 }

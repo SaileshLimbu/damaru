@@ -2,16 +2,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools" >
 
-    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
-    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
-    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MEDIA_PROJECTION" />
-    <uses-permission
-        android:name="android.permission.CAPTURE_VIDEO_OUTPUT"
-        android:protectionLevel="signature"
-        tools:ignore="ProtectedPermissions" />
-    <uses-permission android:name="android.permission.PROJECT_MEDIA" />
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
 
     <application
         android:name=".MyApplication"
@@ -44,9 +36,7 @@
         <activity android:name=".ui.LoginActivity" />
         <activity android:name=".ui.DeviceUsersActivity" />
         <activity android:name=".ui.DeviceControlActivity" />
-        <activity android:name="com.d1vivek.projectz.ui.AddUserActivity" />
-        <activity android:name="com.d1vivek.projectz.ui.EmulatorSetupActivity" />
-        <activity android:name="com.d1vivek.projectz.ui.DeviceShareActivity" />
+        <activity android:name=".ui.AddUserActivity" />
 
         <meta-data
             android:name="preloaded_fonts"
@@ -57,17 +47,6 @@
             android:exported="false"
             android:foregroundServiceType="mediaProjection" />
 
-        <service
-            android:name=".service.DeviceControlService"
-            android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE"
-            android:exported="true">
-            <intent-filter>
-                <action android:name="android.accessibilityservice.AccessibilityService" />
-            </intent-filter>
-            <meta-data
-                android:name="android.accessibilityservice"
-                android:resource="@xml/accessibility_service_config" />
-        </service>
     </application>
 
 </manifest>

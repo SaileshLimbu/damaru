@@ -3,16 +3,17 @@ package com.d1vivek.projectz.ui
 import android.annotation.SuppressLint
 import android.os.Bundle
 import android.util.Log
-import android.view.MotionEvent
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.d1vivek.projectz.databinding.ActivityDeviceControlBinding
-import com.d1vivek.projectz.socket.SocketClient
-import com.d1vivek.projectz.utils.DataModel
-import com.d1vivek.projectz.utils.DataModelType
 import com.d1vivek.projectz.webrtc.MyPeerObserver
 import com.d1vivek.projectz.webrtc.WebrtcClient
 import com.google.gson.Gson
+import com.powersoft.common.model.DataModel
+import com.powersoft.common.model.DataModelType
+import com.powersoft.common.socket.SocketClient
+import com.powersoft.common.socket.SocketListener
+import com.powersoft.common.webrtc.WebRTCListener
 import dagger.hilt.android.AndroidEntryPoint
 import org.json.JSONObject
 import org.webrtc.DataChannel
@@ -24,12 +25,14 @@ import org.webrtc.SessionDescription
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class DeviceControlActivity : AppCompatActivity(), SocketClient.Listener, WebrtcClient.Listener {
+class DeviceControlActivity : AppCompatActivity(), SocketListener, WebRTCListener {
 
     @Inject
     lateinit var socketClient: SocketClient
+
     @Inject
     lateinit var webrtcClient: WebrtcClient
+
     @Inject
     lateinit var gson: Gson
 
@@ -46,20 +49,24 @@ class DeviceControlActivity : AppCompatActivity(), SocketClient.Listener, Webrtc
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-
         binding = ActivityDeviceControlBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        username = intent.getStringExtra(USER_NAME)
+        targetUsername = intent.getStringExtra(TARGET_USER_NAME)
+
         init()
 
-        binding.btnCheck.setOnClickListener {
+        binding.btnDisconnect.setOnClickListener {
+            webrtcClient.closeConnection()
+        }
+
+        binding.btnReconnect.setOnClickListener {
             webrtcClient.call(targetUsername!!)
         }
     }
 
     private fun init() {
-        username = intent.getStringExtra(USER_NAME)
-        targetUsername = intent.getStringExtra(TARGET_USER_NAME)
         if (username.isNullOrEmpty()) {
             Toast.makeText(applicationContext, "No Username", Toast.LENGTH_SHORT).show()
             finish()
@@ -70,11 +77,9 @@ class DeviceControlActivity : AppCompatActivity(), SocketClient.Listener, Webrtc
             finish()
             return
         }
-        socketClient.listener = this
-        socketClient.init(username!!)
+        socketClient.init(username!!, this)
 
-        webrtcClient.listener = this
-        webrtcClient.initializeWebrtcClient(username!!, binding.surfaceView,
+        webrtcClient.initializeWebrtcClient(this, username!!, binding.surfaceView,
             object : MyPeerObserver() {
                 override fun onIceCandidate(p0: IceCandidate?) {
                     super.onIceCandidate(p0)
@@ -147,14 +152,16 @@ class DeviceControlActivity : AppCompatActivity(), SocketClient.Listener, Webrtc
             })
 
         //ask emulator to start stream (send offer to me)
-        socketClient.sendMessageToSocket(
-            DataModel(
-                type = DataModelType.StartStreaming,
-                username = username!!,
-                target = targetUsername,
-                null
-            )
-        )
+//        socketClient.sendMessageToSocket(
+//            DataModel(
+//                type = DataModelType.Offer,
+//                username = username!!,
+//                target = targetUsername!!,
+//                null
+//            )
+//        )
+
+        webrtcClient.call(targetUsername!!)
     }
 
     override fun onNewMessageReceived(model: DataModel) {
@@ -167,32 +174,18 @@ class DeviceControlActivity : AppCompatActivity(), SocketClient.Listener, Webrtc
             }
 
             DataModelType.Offer -> {
-                webrtcClient.onRemoteSessionReceived(
-                    SessionDescription(
-                        SessionDescription.Type.OFFER, model.data
-                            .toString()
-                    )
-                )
-                targetUsername = model.username
-                webrtcClient.answer(model.username)
+//                webrtcClient.onRemoteSessionReceived(SessionDescription(SessionDescription.Type.OFFER, model.data.toString()))
+//                targetUsername = model.username
+//                webrtcClient.answer(model.username)
             }
 
             DataModelType.Answer -> {
-                webrtcClient.onRemoteSessionReceived(
-                    SessionDescription(SessionDescription.Type.ANSWER, model.data.toString())
-                )
+                webrtcClient.onRemoteSessionReceived(SessionDescription(SessionDescription.Type.ANSWER, model.data.toString()))
             }
 
             DataModelType.IceCandidates -> {
-                val candidate = try {
-                    gson.fromJson(model.data.toString(), IceCandidate::class.java)
-                } catch (e: Exception) {
-                    e.printStackTrace()
-                    null
-                }
-                candidate?.let {
-                    webrtcClient.addIceCandidate(it)
-                }
+                val candidate = gson.fromJson(model.data.toString(), IceCandidate::class.java)
+                webrtcClient.addIceCandidate(candidate)
             }
 
             else -> Unit
