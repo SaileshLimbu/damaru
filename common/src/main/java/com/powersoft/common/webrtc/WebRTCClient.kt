@@ -1,10 +1,8 @@
 package com.powersoft.common.webrtc
 
-import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.media.projection.MediaProjection
-import android.provider.Settings
 import android.util.Log
 import com.google.gson.Gson
 import com.powersoft.common.model.DataModel
@@ -19,6 +17,7 @@ import org.webrtc.ScreenCapturerAndroid
 import org.webrtc.SessionDescription
 import org.webrtc.SurfaceTextureHelper
 import org.webrtc.VideoCapturer
+import java.nio.ByteBuffer
 import java.nio.charset.StandardCharsets
 import javax.inject.Inject
 
@@ -27,8 +26,9 @@ class WebRTCClient @Inject constructor(
 ) {
     private val webRTCManager = WebRTCManager(context)
     private var peerConnection: PeerConnection? = null
-    private var dataChannel: DataChannel? = null
-    private lateinit var listener: WebRTCListener
+    var dataChannel: DataChannel? = null
+    private lateinit var webRTCListener: WebRTCListener
+    private lateinit var username: String
 
     //Damaru Server App
     private var screenCapturer: VideoCapturer? = null
@@ -36,30 +36,38 @@ class WebRTCClient @Inject constructor(
     private lateinit var targetUser: String
     private lateinit var intent: Intent
     private val localStreamId = "local_stream"
-    @SuppressLint("HardwareIds")
-    private val username: String = Settings.Secure.getString(context.contentResolver, Settings.Secure.ANDROID_ID)
 
     private val mediaConstraint = MediaConstraints().apply {
         mandatory.add(MediaConstraints.KeyValuePair("OfferToReceiveVideo", "true"))
+        mandatory.add(MediaConstraints.KeyValuePair("OfferToReceiveAudio", "false"))
     }
 
-    fun setTargetUser(target: String){
+    private val iceServers = listOf(
+        PeerConnection.IceServer.builder("stun:stun.l.google.com:19302").createIceServer()
+    )
+
+    fun setTargetUser(target: String) {
         this.targetUser = target
     }
 
-    fun init(intent: Intent, listener: WebRTCListener, observer: Observer) {
-        this.listener = listener
-        this.intent = intent
+    fun getEglBase() = webRTCManager.eglBase
 
-        val iceServers = listOf(
-            PeerConnection.IceServer.builder("stun:stun.l.google.com:19302").createIceServer()
-        )
+    fun init(webRTCListener: WebRTCListener, username: String, intent: Intent? = null, observer: Observer) {
+        this.webRTCListener = webRTCListener
+        this.username = username
 
         peerConnection = webRTCManager.createPeerConnection(iceServers, observer)
 
-        createDataChannel()
-
-        startScreenCapturing(intent)
+        /**
+         * if init is called from server app then set intent
+         * else if it's from client app then createDataChannel()
+         * we don't need to create data channel on both end. WebRTC auto creates on the other side
+         * just need to use onDataChannel() callbacks from webRTC
+         */
+        intent?.let {
+            this.intent = it
+            startScreenCapturing()
+        } ?: createDataChannel()
     }
 
     private fun createDataChannel() {
@@ -78,24 +86,35 @@ class WebRTCClient @Inject constructor(
                     val bytes = ByteArray(p0!!.data.remaining())
                     p0.data.get(bytes)
                     val message = String(bytes, StandardCharsets.UTF_8)
-                    listener?.onChannelMessage(message)
+                    webRTCListener.onChannelMessage(message)
                 }
             }
         })
         Log.d(TAG, "Data Channel Created !!! $dataChannel")
     }
 
-    private fun startScreenCapturing(intent: Intent) {
+    /**
+     * Send message from one peer to another peer for remote control etc.
+     */
+    fun sendDataMessage(mDataChannel: DataChannel?, message: String) {
+        val buffer = ByteBuffer.wrap(message.toByteArray())
+        mDataChannel?.send(DataChannel.Buffer(buffer, false))
+        Log.d(TAG, "sendDataMessage >>> $message")
+    }
+
+    /**
+     * This function is only used by server app to capture the screen and send them to the stream
+     */
+    fun startScreenCapturing() {
         val metrics = context.resources.displayMetrics
-        val densityDpi = metrics.densityDpi
         val screenWidthPixels = metrics.widthPixels
         val screenHeightPixels = metrics.heightPixels
 
         val surfaceTextureHelper = SurfaceTextureHelper.create(
-            Thread.currentThread().name, webRTCManager.eglBase.eglBaseContext
+            Thread.currentThread().name, getEglBase().eglBaseContext
         )
 
-        screenCapturer = createScreenCapturer(intent)
+        screenCapturer = ScreenCapturerAndroid(intent, object : MediaProjection.Callback() {})
         val videoSource = webRTCManager.createVideoSource()
         screenCapturer?.initialize(surfaceTextureHelper, context, videoSource.capturerObserver)
         screenCapturer?.startCapture(screenWidthPixels, screenHeightPixels, 30)
@@ -110,19 +129,44 @@ class WebRTCClient @Inject constructor(
         }
     }
 
-    private fun createScreenCapturer(intent: Intent): VideoCapturer {
-        return ScreenCapturerAndroid(intent, object : MediaProjection.Callback() {
-            override fun onStop() {
-                super.onStop()
-                Log.d("ScreenCaptureService", "onStop: stopped screen capture")
+    /**
+     * Used exclusively by the client app to initiate a WebRTC connection.
+     *
+     * This function creates an SDP (Session Description Protocol) offer using the PeerConnection.
+     * Once the offer is successfully created, it is set as the local description.
+     * After setting the local description, the offer is sent to the server via a socket
+     * as part of the signaling process.
+     *
+     * @param target The identifier of the target peer (e.g., username or device ID) to which the offer is sent.
+     */
+    fun sendOffer(target: String) {
+        peerConnection?.createOffer(object : MySdpObserver() {
+            override fun onCreateSuccess(desc: SessionDescription?) {
+                super.onCreateSuccess(desc)
+                peerConnection?.setLocalDescription(object : MySdpObserver() {
+                    override fun onSetSuccess() {
+                        super.onSetSuccess()
+                        webRTCListener.onTransferEventToSocket(
+                            DataModel(
+                                type = DataModelType.Offer, username, target, desc?.description
+                            )
+                        )
+                    }
+                }, desc)
             }
-
-            override fun onCapturedContentVisibilityChanged(isVisible: Boolean) {
-                super.onCapturedContentVisibilityChanged(isVisible)
-                Log.d("ScreenCaptureService", "Visibility changed: $isVisible")
-            }
-        })
+        }, mediaConstraint)
     }
+
+    /**
+     * This function is exclusively used by the server app.
+     * It processes the received offer from the client app to establish a WebRTC connection.
+     * The function performs the following steps:
+     * 1. Creates an Answer response based on the received Offer.
+     * 2. Sets the Answer as the localDescription on the peerConnection.
+     * 3. Sends the generated Answer back to the client app via a socket connection.
+     *
+     * @param target The identifier of the target peer (e.g., username or device ID) to which the offer is sent.
+     */
 
     fun createAnswer(target: String) {
         peerConnection!!.createAnswer(object : MySdpObserver() {
@@ -131,7 +175,7 @@ class WebRTCClient @Inject constructor(
                 peerConnection?.setLocalDescription(object : MySdpObserver() {
                     override fun onSetSuccess() {
                         super.onSetSuccess()
-                        listener?.onTransferEventToSocket(
+                        webRTCListener.onTransferEventToSocket(
                             DataModel(
                                 type = DataModelType.Answer,
                                 username = username,
@@ -150,17 +194,29 @@ class WebRTCClient @Inject constructor(
         }, mediaConstraint)
     }
 
+    /**
+     * Handles the received OFFER or ANSWER from the socket.
+     * Adds the received session description to the PeerConnection.
+     */
+
     fun onRemoteSessionReceived(sessionDescription: SessionDescription) {
         peerConnection?.setRemoteDescription(MySdpObserver(), sessionDescription)
     }
 
+    /**
+     * When we receive ICE candidate from client/server than
+     * add this to the peerConnection
+     */
     fun addIceCandidate(iceCandidate: IceCandidate) {
-        Log.d(TAG, "onIceCandidateAdded (EMULATOR)($targetUser): $iceCandidate")
+        Log.d(TAG, "onIceCandidateAdded: $iceCandidate")
         peerConnection?.addIceCandidate(iceCandidate)
     }
 
+    /**
+     * Send the ICE candidate received from webRTC to target user
+     */
     fun sendIceCandidate(candidate: IceCandidate, target: String) {
-        listener?.onTransferEventToSocket(
+        webRTCListener.onTransferEventToSocket(
             DataModel(
                 type = DataModelType.IceCandidates,
                 username = username,
@@ -170,18 +226,44 @@ class WebRTCClient @Inject constructor(
         )
     }
 
-    fun closeConnection() {
-        try {
-            screenCapturer?.stopCapture()
-            screenCapturer?.dispose()
-            localStream?.dispose()
-            peerConnection?.close()
-        } catch (e: Exception) {
-            e.printStackTrace()
-        }
+    /**
+     * When client disconnects from their site. Close the connection
+     * and do some clean up.
+     */
+    fun closeConnection(target: String) {
+        webRTCListener.onTransferEventToSocket(
+            DataModel(
+                type = DataModelType.EndCall,
+                username = username,
+                target = target
+            )
+        )
+        disposeClient()
+    }
+
+    /**
+     * When stream is ended then clear these things from server
+     * We can initialize these things when the stream starts again
+     * TODO: for multiple stream we have to check if some users are still using the stream before disposing
+     */
+    fun disposeServer() {
+        screenCapturer?.stopCapture()
+        screenCapturer?.dispose()
+        localStream?.dispose()
+    }
+
+    /**
+     * When user is no longer connected to emulator then clear these two
+     * because these 2 are the only thing that are used by client app
+     */
+    private fun disposeClient() {
+        peerConnection?.close()
+        webRTCManager.dispose()
+        dataChannel?.unregisterObserver()
+        dataChannel = null
     }
 
     companion object {
-        const val TAG = "DAMARU_SERVER-WebRTCClient"
+        const val TAG = "DAMARU"
     }
 }

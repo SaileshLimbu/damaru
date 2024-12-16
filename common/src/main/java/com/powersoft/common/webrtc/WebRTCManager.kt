@@ -47,4 +47,13 @@ class WebRTCManager(context: Context) {
     fun createVideoTrack(videoSource: VideoSource): VideoTrack {
         return peerConnectionFactory.createVideoTrack("ARDAMSv0", videoSource)
     }
+
+    fun dispose(){
+        try {
+            eglBase.release()
+            peerConnectionFactory.dispose()
+        }catch (e: Exception){
+            //ignore
+        }
+    }
 }

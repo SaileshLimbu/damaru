@@ -4,10 +4,6 @@ import android.util.Log
 import com.google.gson.Gson
 import com.powersoft.common.model.DataModel
 import com.powersoft.common.model.DataModelType
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 import org.java_websocket.client.WebSocketClient
 import org.java_websocket.handshake.ServerHandshake
 import java.net.URI
@@ -20,7 +16,7 @@ class SocketClient @Inject constructor(private val gson: Gson) {
     private lateinit var user: String
 
     companion object {
-        const val TAG = "DAMARU_SERVER-SocketClient"
+        const val TAG = "DAMARU"
         private var webSocket: WebSocketClient? = null
     }
 
@@ -29,7 +25,7 @@ class SocketClient @Inject constructor(private val gson: Gson) {
     fun init(user: String, socketListener: SocketListener) {
         this.user = user
         this.listener = socketListener
-        webSocket = object : WebSocketClient(URI("ws://10.0.0.112:3000")){
+        webSocket = object : WebSocketClient(URI("ws://10.0.0.112:3000")) {
             override fun onOpen(handshakedata: ServerHandshake?) {
                 sendMessageToSocket(DataModel(DataModelType.SignIn, user, null, null))
             }
@@ -40,10 +36,6 @@ class SocketClient @Inject constructor(private val gson: Gson) {
             }
 
             override fun onClose(code: Int, reason: String?, remote: Boolean) {
-                CoroutineScope(Dispatchers.IO).launch {
-                    delay(5000)
-                    init(user, socketListener)
-                }
             }
 
             override fun onError(ex: Exception?) {
@@ -55,11 +47,15 @@ class SocketClient @Inject constructor(private val gson: Gson) {
     }
 
     fun sendMessageToSocket(message: Any?) {
-        Log.d(TAG, "sendMessageToSocket ($user) : $message")
-        webSocket?.send(gson.toJson(message))
+        if (webSocket?.isOpen == true) {
+            Log.d(TAG, "sendMessageToSocket ($user) : $message")
+            webSocket?.send(gson.toJson(message))
+        }else{
+            Log.e(TAG, "WebSocket is not connected. Unable to send message.")
+        }
     }
 
-    fun onDestroy() {
+    fun closeSocket() {
         webSocket?.close()
     }
 }

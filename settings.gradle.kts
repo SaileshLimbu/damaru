@@ -19,7 +19,7 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "ProjectZ"
-include(":app")
+rootProject.name = "Damaru"
+include(":damaruclient")
 include(":damaruserver")
 include(":common")

@@ -11,6 +11,9 @@ import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
+import com.powersoft.common.model.GestureAction
+import com.powersoft.common.model.GestureCommand
+import com.powersoft.damaruserver.service.DeviceControlService
 import com.powersoft.damaruserver.service.ScreenCaptureForegroundService
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -33,6 +36,7 @@ class MainActivity : AppCompatActivity() {
             }
         }
         startScreenCapture()
+        DeviceControlService().performGesture(GestureCommand(GestureAction.TAP, 200f, 400f))
     }
 
     private fun startScreenCapture() {
