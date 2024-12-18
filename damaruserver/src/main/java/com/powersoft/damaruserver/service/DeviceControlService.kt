@@ -2,8 +2,10 @@ package com.powersoft.damaruserver.service
 
 import android.accessibilityservice.AccessibilityService
 import android.accessibilityservice.GestureDescription
+import android.app.ActionBar
 import android.bluetooth.BluetoothClass.Device
 import android.graphics.Path
+import android.util.DisplayMetrics
 import android.util.Log
 import android.view.accessibility.AccessibilityEvent
 import com.powersoft.common.model.GestureAction
@@ -12,6 +14,7 @@ import com.powersoft.common.model.GestureCommand
 class DeviceControlService: AccessibilityService() {
 
     companion object{
+        const val TAG = "DeviceControlService"
         private var instance: DeviceControlService? = null
         fun getInstance(): DeviceControlService? = instance
     }
@@ -64,13 +67,18 @@ class DeviceControlService: AccessibilityService() {
         dispatchGesture(gesture, null, null)
     }
 
+    fun refreshScreen(){
+        performGesture(GestureCommand(GestureAction.SWIPE, startX=156.0f, startY=448.9f, endX=367.6f, endY=456.3f))
+
+    }
+
     fun performGesture(command: GestureCommand) {
-        Log.d("damaru", "performGesture: ${command.action}")
+        Log.d(TAG, "performGesture: $command")
         when(command.action){
             GestureAction.TAP -> performTap(command.startX!!, command.startY!!)
-            GestureAction.LONG_PRESS -> TODO()
+            GestureAction.LONG_PRESS -> Unit
             GestureAction.SWIPE -> performSwipe(command.startX!!, command.startY!!, command.endX!!, command.endY!!)
-            GestureAction.PINCH_ZOOM -> TODO()
+            GestureAction.PINCH_ZOOM -> Unit
             GestureAction.BACK -> performGlobalAction(GLOBAL_ACTION_BACK)
             GestureAction.HOME -> performGlobalAction(GLOBAL_ACTION_HOME)
             GestureAction.RECENT -> performGlobalAction(GLOBAL_ACTION_RECENTS)

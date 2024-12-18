@@ -12,8 +12,8 @@ enum class GestureAction {
 
 data class GestureCommand(
     val action: GestureAction,
-    val startX: Float? = null,
-    val startY: Float? = null,
-    val endX: Float? = null,
-    val endY: Float? = null
+    var startX: Float? = null,
+    var startY: Float? = null,
+    var endX: Float? = null,
+    var endY: Float? = null
 )

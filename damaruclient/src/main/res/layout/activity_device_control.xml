@@ -3,79 +3,100 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="@color/black"
+    tools:ignore="ContentDescription">
 
-    <org.webrtc.SurfaceViewRenderer
-        android:id="@+id/surfaceView"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
+    <RelativeLayout
+        android:id="@+id/viewConnecting"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent">
 
-    <LinearLayout
-        android:id="@+id/navigationView"
-        android:layout_width="match_parent"
-        android:layout_height="50dp"
-        android:background="#000"
-        android:orientation="horizontal"
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/quicksand_medium"
+            android:text="Connecting..."
+            android:textColor="@color/white" />
+    </RelativeLayout>
+
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/viewRemoteDevice"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent">
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <org.webrtc.SurfaceViewRenderer
+            android:id="@+id/surfaceView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintBottom_toTopOf="@id/navigationView"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <LinearLayout
+            android:id="@+id/navigationView"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:background="#000"
+            android:orientation="horizontal"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent">
+
+            <ImageView
+                android:id="@+id/navBack"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:padding="12dp"
+                android:src="@drawable/ic_nav_back" />
+
+            <ImageView
+                android:id="@+id/navHome"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:padding="12dp"
+                android:src="@drawable/ic_nav_home" />
+
+            <ImageView
+                android:id="@+id/navRecent"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:padding="12dp"
+                android:src="@drawable/ic_nav_recent" />
+
+        </LinearLayout>
 
         <ImageView
-            android:id="@+id/navBack"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:gravity="center"
-            android:padding="12dp"
-            android:src="@drawable/ic_nav_back" />
+            android:id="@+id/btnDisconnect"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_marginBottom="60dp"
+            android:background="@drawable/drawable_disconnect"
+            android:contentDescription="@null"
+            android:padding="8dp"
+            android:src="@drawable/ic_logout"
+            android:tooltipText="@string/damaru_label_disconnect"
+            app:layout_constraintBottom_toBottomOf="@id/surfaceView"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:tint="@color/white"
+            tools:ignore="UnusedAttribute" />
 
-        <ImageView
-            android:id="@+id/navHome"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:gravity="center"
-            android:padding="12dp"
-            android:src="@drawable/ic_nav_home" />
-
-        <ImageView
-            android:id="@+id/navRecent"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:gravity="center"
-            android:padding="12dp"
-            android:src="@drawable/ic_nav_recent" />
-
-    </LinearLayout>
-
-    <ImageView
-        android:id="@+id/btnDisconnect"
-        android:layout_width="50dp"
-        android:layout_height="50dp"
-        android:layout_marginBottom="80dp"
-        android:background="@drawable/drawable_disconnect"
-        android:contentDescription="@null"
-        android:tooltipText="@string/damaru_label_disconnect"
-        android:padding="8dp"
-        android:src="@drawable/ic_logout"
-        app:layout_constraintBottom_toTopOf="@id/navigationView"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:tint="@color/white"
-        tools:ignore="UnusedAttribute" />
-
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/btnReconnect"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/damaru_label_connect"
-        android:textColor="@color/white"
-        android:visibility="visible"
-        app:layout_constraintBottom_toTopOf="@id/navigationView"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>
