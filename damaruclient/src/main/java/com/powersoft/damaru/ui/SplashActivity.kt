@@ -29,14 +29,13 @@ class SplashActivity : AppCompatActivity() {
 
         splashViewModel.navigateToMain.observe(this) { navigateTo ->
             when (navigateTo) {
-
                 "userPin" -> {
                     startActivity(Intent(this@SplashActivity, PinActivity::class.java))
                     finish()
                 }
 
                 else -> {
-                    startActivity(Intent(this@SplashActivity, MainActivity::class.java))
+                    startActivity(Intent(this@SplashActivity, LoginActivity::class.java))
                     finish()
                 }
             }

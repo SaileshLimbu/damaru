@@ -29,7 +29,6 @@ class LoginActivity : AppCompatActivity() {
         if(BuildConfig.DEBUG){
             b.etUsername.setText("admin")
             b.etPassword.setText("pass")
-            b.btnLogin.performClick()
         }
     }
 }
