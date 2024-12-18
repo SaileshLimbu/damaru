@@ -36,7 +36,6 @@ class MainActivity : AppCompatActivity() {
             }
         }
         startScreenCapture()
-        DeviceControlService().performGesture(GestureCommand(GestureAction.TAP, 200f, 400f))
     }
 
     private fun startScreenCapture() {

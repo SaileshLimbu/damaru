@@ -10,11 +10,9 @@ import org.webrtc.VideoSource
 import org.webrtc.VideoTrack
 
 class WebRTCManager(context: Context) {
-    val eglBase: EglBase = EglBase.create()
+    private val eglBase: EglBase = EglBase.create()
 
     private val peerConnectionFactory: PeerConnectionFactory
-
-    fun getMyPeerConnectionFactory() = peerConnectionFactory
 
     init {
         PeerConnectionFactory.initialize(
@@ -32,6 +30,10 @@ class WebRTCManager(context: Context) {
                 disableNetworkMonitor = false
             }).createPeerConnectionFactory()
     }
+
+    fun getEglBase() = eglBase
+
+    fun getMyPeerConnectionFactory() = peerConnectionFactory
 
     fun createVideoSource(): VideoSource {
         return peerConnectionFactory.createVideoSource(false)

@@ -7,6 +7,8 @@ import android.util.Log
 import com.google.gson.Gson
 import com.powersoft.common.model.DataModel
 import com.powersoft.common.model.DataModelType
+import com.powersoft.common.model.GestureAction
+import com.powersoft.common.model.GestureCommand
 import org.webrtc.DataChannel
 import org.webrtc.IceCandidate
 import org.webrtc.MediaConstraints
@@ -17,6 +19,7 @@ import org.webrtc.ScreenCapturerAndroid
 import org.webrtc.SessionDescription
 import org.webrtc.SurfaceTextureHelper
 import org.webrtc.VideoCapturer
+import org.webrtc.VideoTrack
 import java.nio.ByteBuffer
 import java.nio.charset.StandardCharsets
 import javax.inject.Inject
@@ -33,9 +36,11 @@ class WebRTCClient @Inject constructor(
     //Damaru Server App
     private var screenCapturer: VideoCapturer? = null
     private var localStream: MediaStream? = null
+    private var localVideoTrack: VideoTrack? = null
+    private val localStreamId = "local_stream"
+
     private lateinit var targetUser: String
     private lateinit var intent: Intent
-    private val localStreamId = "local_stream"
 
     private val mediaConstraint = MediaConstraints().apply {
         mandatory.add(MediaConstraints.KeyValuePair("OfferToReceiveVideo", "true"))
@@ -43,14 +48,16 @@ class WebRTCClient @Inject constructor(
     }
 
     private val iceServers = listOf(
-        PeerConnection.IceServer.builder("stun:stun.l.google.com:19302").createIceServer()
+//        PeerConnection.IceServer.builder("stun:stun.l.google.com:19302").createIceServer(),
+        PeerConnection.IceServer.builder("turn:openrelay.metered.ca:443?transport=tcp")
+            .setUsername("openrelayproject")
+            .setPassword("openrelayproject")
+            .createIceServer()
     )
 
     fun setTargetUser(target: String) {
         this.targetUser = target
     }
-
-    fun getEglBase() = webRTCManager.eglBase
 
     fun init(webRTCListener: WebRTCListener, username: String, intent: Intent? = null, observer: Observer) {
         this.webRTCListener = webRTCListener
@@ -79,6 +86,9 @@ class WebRTCClient @Inject constructor(
 
             override fun onStateChange() {
                 Log.d(TAG, "onStateChange >> ${dataChannel?.state()}")
+                if (dataChannel?.state() == DataChannel.State.OPEN){
+                    webRTCListener.onDataChannelConnected()
+                }
             }
 
             override fun onMessage(p0: DataChannel.Buffer?) {
@@ -105,19 +115,19 @@ class WebRTCClient @Inject constructor(
     /**
      * This function is only used by server app to capture the screen and send them to the stream
      */
-    fun startScreenCapturing() {
+    private fun startScreenCapturing() {
         val metrics = context.resources.displayMetrics
         val screenWidthPixels = metrics.widthPixels
         val screenHeightPixels = metrics.heightPixels
 
         val surfaceTextureHelper = SurfaceTextureHelper.create(
-            Thread.currentThread().name, getEglBase().eglBaseContext
+            Thread.currentThread().name, webRTCManager.getEglBase().eglBaseContext
         )
 
         screenCapturer = ScreenCapturerAndroid(intent, object : MediaProjection.Callback() {})
         val videoSource = webRTCManager.createVideoSource()
         screenCapturer?.initialize(surfaceTextureHelper, context, videoSource.capturerObserver)
-        screenCapturer?.startCapture(screenWidthPixels, screenHeightPixels, 30)
+        screenCapturer?.startCapture(screenWidthPixels, screenHeightPixels, 60)
 
         val localVideoTrack = webRTCManager.createVideoTrack(videoSource)
 
@@ -128,6 +138,8 @@ class WebRTCClient @Inject constructor(
             peerConnection?.addTrack(localVideoTrack, listOf(localStreamId))
         }
     }
+
+    fun getEglBase() = webRTCManager.getEglBase()
 
     /**
      * Used exclusively by the client app to initiate a WebRTC connection.
@@ -241,15 +253,27 @@ class WebRTCClient @Inject constructor(
         disposeClient()
     }
 
+    private fun PeerConnection.removeStreamsTracks(){
+        senders.forEach{removeTrack(it)}
+    }
+
     /**
      * When stream is ended then clear these things from server
      * We can initialize these things when the stream starts again
      * TODO: for multiple stream we have to check if some users are still using the stream before disposing
      */
     fun disposeServer() {
-        screenCapturer?.stopCapture()
-        screenCapturer?.dispose()
+        disposeClient()
+        screenCapturer?.apply{
+            stopCapture()
+            dispose()
+        }
         localStream?.dispose()
+        localVideoTrack?.dispose()
+
+        screenCapturer = null
+        localStream = null
+        localVideoTrack = null
     }
 
     /**
@@ -257,10 +281,15 @@ class WebRTCClient @Inject constructor(
      * because these 2 are the only thing that are used by client app
      */
     private fun disposeClient() {
-        peerConnection?.close()
+        peerConnection?.apply {
+            removeStreamsTracks()
+            close()
+            dispose()
+        }
         webRTCManager.dispose()
         dataChannel?.unregisterObserver()
         dataChannel = null
+        peerConnection = null
     }
 
     companion object {

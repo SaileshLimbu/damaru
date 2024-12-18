@@ -3,6 +3,7 @@ package com.powersoft.damaru.ui
 import android.annotation.SuppressLint
 import android.os.Bundle
 import android.util.Log
+import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import com.powersoft.damaru.databinding.ActivityDeviceControlBinding
 import com.powersoft.damaru.utils.GestureDetector
@@ -13,11 +14,13 @@ import com.powersoft.common.model.GestureAction
 import com.powersoft.common.model.GestureCommand
 import com.powersoft.common.socket.SocketClient
 import com.powersoft.common.socket.SocketListener
+import com.powersoft.common.utils.AspectRatioUtils
 import com.powersoft.common.webrtc.MyPeerObserver
 import com.powersoft.common.webrtc.WebRTCClient
 import com.powersoft.common.webrtc.WebRTCListener
 import dagger.hilt.android.AndroidEntryPoint
 import org.webrtc.DataChannel
+import org.webrtc.EglBase
 import org.webrtc.IceCandidate
 import org.webrtc.MediaStream
 import org.webrtc.RendererCommon
@@ -72,16 +75,21 @@ class DeviceControlActivity : AppCompatActivity(), SocketListener, WebRTCListene
             socketClient.closeSocket()
             finish()
         }
-
-        binding.btnReconnect.setOnClickListener {
-            webrtcClient.sendOffer(targetUsername!!)
-        }
     }
 
     @SuppressLint("ClickableViewAccessibility")
     private fun initRemoteControl() {
+        val screen = resources.displayMetrics
+        val screenWidth = screen.widthPixels
+        val screenHeight = screen.heightPixels
         gestureDetector = GestureDetector { command ->
-            webrtcClient.dataChannel?.let { webrtcClient.sendDataMessage(it, Gson().toJson(command)) }
+            val normalizedCommand = AspectRatioUtils.normalizeControllerCoordinates(
+                screenWidth,
+                screenHeight,
+                command,
+                binding.surfaceView.y.toInt()
+            )
+            webrtcClient.dataChannel?.let { webrtcClient.sendDataMessage(it, Gson().toJson(normalizedCommand)) }
         }
         binding.surfaceView.setOnTouchListener { view, event -> gestureDetector.onTouch(view, event) }
         binding.apply {
@@ -147,9 +155,9 @@ class DeviceControlActivity : AppCompatActivity(), SocketListener, WebRTCListene
                     })
                 }
             })
-
-        webrtcClient.sendOffer(targetUsername!!)
     }
+
+
 
     override fun onNewMessageReceived(model: DataModel) {
         when (model.type) {
@@ -163,6 +171,17 @@ class DeviceControlActivity : AppCompatActivity(), SocketListener, WebRTCListene
             }
 
             else -> Unit
+        }
+    }
+
+    override fun onWebSocketConnected() {
+        webrtcClient.sendOffer(targetUsername!!)
+    }
+
+    override fun onDataChannelConnected() {
+        runOnUiThread{
+            binding.viewConnecting.visibility = View.GONE
+            binding.viewRemoteDevice.visibility = View.VISIBLE
         }
     }
 
