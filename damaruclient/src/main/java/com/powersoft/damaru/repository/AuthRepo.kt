@@ -1,7 +1,6 @@
 package com.powersoft.damaru.repository
 
 import com.powersoft.damaru.webservice.ApiService
-import okhttp3.RequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
 import okhttp3.ResponseBody
 import javax.inject.Inject
