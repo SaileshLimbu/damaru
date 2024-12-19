@@ -15,6 +15,7 @@ import org.webrtc.MediaConstraints
 import org.webrtc.MediaStream
 import org.webrtc.PeerConnection
 import org.webrtc.PeerConnection.Observer
+import org.webrtc.RtpParameters
 import org.webrtc.ScreenCapturerAndroid
 import org.webrtc.SessionDescription
 import org.webrtc.SurfaceTextureHelper
@@ -74,6 +75,7 @@ class WebRTCClient @Inject constructor(
         intent?.let {
             this.intent = it
             startScreenCapturing()
+            peerConnection?.setVideoBitrate(500_000, 1_000_000)
         } ?: createDataChannel()
     }
 
@@ -204,6 +206,22 @@ class WebRTCClient @Inject constructor(
                 Log.d(TAG, "onCreateFailure >>>> $p0")
             }
         }, mediaConstraint)
+    }
+
+    private fun PeerConnection.setVideoBitrate(minBitrateBps: Int, maxBitrateBps: Int) {
+        val senders = senders
+        senders.forEach { sender ->
+            val parameters = sender.parameters
+
+            // Set bitrate for each encoding
+            parameters.encodings.forEach { encoding ->
+                encoding.minBitrateBps = minBitrateBps
+                encoding.maxBitrateBps = maxBitrateBps
+            }
+
+            // Apply the parameters
+            sender.parameters = parameters
+        }
     }
 
     /**
