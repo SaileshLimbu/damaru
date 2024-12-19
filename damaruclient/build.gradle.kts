@@ -64,5 +64,7 @@ dependencies {
     implementation(libs.coroutine.core)
     implementation(libs.coroutine.android)
 
+    implementation(libs.lottie)
+
     implementation(project(":common"))
 }

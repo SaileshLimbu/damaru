@@ -6,13 +6,13 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.powersoft.damaru.BuildConfig
-import com.powersoft.damaru.utils.PrefsHelper
+import com.powersoft.damaru.repository.UserRepo
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 
 @HiltViewModel
 class SplashViewModel @Inject constructor(
-    prefsHelper: PrefsHelper
+    userRepo: UserRepo
 ) : ViewModel() {
 
     private val _navigateToMain = MutableLiveData<String>()
@@ -20,8 +20,7 @@ class SplashViewModel @Inject constructor(
 
     init {
         Handler(Looper.getMainLooper()).postDelayed({
-            val isLoggedIn = prefsHelper.getBoolean(PrefsHelper.LOGGED_IN)
-            if (isLoggedIn) {
+            if (userRepo.userEntity != null) {
                 _navigateToMain.value = "userPin"
             } else {
                 _navigateToMain.value = "login"

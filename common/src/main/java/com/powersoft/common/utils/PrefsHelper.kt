@@ -1,4 +1,4 @@
-package com.powersoft.damaru.utils
+package com.powersoft.common.utils
 
 import android.content.Context
 import androidx.security.crypto.EncryptedSharedPreferences
@@ -28,7 +28,7 @@ class PrefsHelper @Inject constructor(@ApplicationContext context: Context) {
         private const val SHARED_PREFS_NAME = "theone_is_cool"
 
         const val EMULATOR_ID = "emulator_id"
-        const val LOGGED_IN = "logged_in"
+        const val USER = "user"
     }
 
     fun putString(key: String, value: String) {

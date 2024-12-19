@@ -13,6 +13,24 @@ android {
     defaultConfig {
         minSdk = 24
         targetSdk = 35
+        ndkVersion = "28.0.12674087"
+
+        multiDexEnabled = true
+        externalNativeBuild {
+            cmake {
+                cppFlags("")
+            }
+        }
+        ndk {
+            abiFilters.addAll(listOf("armeabi-v7a", "x86", "x86_64", "arm64-v8a"))
+        }
+    }
+
+    externalNativeBuild {
+        cmake {
+            path = file("src/main/cpp/CMakeLists.txt")
+            version = "3.31.1"
+        }
     }
 
     compileOptions {
@@ -32,4 +50,7 @@ dependencies {
     implementation(libs.websocket)
     implementation(libs.gson)
     implementation(libs.security.crypto)
+    api(libs.retrofit)
+    api(libs.converter.gson)
+    api(libs.logging.interceptor)
 }

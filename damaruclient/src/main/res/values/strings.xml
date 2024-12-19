@@ -27,4 +27,10 @@
     <string name="damaru_desc_remote_control_service">Service for remote control</string>
     <string name="damaru_label_disconnect">Disconnect</string>
     <string name="damaru_label_connect">Connect</string>
+    <string name="login">LOGIN</string>
+    <string name="email">Email</string>
+    <string name="password">Password</string>
+    <string name="_2024_damaru">© 2024 Damaru</string>
+    <string name="please_enter_valid_email">Please enter valid email</string>
+    <string name="please_enter_password">Please enter password</string>
 </resources>
