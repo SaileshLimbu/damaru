@@ -4,6 +4,7 @@ plugins {
     alias(libs.plugins.ksp)
     alias(libs.plugins.hilt)
     id("kotlin-kapt")
+    kotlin("plugin.serialization") version "2.1.0"
 }
 
 android {
@@ -65,6 +66,7 @@ dependencies {
     implementation(libs.coroutine.android)
 
     implementation(libs.lottie)
+    implementation(libs.kotlinx.serialization.json)
 
     implementation(project(":common"))
 }

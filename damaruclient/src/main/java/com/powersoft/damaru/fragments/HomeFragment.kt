@@ -8,7 +8,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.powersoft.damaru.ui.DeviceUsersActivity
+import com.powersoft.damaru.ui.AccountUsersActivity
 import com.powersoft.damaru.R
 import com.powersoft.damaru.adapters.MyDevicesAdapter
 import com.powersoft.damaru.databinding.FragmentHomeBinding
@@ -64,7 +64,7 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
         })
 
         b.extendedFAB.setOnClickListener {
-            startActivity(Intent(context, DeviceUsersActivity::class.java))
+            startActivity(Intent(context, AccountUsersActivity::class.java))
         }
 
     }

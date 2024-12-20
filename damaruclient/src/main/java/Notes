@@ -1,0 +1,17 @@
+Splash Screen
+Login Screen
+Display who is using and ask them for pin if they have multiple accounts
+Display list of devices
+
+If the user is primary admin then
+Ask who is using and enter pin same as before
+
+Additional feature:
+Show a list of device and on the next tab show list of users where they can manage user like add, edit or deactivate user.
+If they click on user then show bottomsheet with options Edit, Show logs, Deactivate
+And also they must be able to see which users are currently active and then have a feature where they can end their session. When admin end session.
+
+
+
+
+--> Login API

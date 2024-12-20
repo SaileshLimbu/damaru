@@ -5,6 +5,7 @@ import com.powersoft.damaru.repository.UserRepo
 import com.powersoft.damaru.webservice.ApiService
 import com.powersoft.damaru.webservice.HeaderInterceptor
 import com.powersoft.damaru.webservice.RequestInterceptor
+import com.powersoft.damaru.webservice.RetryInterceptor
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -31,10 +32,10 @@ open class NetworkModule {
         }
 
         val okHttpClient = OkHttpClient.Builder()
-            .addInterceptor(logging)
-//            .addInterceptor(RetryInterceptor(2))
-            .addInterceptor(RequestInterceptor())
             .addInterceptor(HeaderInterceptor(userRepo))
+            .addInterceptor(RequestInterceptor())
+//            .addInterceptor(RetryInterceptor(2))
+            .addInterceptor(logging)
             .build()
 
         return Retrofit.Builder()

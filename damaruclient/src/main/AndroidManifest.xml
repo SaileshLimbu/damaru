@@ -35,7 +35,7 @@
             android:theme="@style/Theme.ProjectZ" />
         <activity android:name=".ui.MainActivity" />
         <activity android:name=".ui.LoginActivity" />
-        <activity android:name=".ui.DeviceUsersActivity" />
+        <activity android:name=".ui.AccountUsersActivity" />
         <activity android:name=".ui.DeviceControlActivity" />
         <activity android:name=".ui.AddUserActivity" />
 

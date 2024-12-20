@@ -61,16 +61,18 @@ class RequestInterceptor : Interceptor {
     override fun intercept(chain: Interceptor.Chain): Response {
         val originalRequest = chain.request()
 
-        var modifiedBody = ""
-        if (isEncryptionEnabled) {
-            val originalBody = originalRequest.body?.let { bodyToString(it) }
-
+        val originalBody = originalRequest.body?.let { bodyToString(it) }
+        val modifiedBody = if (isEncryptionEnabled) {
             val publicKey = SoManager().getPublicKey()
-            modifiedBody = originalBody?.let { EncryptionHelper.encryptPayloadWithPublicKey(it, publicKey).toList().joinToString() } ?: "error encryption"
+            originalBody?.let { EncryptionHelper.encryptPayloadWithPublicKey(it, publicKey).toList().joinToString() } ?: "error encryption"
+        } else {
+            originalBody ?: ""
         }
-        val zippedBody = gzip(modifiedBody.toByteArray())
+
+//        val gzippedBody = gzip(modifiedBody.toByteArray())
+        val newRequestBody = modifiedBody.toRequestBody(originalRequest.body?.contentType())
         val newRequest = originalRequest.newBuilder()
-            .method(originalRequest.method, zippedBody.toRequestBody(originalRequest.body?.contentType()))
+            .method(originalRequest.method, newRequestBody)
             .build()
 
         return chain.proceed(newRequest)
@@ -85,26 +87,25 @@ class RequestInterceptor : Interceptor {
             ""
         }
     }
+
+    private fun gzip(data: ByteArray): ByteArray {
+        val byteStream = ByteArrayOutputStream()
+        val gzipStream = GZIPOutputStream(byteStream)
+        gzipStream.write(data)
+        gzipStream.close()
+        return byteStream.toByteArray()
+    }
 }
 
 class HeaderInterceptor(private val userRepo: UserRepo) : Interceptor {
     override fun intercept(chain: Interceptor.Chain): Response {
         val request = chain.request().newBuilder()
-        if(userRepo.userEntity != null) {
-            request.addHeader("Authorization", "Bearer ${userRepo.userEntity?.id}")
+        if (userRepo.userEntity != null) {
+            request.addHeader("Authorization", "Bearer ${userRepo.userEntity?.accessToken}")
         }
-        request.addHeader("Accept", if (isEncryptionEnabled) "text/plain" else "application/json")
-
+        request.addHeader("content-type", if (isEncryptionEnabled) "text/plain" else "application/json")
         return chain.proceed(request.build())
     }
-}
-
-private fun gzip(data: ByteArray): ByteArray {
-    val byteStream = ByteArrayOutputStream()
-    val gzipStream = GZIPOutputStream(byteStream)
-    gzipStream.write(data)
-    gzipStream.close()
-    return byteStream.toByteArray()
 }
 
 

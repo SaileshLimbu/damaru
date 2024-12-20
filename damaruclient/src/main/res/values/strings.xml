@@ -33,4 +33,17 @@
     <string name="_2024_damaru">© 2024 Damaru</string>
     <string name="please_enter_valid_email">Please enter valid email</string>
     <string name="please_enter_password">Please enter password</string>
+    <string name="delete">Delete</string>
+    <string name="lock_icon">Lock Icon</string>
+    <string name="enter_your_pin">Enter Your PIN</string>
+    <string name="_1">1</string>
+    <string name="_2">2</string>
+    <string name="_3">3</string>
+    <string name="_4">4</string>
+    <string name="_5">5</string>
+    <string name="_6">6</string>
+    <string name="_7">7</string>
+    <string name="_8">8</string>
+    <string name="_9">9</string>
+    <string name="_0">0</string>
 </resources>

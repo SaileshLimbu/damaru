@@ -1,27 +1,24 @@
 package com.powersoft.damaru.repository
 
 import com.google.gson.Gson
+import com.powersoft.damaru.models.AccountsEntity
 import com.powersoft.damaru.models.ErrorResponse
 import com.powersoft.damaru.models.ResponseWrapper
 import com.powersoft.damaru.models.getUnknownError
-import com.powersoft.damaru.models.UserEntity
 import com.powersoft.damaru.webservice.ApiService
-import okhttp3.RequestBody.Companion.toRequestBody
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class AuthRepo @Inject constructor(private val apiService: ApiService, private val gson: Gson) {
+class DeviceRepo @Inject constructor(private val apiService: ApiService, private val gson: Gson) {
 
-    suspend fun loginTask(email: String, password: String): ResponseWrapper<UserEntity> {
+    suspend fun accountsListTask(): ResponseWrapper<AccountsEntity> {
         return try {
-            val response = apiService.loginApi(
-                "{\"email\":\"$email\",\"password\":\"$password\",\"pin\":\"05007\"}".toRequestBody()
-            )
+            val response = apiService.getAccountsApi()
             if (response.isSuccessful) {
                 response.body()?.let {
                     ResponseWrapper.success(it)
-                } ?: ResponseWrapper.error(getUnknownError("Something went wrong (Code 2143)"))
+                } ?: ResponseWrapper.error(getUnknownError("Something went wrong (Code 632)"))
             } else {
                 val errorResponse = try {
                     val errorBody = response.errorBody()?.string()
@@ -34,8 +31,7 @@ class AuthRepo @Inject constructor(private val apiService: ApiService, private v
                 ResponseWrapper.error(errorResponse)
             }
         } catch (e: Exception) {
-            ResponseWrapper.error(getUnknownError("Something went wrong (Code 8437)"))
+            ResponseWrapper.error(getUnknownError("Something went wrong (Code 34523)"))
         }
     }
-
 }

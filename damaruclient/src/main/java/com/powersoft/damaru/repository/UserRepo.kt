@@ -1,7 +1,7 @@
 package com.powersoft.damaru.repository
 
 import com.google.gson.Gson
-import com.powersoft.common.model.UserEntity
+import com.powersoft.damaru.models.UserEntity
 import com.powersoft.common.utils.PrefsHelper
 import javax.inject.Inject
 

@@ -29,8 +29,8 @@ class SplashActivity : AppCompatActivity() {
 
         splashViewModel.navigateToMain.observe(this) { navigateTo ->
             when (navigateTo) {
-                "userPin" -> {
-                    startActivity(Intent(this@SplashActivity, PinActivity::class.java))
+                "dashboard" -> {
+                    startActivity(Intent(this@SplashActivity, AccountUsersActivity::class.java))
                     finish()
                 }
 
