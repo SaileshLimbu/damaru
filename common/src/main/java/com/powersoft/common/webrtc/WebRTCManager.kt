@@ -8,6 +8,7 @@ import org.webrtc.PeerConnection
 import org.webrtc.PeerConnectionFactory
 import org.webrtc.VideoSource
 import org.webrtc.VideoTrack
+import java.util.UUID
 
 class WebRTCManager(context: Context) {
     private val eglBase: EglBase = EglBase.create()
@@ -47,7 +48,7 @@ class WebRTCManager(context: Context) {
     }
 
     fun createVideoTrack(videoSource: VideoSource): VideoTrack {
-        return peerConnectionFactory.createVideoTrack("ARDAMSv0", videoSource)
+        return peerConnectionFactory.createVideoTrack("VIDEO${UUID.randomUUID()}", videoSource)
     }
 
     fun dispose(){
