@@ -13,10 +13,13 @@
         </DropdownSelection>
         <DialogSelection />
       </SelectionState>
-      <SelectionState runConfigName="damaruclient">
+      <SelectionState runConfigName="Damaru.damaruclient">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
-      <SelectionState runConfigName="damaruserver">
+      <SelectionState runConfigName="Damaru.damaruserver">
+        <option name="selectionMode" value="DROPDOWN" />
+      </SelectionState>
+      <SelectionState runConfigName="Damaru.damaruadmin">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
     </selectionStates>

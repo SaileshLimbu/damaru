@@ -30,7 +30,15 @@ class SplashActivity : AppCompatActivity() {
         splashViewModel.navigateToMain.observe(this) { navigateTo ->
             when (navigateTo) {
                 "dashboard" -> {
-                    startActivity(Intent(this@SplashActivity, AccountUsersActivity::class.java))
+                    startActivity(Intent(this@SplashActivity, MainActivity::class.java))
+                    finish()
+                }
+
+                "resetPin" -> {
+                    startActivity(
+                        Intent(this@SplashActivity, PinActivity::class.java)
+                            .putExtra("resetPin", true)
+                    )
                     finish()
                 }
 

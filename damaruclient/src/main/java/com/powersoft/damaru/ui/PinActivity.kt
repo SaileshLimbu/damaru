@@ -2,14 +2,31 @@ package com.powersoft.damaru.ui
 
 import android.content.Intent
 import android.os.Bundle
-import androidx.appcompat.app.AppCompatActivity
+import androidx.activity.viewModels
 import com.powersoft.damaru.R
+import com.powersoft.damaru.base.BaseActivity
+import com.powersoft.damaru.base.BaseViewModel
 import com.powersoft.damaru.databinding.ActivityPinBinding
+import com.powersoft.damaru.models.ErrorResponse
+import com.powersoft.damaru.models.UserEntity
+import com.powersoft.damaru.ui.LoginActivity
+import com.powersoft.damaru.ui.helper.AlertHelper
+import com.powersoft.damaru.ui.helper.ResponseCallback
+import com.powersoft.damaru.viewmodels.PinViewModel
+import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.MainCoroutineDispatcher
 
-class PinActivity : AppCompatActivity() {
-
+@AndroidEntryPoint
+class PinActivity : BaseActivity() {
+    private val viewModel: PinViewModel by viewModels()
     private lateinit var binding: ActivityPinBinding
     private val enteredPin = StringBuilder()
+    var resetPin = false
+    var pinOnce = ""
+
+    override fun getViewModel(): BaseViewModel {
+        return viewModel
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -18,6 +35,11 @@ class PinActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         setupKeypad()
+
+        resetPin = intent.getBooleanExtra("resetPin", false)
+        if (resetPin) {
+            binding.pinPrompt.text = getString(R.string.enter_your_new_pin)
+        }
     }
 
     private fun setupKeypad() {
@@ -70,12 +92,43 @@ class PinActivity : AppCompatActivity() {
     }
 
     private fun verifyPin() {
-        val correctPin = "1234"
-        if (enteredPin.toString() == correctPin) {
-            startActivity(Intent(this@PinActivity, DeviceControlActivity::class.java))
-        } else {
-            enteredPin.clear()
-            updatePinDots()
+        if (resetPin) {
+            if (pinOnce.isEmpty()) {
+                pinOnce = enteredPin.toString()
+                enteredPin.clear()
+                binding.pinPrompt.text = getString(R.string.re_enter_your_pin)
+                updatePinDots()
+            } else {
+                if (pinOnce == enteredPin.toString()) {
+                    viewModel.resetPin(enteredPin.toString(), object : ResponseCallback {
+                        override fun onResponse(any: Any, errorResponse: ErrorResponse?) {
+                            if (errorResponse == null) {
+                                if (resetPin) {
+                                    startActivity(Intent(this@PinActivity, MainActivity::class.java))
+                                }
+                                return
+                            } else {
+                                AlertHelper.showAlertDialog(
+                                    this@PinActivity, errorResponse.message?.error ?: getString(R.string.error),
+                                    errorResponse.message?.message ?: getString(R.string.error)
+                                )
+                            }
+                        }
+                    })
+                    pinOnce = ""
+                    enteredPin.clear()
+                    updatePinDots()
+                } else {
+                    pinOnce = ""
+                    enteredPin.clear()
+                    binding.pinPrompt.text = getString(R.string.enter_your_new_pin)
+                    updatePinDots()
+                    AlertHelper.showSnackbar(binding.root, getString(R.string.pin_does_not_matches))
+                }
+            }
+            return
         }
+
+        //do something
     }
 }

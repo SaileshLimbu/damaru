@@ -23,3 +23,4 @@ rootProject.name = "Damaru"
 include(":damaruclient")
 include(":damaruserver")
 include(":common")
+include(":damaruadmin")

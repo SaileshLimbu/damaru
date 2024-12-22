@@ -25,7 +25,7 @@ class LoginViewModel @Inject constructor(
     private val gson: Gson
 ) : BaseViewModel() {
 
-    fun login(email: String, password: String, responseCallback: ResponseCallback) {
+    fun login(email: String, password: String, pin : String, responseCallback: ResponseCallback) {
         if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
             Toast.makeText(context, context.getString(R.string.please_enter_valid_email), Toast.LENGTH_SHORT).show()
         } else if (password.isEmpty()) {
@@ -33,7 +33,7 @@ class LoginViewModel @Inject constructor(
         } else {
             showLoader()
             viewModelScope.launch {
-                when (val response = repo.loginTask(email, password)) {
+                when (val response = repo.loginTask(email, password, pin)) {
                     is ResponseWrapper.Success -> {
                         prefsHelper.putString(PrefsHelper.USER, gson.toJson(response.data))
                         responseCallback.onResponse(response.data)
