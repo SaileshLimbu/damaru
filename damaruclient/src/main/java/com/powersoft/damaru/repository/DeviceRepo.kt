@@ -1,18 +1,17 @@
 package com.powersoft.damaru.repository
 
 import com.google.gson.Gson
-import com.powersoft.damaru.models.AccountsEntity
-import com.powersoft.damaru.models.ErrorResponse
-import com.powersoft.damaru.models.ResponseWrapper
-import com.powersoft.damaru.models.getUnknownError
-import com.powersoft.damaru.webservice.ApiService
+import com.powersoft.common.model.ErrorResponse
+import com.powersoft.common.model.ResponseWrapper
+import com.powersoft.common.model.getUnknownError
+import com.powersoft.common.webservice.ApiService
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
 class DeviceRepo @Inject constructor(private val apiService: ApiService, private val gson: Gson) {
 
-    suspend fun accountsListTask(): ResponseWrapper<AccountsEntity> {
+    suspend fun accountsListTask(): ResponseWrapper<Any> {
         return try {
             val response = apiService.getAccountsApi()
             if (response.isSuccessful) {

@@ -4,6 +4,7 @@ plugins {
     alias(libs.plugins.ksp)
     alias(libs.plugins.hilt)
     id("kotlin-kapt")
+    kotlin("plugin.serialization") version "2.1.0"
 }
 
 android {
@@ -40,10 +41,15 @@ android {
     kotlinOptions {
         jvmTarget = "11"
     }
+
+    buildFeatures {
+        viewBinding = true
+        buildConfig = true
+    }
 }
 
 dependencies {
-    implementation(libs.hilt.android)
+    api(libs.hilt.android)
     ksp(libs.hilt.compiler)
 
     implementation(libs.webrtc)
@@ -53,4 +59,32 @@ dependencies {
     api(libs.retrofit)
     api(libs.converter.gson)
     api(libs.logging.interceptor)
+
+
+    api(libs.androidx.core.ktx)
+    api(libs.androidx.appcompat)
+    api(libs.material)
+    api(libs.androidx.activity)
+    api(libs.androidx.constraintlayout)
+    api(libs.androidx.navigation.fragment.ktx)
+    api(libs.androidx.navigation.ui.ktx)
+
+    api(libs.lifecycle.viewmodel)
+    api(libs.lifecycle.livedata)
+    api(libs.activity.ktx)
+    api(libs.fragment.ktx)
+
+    api(libs.hilt.android)
+    ksp(libs.hilt.compiler)
+
+    api(libs.webrtc)
+    api(libs.websocket)
+    api(libs.gson)
+    api(libs.security.crypto)
+
+    api(libs.coroutine.core)
+    api(libs.coroutine.android)
+
+    api(libs.lottie)
+    api(libs.kotlinx.serialization.json)
 }

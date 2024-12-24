@@ -4,9 +4,8 @@ import android.content.Context
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
-import com.powersoft.damaru.base.BaseViewModel
-import com.powersoft.damaru.models.AccountsEntity
-import com.powersoft.damaru.models.ResponseWrapper
+import com.powersoft.common.base.BaseViewModel
+import com.powersoft.common.model.ResponseWrapper
 import com.powersoft.damaru.repository.DeviceRepo
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -19,9 +18,9 @@ class AccountUsersViewModel @Inject constructor(
     private val repo: DeviceRepo,
 ) : BaseViewModel() {
 
-    private var _mutableLiveData = MutableLiveData<ResponseWrapper<AccountsEntity>>()
+    private var _mutableLiveData = MutableLiveData<ResponseWrapper<Any>>()
 
-    val liveData: LiveData<ResponseWrapper<AccountsEntity>>
+    val liveData: LiveData<ResponseWrapper<Any>>
         get() = _mutableLiveData
 
     init {

@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">damaruadmin</string>
+    <string name="add_user">Add User</string>
+    <string name="my_system_users">My System Users</string>
 </resources>

@@ -4,14 +4,14 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.activity.viewModels
 import androidx.recyclerview.widget.GridLayoutManager
+import com.powersoft.common.base.BaseActivity
+import com.powersoft.common.base.BaseViewModel
+import com.powersoft.common.model.ResponseWrapper
+import com.powersoft.common.ui.helper.AlertHelper
 import com.powersoft.damaru.R
 import com.powersoft.damaru.adapters.DeviceUserAdapter
 import com.powersoft.damaru.adapters.User
-import com.powersoft.damaru.base.BaseActivity
-import com.powersoft.damaru.base.BaseViewModel
 import com.powersoft.damaru.databinding.ActivityAccountUsersBinding
-import com.powersoft.damaru.models.ResponseWrapper
-import com.powersoft.damaru.ui.helper.AlertHelper
 import com.powersoft.damaru.viewmodels.AccountUsersViewModel
 
 class AccountUsersActivity : BaseActivity() {
@@ -40,7 +40,7 @@ class AccountUsersActivity : BaseActivity() {
             if (user.name.isEmpty() && user.profileImage == -1) {
                 startActivity(Intent(this@AccountUsersActivity, AddUserActivity::class.java))
             } else {
-                startActivity(Intent(this@AccountUsersActivity, PinActivity::class.java))
+                startActivity(Intent(this@AccountUsersActivity, PinActivityImpl::class.java))
             }
         }
 
