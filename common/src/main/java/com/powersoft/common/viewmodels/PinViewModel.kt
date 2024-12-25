@@ -27,7 +27,7 @@ class PinViewModel @Inject constructor(
     fun resetPin(pin: String, responseCallback: ResponseCallback) {
         showLoader()
         viewModelScope.launch {
-            when (val response = repo.resetPinTask(userRepo.userEntity?.userId.toString(), pin)) {
+            when (val response = repo.resetPinTask(userRepo.userEntity.value?.accountId.toString(), pin)) {
                 is ResponseWrapper.Success -> {
                     prefsHelper.putString(PrefsHelper.USER, gson.toJson(response.data))
                     responseCallback.onResponse(response.data)
@@ -47,6 +47,7 @@ class PinViewModel @Inject constructor(
 
     fun logout(responseCallback: ResponseCallback){
         prefsHelper.clear()
+        userRepo.refreshToken()
         responseCallback.onResponse(Any(), null)
     }
 

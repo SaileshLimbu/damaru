@@ -7,6 +7,7 @@ import com.powersoft.damaru.webservice.HeaderInterceptor
 import com.powersoft.damaru.webservice.RequestInterceptor
 import dagger.Module
 import dagger.Provides
+import dagger.Reusable
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import okhttp3.OkHttpClient
@@ -45,7 +46,7 @@ open class NetworkModule {
     }
 
     @Provides
-    @Singleton
+    @Reusable
     open fun provideApiService(retrofit: Retrofit): ApiService {
         return retrofit.create(ApiService::class.java)
     }

@@ -38,12 +38,12 @@ class AuthRepo @Inject constructor(private val apiService: ApiService, private v
         }
     }
 
-    suspend fun resetPinTask(userId : String, pin: String): ResponseWrapper<UserEntity> {
+    suspend fun resetPinTask(accountId : String, pin: String): ResponseWrapper<UserEntity> {
         return try {
             val params = hashMapOf(
                 "pin" to pin
             )
-            val response = apiService.resetPinTask(userId, gson.toJson(params).toRequestBody())
+            val response = apiService.resetPinTask(accountId, gson.toJson(params).toRequestBody())
             if (response.isSuccessful) {
                 response.body()?.let {
                     ResponseWrapper.success(it)

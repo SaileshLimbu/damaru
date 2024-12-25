@@ -17,7 +17,7 @@ class DeviceUserAdapter(private val users: List<User>, private val onClick: (Use
                 binding.userName.setTextColor(ContextCompat.getColor(binding.root.context, R.color.colorPrimaryVariant))
                 binding.userImage.setColorFilter(ContextCompat.getColor(binding.root.context, R.color.colorPrimaryVariant))
                 binding.userName.text = "Add User"
-                binding.userImage.setImageResource(R.drawable.ic_add_user)
+                binding.userImage.setImageResource(com.powersoft.common.R.drawable.ic_add_user)
             } else {
                 binding.userName.setTextColor(ContextCompat.getColor(binding.root.context, R.color.colorPrimaryDark))
                 binding.userImage.colorFilter = null

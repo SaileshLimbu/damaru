@@ -16,6 +16,6 @@ interface ApiService {
     @GET("accounts")
     suspend fun getAccountsApi(): Response<Any>
 
-    @PUT("users/{userId}")
-    suspend fun resetPinTask(@Path("userId") userId : String, @Body payload: RequestBody): Response<UserEntity>
+    @PUT("accounts/{accountId}")
+    suspend fun resetPinTask(@Path("accountId") accountId : String, @Body payload: RequestBody): Response<UserEntity>
 }

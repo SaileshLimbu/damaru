@@ -1,5 +1,6 @@
 package com.powersoft.common.model
 
+
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
@@ -7,6 +8,10 @@ import kotlinx.serialization.Serializable
 data class UserEntity(
     @SerialName("accessToken")
     val accessToken: String?,
+    @SerialName("accountId")
+    val accountId: Int?,
+    @SerialName("accountName")
+    val accountName: String?,
     @SerialName("firstLogin")
     val firstLogin: Boolean?,
     @SerialName("isRootUser")

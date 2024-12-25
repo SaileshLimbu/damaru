@@ -1,8 +1,12 @@
 package com.powersoft.damaru.webservice
 
+import com.powersoft.common.model.UserEntity
 import com.powersoft.common.repository.UserRepo
 import com.powersoft.common.utils.EncryptionHelper
+import com.powersoft.common.utils.Logg
 import com.powersoft.common.utils.SoManager
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.runBlocking
 import okhttp3.Interceptor
 import okhttp3.RequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
@@ -103,8 +107,10 @@ class RequestInterceptor : Interceptor {
 class HeaderInterceptor(private val userRepo: UserRepo) : Interceptor {
     override fun intercept(chain: Interceptor.Chain): Response {
         val request = chain.request().newBuilder()
-        if (userRepo.userEntity != null) {
-            request.addHeader("Authorization", "Bearer ${userRepo.userEntity?.accessToken}")
+        val token : String? = userRepo.userEntity.value?.accessToken
+        Logg.e("FUCK token >>>>>>>>>>>>>> $token")
+        if (!token.isNullOrEmpty()) {
+            request.addHeader("Authorization", "Bearer $token")
         }
         request.addHeader("content-type", if (isEncryptionEnabled) "text/plain" else "application/json")
         return chain.proceed(request.build())

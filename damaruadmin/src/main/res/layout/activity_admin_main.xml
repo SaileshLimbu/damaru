@@ -8,13 +8,15 @@
     tools:context=".ui.AdminMainActivity">
 
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
         android:background="@drawable/drawable_bg_header"
         android:elevation="5dp"
         android:paddingStart="@dimen/padding_large"
         android:paddingTop="@dimen/padding_with_status_bar_and_header"
         android:paddingEnd="@dimen/padding_large"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
@@ -52,7 +54,6 @@
             app:layout_constraintTop_toTopOf="parent"
             app:tint="@color/primary" />
 
-
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recyclerView"
             android:layout_width="0dp"
@@ -77,6 +78,21 @@
             app:iconTint="@color/white"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent" />
+
+        <include
+            android:id="@+id/loader"
+            layout="@layout/view_loader" />
+
+        <include
+            android:id="@+id/errorView"
+            layout="@layout/view_error"
+            android:layout_width="0dp"
+            android:layout_height="120dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            android:visibility="gone"
+            app:layout_constraintTop_toTopOf="parent" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

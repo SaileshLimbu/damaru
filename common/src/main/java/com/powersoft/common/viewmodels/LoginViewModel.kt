@@ -9,6 +9,7 @@ import com.powersoft.common.R
 import com.powersoft.common.base.BaseViewModel
 import com.powersoft.common.model.ResponseWrapper
 import com.powersoft.common.repository.AuthRepo
+import com.powersoft.common.repository.UserRepo
 import com.powersoft.common.ui.helper.ResponseCallback
 import com.powersoft.common.utils.Logg
 import com.powersoft.common.utils.PrefsHelper
@@ -22,10 +23,11 @@ class LoginViewModel @Inject constructor(
     @ApplicationContext val context: Context,
     private val repo: AuthRepo,
     private val prefsHelper: PrefsHelper,
-    private val gson: Gson
+    private val gson: Gson,
+    private val userRepo: UserRepo
 ) : BaseViewModel() {
 
-    fun login(email: String, password: String, pin : String, responseCallback: ResponseCallback) {
+    fun login(email: String, password: String, pin: String, responseCallback: ResponseCallback) {
         if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
             Toast.makeText(context, context.getString(R.string.please_enter_valid_email), Toast.LENGTH_SHORT).show()
         } else if (password.isEmpty()) {
@@ -36,6 +38,7 @@ class LoginViewModel @Inject constructor(
                 when (val response = repo.loginTask(email, password, pin)) {
                     is ResponseWrapper.Success -> {
                         prefsHelper.putString(PrefsHelper.USER, gson.toJson(response.data))
+                        userRepo.refreshToken()
                         responseCallback.onResponse(response.data)
                     }
 

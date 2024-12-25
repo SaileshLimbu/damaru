@@ -40,7 +40,7 @@ class LoginActivityImpl : LoginActivity() {
             //SuperAdmin, AndroidUser
             b.etUsername.setText("theone@gmail.com")
             b.etPassword.setText("Test@123")
-            b.etPin.setText("05007")
+            b.etPin.setText("0000")
         }
     }
 }
