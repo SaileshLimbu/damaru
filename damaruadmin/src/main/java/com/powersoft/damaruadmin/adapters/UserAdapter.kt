@@ -22,7 +22,10 @@ class UserAdapter(
 
         fun bind(user: UserEntity) {
             binding.apply {
-                tvUserName.text = user.accountName
+                tvUsername.text = user.name
+                tvUserEmail.text = user.email
+                tvTotalDevices.text = "${user.accounts?.size ?: 0}"
+                tvTotalAccounts.text = "${user.accounts?.size ?: 0}"
             }
         }
     }

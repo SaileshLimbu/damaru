@@ -8,6 +8,6 @@ import retrofit2.http.GET
 interface ApiServiceImpl : ApiService {
 
     @GET("emulators")
-    suspend fun getMyEmulators(): Response<Device>
+    suspend fun getMyEmulators(): Response<List<Device>>
 
 }

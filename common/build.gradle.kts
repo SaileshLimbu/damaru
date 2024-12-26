@@ -87,4 +87,6 @@ dependencies {
 
     api(libs.lottie)
     api(libs.kotlinx.serialization.json)
+
+    api(libs.androidx.swiperefreshlayout)
 }

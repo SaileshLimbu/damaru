@@ -6,18 +6,18 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class UserEntity(
-    @SerialName("accessToken")
-    val accessToken: String?,
-    @SerialName("accountId")
-    val accountId: Int?,
-    @SerialName("accountName")
-    val accountName: String?,
-    @SerialName("firstLogin")
-    val firstLogin: Boolean?,
-    @SerialName("isRootUser")
-    val isRootUser: Boolean?,
-    @SerialName("isSuperAdmin")
-    val isSuperAdmin: Boolean?,
-    @SerialName("userId")
-    val userId: Int?
+    @SerialName("accounts")
+    val accounts: List<Account?>?,
+    @SerialName("created_at")
+    val createdAt: String?,
+    @SerialName("email")
+    val email: String?,
+    @SerialName("id")
+    val id: Int?,
+    @SerialName("name")
+    val name: String?,
+    @SerialName("password")
+    val password: String?,
+    @SerialName("updated_at")
+    val updatedAt: String?
 )

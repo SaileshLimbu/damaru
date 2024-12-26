@@ -3,8 +3,8 @@ package com.powersoft.common.di
 import com.powersoft.common.BuildConfig
 import com.powersoft.common.repository.UserRepo
 import com.powersoft.common.webservice.ApiService
-import com.powersoft.damaru.webservice.HeaderInterceptor
-import com.powersoft.damaru.webservice.RequestInterceptor
+import com.powersoft.common.webservice.HeaderInterceptor
+import com.powersoft.common.webservice.RequestInterceptor
 import dagger.Module
 import dagger.Provides
 import dagger.Reusable

@@ -1,12 +1,9 @@
-package com.powersoft.damaru.webservice
+package com.powersoft.common.webservice
 
-import com.powersoft.common.model.UserEntity
 import com.powersoft.common.repository.UserRepo
 import com.powersoft.common.utils.EncryptionHelper
 import com.powersoft.common.utils.Logg
 import com.powersoft.common.utils.SoManager
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.runBlocking
 import okhttp3.Interceptor
 import okhttp3.RequestBody
 import okhttp3.RequestBody.Companion.toRequestBody

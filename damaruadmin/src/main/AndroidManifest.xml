@@ -30,6 +30,7 @@
         </activity>
         <activity android:name="com.powersoft.damaruadmin.ui.LoginActivityImpl" />
         <activity android:name="com.powersoft.damaruadmin.ui.AdminMainActivity" />
+        <activity android:name="com.powersoft.damaruadmin.ui.AddUserActivity" />
     </application>
 
 </manifest>

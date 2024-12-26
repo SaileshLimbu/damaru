@@ -3,7 +3,7 @@ package com.powersoft.common.repository
 import com.google.gson.Gson
 import com.powersoft.common.model.ErrorResponse
 import com.powersoft.common.model.ResponseWrapper
-import com.powersoft.common.model.UserEntity
+import com.powersoft.common.model.LoginEntity
 import com.powersoft.common.model.getUnknownError
 import com.powersoft.common.webservice.ApiService
 import okhttp3.RequestBody.Companion.toRequestBody
@@ -13,7 +13,7 @@ import javax.inject.Singleton
 @Singleton
 class AuthRepo @Inject constructor(private val apiService: ApiService, private val gson: Gson) {
 
-    suspend fun loginTask(email: String, password: String, pin: String): ResponseWrapper<UserEntity> {
+    suspend fun loginTask(email: String, password: String, pin: String): ResponseWrapper<LoginEntity> {
         return try {
             val response = apiService.loginApi(
                 "{\"email\":\"$email\",\"password\":\"$password\",\"pin\":\"$pin\"}".toRequestBody()
@@ -38,7 +38,7 @@ class AuthRepo @Inject constructor(private val apiService: ApiService, private v
         }
     }
 
-    suspend fun resetPinTask(accountId : String, pin: String): ResponseWrapper<UserEntity> {
+    suspend fun resetPinTask(accountId : String, pin: String): ResponseWrapper<LoginEntity> {
         return try {
             val params = hashMapOf(
                 "pin" to pin

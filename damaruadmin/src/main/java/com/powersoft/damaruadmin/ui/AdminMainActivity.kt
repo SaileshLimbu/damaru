@@ -1,15 +1,16 @@
 package com.powersoft.damaruadmin.ui
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import androidx.activity.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.powersoft.common.base.BaseActivity
 import com.powersoft.common.base.BaseViewModel
 import com.powersoft.common.listeners.RecyclerViewItemClickListener
 import com.powersoft.common.model.ResponseWrapper
 import com.powersoft.common.model.UserEntity
-import com.powersoft.common.utils.Logg
 import com.powersoft.damaruadmin.adapters.UserAdapter
 import com.powersoft.damaruadmin.databinding.ActivityAdminMainBinding
 import com.powersoft.damaruadmin.viewmodels.AdminMainViewModel
@@ -31,8 +32,19 @@ class AdminMainActivity : BaseActivity() {
         setContentView(binding.root)
 
         binding.extendedFAB.setOnClickListener {
-
+            startActivity(Intent(this, AddUserActivity::class.java))
         }
+
+        binding.recyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                super.onScrolled(recyclerView, dx, dy)
+                if (dy > 0) {
+                    binding.extendedFAB.shrink()
+                } else if (dy < 0) {
+                    binding.extendedFAB.extend()
+                }
+            }
+        })
 
         binding.recyclerView.layoutManager = LinearLayoutManager(this)
 
@@ -46,20 +58,17 @@ class AdminMainActivity : BaseActivity() {
                         })
                     binding.loader.root.visibility = View.GONE
                     binding.errorView.root.visibility = View.GONE
-                    Logg.d("FUck this")
                 }
 
                 is ResponseWrapper.Error -> {
                     binding.loader.root.visibility = View.GONE
                     binding.errorView.tvError.text = it.errorResponse.message?.message
                     binding.errorView.root.visibility = View.VISIBLE
-                    Logg.d("FUck that")
                 }
 
                 is ResponseWrapper.Loading -> {
                     binding.loader.root.visibility = View.VISIBLE
                     binding.errorView.root.visibility = View.GONE
-                    Logg.d("FUck it")
                 }
             }
         }
