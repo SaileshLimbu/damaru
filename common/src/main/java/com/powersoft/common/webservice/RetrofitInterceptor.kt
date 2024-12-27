@@ -104,7 +104,7 @@ class RequestInterceptor : Interceptor {
 class HeaderInterceptor(private val userRepo: UserRepo) : Interceptor {
     override fun intercept(chain: Interceptor.Chain): Response {
         val request = chain.request().newBuilder()
-        val token : String? = userRepo.userEntity.value?.accessToken
+        val token : String? = userRepo.seasonEntity.value?.accessToken
         Logg.e("FUCK token >>>>>>>>>>>>>> $token")
         if (!token.isNullOrEmpty()) {
             request.addHeader("Authorization", "Bearer $token")

@@ -20,8 +20,8 @@ class SplashViewModel @Inject constructor(
 
     init {
         Handler(Looper.getMainLooper()).postDelayed({
-            if (!userRepo.userEntity.value?.accessToken.isNullOrEmpty()) {
-                if(userRepo.userEntity.value?.firstLogin == true){
+            if (!userRepo.seasonEntity.value?.accessToken.isNullOrEmpty()) {
+                if(userRepo.seasonEntity.value?.firstLogin == true){
                     _navigateToMain.value = "resetPin"
                 }else {
                     _navigateToMain.value = "dashboard"

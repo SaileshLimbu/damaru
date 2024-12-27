@@ -1,25 +1,26 @@
 package com.powersoft.common.model
 
 
+import com.google.gson.annotations.SerializedName
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class Account(
-    @SerialName("account_name")
+data class AccountEntity(
+    @SerializedName("account_name")
     val accountName: String?,
-    @SerialName("created_at")
+    @SerializedName("created_at")
     val createdAt: String?,
-    @SerialName("first_login")
+    @SerializedName("first_login")
     val firstLogin: Boolean?,
-    @SerialName("id")
+    @SerializedName("id")
     val id: Int?,
-    @SerialName("is_admin")
+    @SerializedName("is_admin")
     val isAdmin: Boolean?,
-    @SerialName("last_login")
+    @SerializedName("last_login")
     val lastLogin: String?,
-    @SerialName("pin")
+    @SerializedName("pin")
     val pin: String?,
-    @SerialName("updated_at")
+    @SerializedName("updated_at")
     val updatedAt: String?
 )

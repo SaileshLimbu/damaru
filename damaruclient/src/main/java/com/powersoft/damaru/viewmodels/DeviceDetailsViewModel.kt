@@ -5,7 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.google.gson.Gson
 import com.powersoft.common.base.BaseViewModel
-import com.powersoft.common.model.DeviceEntity
+import com.powersoft.common.model.AccountEntity
 import com.powersoft.common.model.ErrorResponse
 import com.powersoft.common.model.ResponseWrapper
 import com.powersoft.common.model.getUnknownError
@@ -15,26 +15,26 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class HomeViewmodel @Inject constructor(
+class DeviceDetailsViewModel @Inject constructor(
     private val apiService: ApiServiceImpl,
     private val gson: Gson
 ) : BaseViewModel() {
-    private val _allDevices = MutableLiveData<ResponseWrapper<List<DeviceEntity>>>()
+    private val _allAccounts = MutableLiveData<ResponseWrapper<List<AccountEntity>>>()
 
-    val allDevices: LiveData<ResponseWrapper<List<DeviceEntity>>>
-        get() = _allDevices
+    val allAccounts: LiveData<ResponseWrapper<List<AccountEntity>>>
+        get() = _allAccounts
 
     init {
-        getMyEmulators()
+        getAllAccounts()
     }
 
-    fun getMyEmulators() {
+    private fun getAllAccounts() {
         viewModelScope.launch {
             try {
-                _allDevices.postValue(ResponseWrapper.loading())
-                val response = apiService.getMyEmulators()
+                _allAccounts.postValue(ResponseWrapper.loading())
+                val response = apiService.getAccountsApi()
                 if (response.isSuccessful) {
-                    _allDevices.postValue(response.body()?.let {
+                    _allAccounts.postValue(response.body()?.let {
                         if (response.body().isNullOrEmpty()) {
                             ResponseWrapper.error(getUnknownError("No Emulators Found"))
                         } else {
@@ -49,10 +49,10 @@ class HomeViewmodel @Inject constructor(
                     } catch (e: Exception) {
                         getUnknownError()
                     }
-                    _allDevices.postValue(ResponseWrapper.error(errorResponse))
+                    _allAccounts.postValue(ResponseWrapper.error(errorResponse))
                 }
             } catch (e: Exception) {
-                _allDevices.postValue(ResponseWrapper.error(getUnknownError("Something went wrong (Code 37265)")))
+                _allAccounts.postValue(ResponseWrapper.error(getUnknownError("Something went wrong (Code 37265)")))
             }
         }
     }

@@ -1,45 +1,45 @@
 package com.powersoft.damaru.adapters
 
-import android.content.Intent
+import android.annotation.SuppressLint
 import android.content.res.ColorStateList
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
+import com.powersoft.common.listeners.RecyclerViewItemClickListener
+import com.powersoft.common.model.DeviceEntity
 import com.powersoft.damaru.R
 import com.powersoft.damaru.databinding.ItemDeviceBinding
-import com.powersoft.damaru.models.Device
-import com.powersoft.damaru.ui.DeviceControlActivity
 
 class MyDevicesAdapter(
-    private val deviceList: List<Device>
+    private val deviceList: List<DeviceEntity>,
+    private val clickListener : RecyclerViewItemClickListener<DeviceEntity>
 ) : RecyclerView.Adapter<MyDevicesAdapter.ViewHolder>() {
 
     inner class ViewHolder(private val binding: ItemDeviceBinding) :
         RecyclerView.ViewHolder(binding.root) {
         init {
             binding.root.setOnClickListener {
-                val intent = Intent(binding.root.context, DeviceControlActivity::class.java)
-                    .putExtra(DeviceControlActivity.USER_NAME, "theone")
-                    .putExtra(DeviceControlActivity.TARGET_USER_NAME, deviceList[layoutPosition].deviceId)
-                binding.root.context.startActivity(intent)
+                clickListener.onItemClick(layoutPosition, deviceList[layoutPosition])
             }
         }
 
-        fun bind(device: Device) {
+        @SuppressLint("SetTextI18n")
+        fun bind(device: DeviceEntity) {
             binding.apply {
-                tvDeviceName.text = device.name
-                imgDevice.setImageResource(device.image)
-                tvRemainingDays.text = "${device.remainingDays} days"
+                tvDeviceName.text = device.deviceName
+                Glide.with(itemView.context).load(device.screenshot).into(imgDevice)
+                tvRemainingDays.text = "${device.expiresAt} days"
 
                 val colorRed = ContextCompat.getColor(itemView.context, R.color.red)
-                tvRemainingDays.backgroundTintList = when (device.remainingDays) {
-                    in 1..3, 0 -> ColorStateList.valueOf(colorRed)
-                    else -> null // Default color or no tint
+                tvRemainingDays.backgroundTintList = when  {
+                    ((device.expiresAt?.toIntOrNull()) ?: 0) < 1 -> ColorStateList.valueOf(colorRed)
+                    else -> null
                 }
 
-                tvExpired.visibility = if (device.remainingDays == 0) View.VISIBLE else View.GONE
+                tvExpired.visibility = if (((device.expiresAt?.toIntOrNull()) ?: 0) < 1) View.VISIBLE else View.GONE
             }
         }
     }

@@ -4,6 +4,7 @@ import android.content.Intent
 import android.os.Bundle
 import com.powersoft.common.BuildConfig
 import com.powersoft.common.model.ErrorResponse
+import com.powersoft.common.model.LoginEntity
 import com.powersoft.common.model.UserEntity
 import com.powersoft.common.ui.LoginActivity
 import com.powersoft.common.ui.helper.AlertHelper
@@ -12,7 +13,7 @@ import com.powersoft.damaru.R
 class LoginActivityImpl : LoginActivity() {
     override fun onLoginResponse(any: Any, errorResponse: ErrorResponse?) {
         if (errorResponse == null) {
-            if (any is UserEntity && any.firstLogin == true) {
+            if (any is LoginEntity && any.firstLogin == true) {
                 startActivity(
                     Intent(applicationContext, PinActivityImpl::class.java)
                         .putExtra("resetPin", true)

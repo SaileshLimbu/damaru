@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:fitsSystemWindows="true"
+    android:layout_height="match_parent">
+
+    <ImageButton
+        android:id="@+id/imgBack"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="12dp"
+        android:background="?selectableItemBackgroundBorderless"
+        android:padding="16dp"
+        android:src="@drawable/ic_back"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <include
+        android:id="@+id/holderDevice"
+        layout="@layout/item_device"
+        android:layout_width="170dp"
+        android:layout_marginStart="10dp"
+        android:layout_height="320dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/imgBack" />
+
+    <TextView
+        android:id="@+id/tvDeviceName"
+        android:layout_width="0dp"
+        app:layout_constraintStart_toEndOf="@+id/holderDevice"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/holderDevice"
+        android:textStyle="bold"
+        android:textSize="112sp"
+        android:text="fuck"
+        android:layout_height="wrap_content" />
+
+    <TextView
+        android:id="@+id/tvCreatedAt"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        app:layout_constraintStart_toEndOf="@+id/holderDevice"
+        app:layout_constraintTop_toBottomOf="@+id/tvDeviceName"
+        tools:text="Subscribed on : 2024-01-01" />
+
+    <TextView
+        android:id="@+id/tvExpiresIn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        app:layout_constraintStart_toEndOf="@+id/holderDevice"
+        app:layout_constraintTop_toBottomOf="@+id/tvCreatedAt"
+        tools:text="Expires In : 28 days" />
+
+    <TextView
+        android:id="@+id/lvlAccounts"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="Accounts : "
+        app:layout_constraintStart_toEndOf="@+id/holderDevice"
+        app:layout_constraintTop_toBottomOf="@+id/tvExpiresIn" />
+
+    <TextView
+        android:id="@+id/tvTotalAccounts"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="12dp"
+        android:fontFamily="@font/sairacondensed_medium"
+        android:includeFontPadding="false"
+        android:textColor="@color/colorPrimaryVariant"
+        android:textSize="72sp"
+        app:layout_constraintStart_toEndOf="@+id/lvlAccounts"
+        app:layout_constraintTop_toTopOf="@+id/lvlAccounts"
+        tools:text="6" />
+
+    <TextView
+        android:id="@+id/lvlAllAccounts"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="24dp"
+        android:layout_marginTop="8dp"
+        android:text="Accounts"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/holderDevice" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerView"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="24dp"
+        android:layout_marginEnd="24dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/lvlAllAccounts" />
+
+    <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+        android:id="@+id/extendedFAB"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/margin_medium"
+        android:text="@string/text_add_device"
+        android:textColor="@color/white"
+        app:backgroundTint="@color/secondary"
+        app:icon="@drawable/ic_add"
+        app:iconTint="@color/white"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <include
+        android:id="@+id/errorView"
+        layout="@layout/view_error"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/lvlAllAccounts"
+        tools:visibility="gone" />
+
+    <include
+        android:id="@+id/loader"
+        layout="@layout/view_loader"
+        android:layout_width="0dp"
+        android:layout_height="200dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/lvlAllAccounts" />
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

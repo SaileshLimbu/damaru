@@ -1,5 +1,6 @@
 package com.powersoft.common.webservice
 
+import com.powersoft.common.model.AccountEntity
 import com.powersoft.common.model.LoginEntity
 import okhttp3.RequestBody
 import retrofit2.Response
@@ -14,7 +15,7 @@ interface ApiService {
     suspend fun loginApi(@Body payload : RequestBody): Response<LoginEntity>
 
     @GET("accounts")
-    suspend fun getAccountsApi(): Response<Any>
+    suspend fun getAccountsApi(): Response<List<AccountEntity>>
 
     @PUT("accounts/{accountId}")
     suspend fun resetPinTask(@Path("accountId") accountId : String, @Body payload: RequestBody): Response<LoginEntity>

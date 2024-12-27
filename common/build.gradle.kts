@@ -89,4 +89,5 @@ dependencies {
     api(libs.kotlinx.serialization.json)
 
     api(libs.androidx.swiperefreshlayout)
+    api (libs.glide)
 }

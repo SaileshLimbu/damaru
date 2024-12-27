@@ -7,7 +7,7 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class UserEntity(
     @SerialName("accounts")
-    val accounts: List<Account?>?,
+    val accounts: List<AccountEntity?>?,
     @SerialName("created_at")
     val createdAt: String?,
     @SerialName("email")

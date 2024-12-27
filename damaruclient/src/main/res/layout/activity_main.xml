@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:fitsSystemWindows="true"
     android:background="@drawable/background_primary"
     tools:context=".ui.MainActivity">
 
@@ -13,7 +14,7 @@
         android:background="@drawable/drawable_bg_header"
         android:elevation="5dp"
         android:paddingStart="@dimen/padding_large"
-        android:paddingTop="@dimen/padding_with_status_bar_and_header"
+        android:paddingTop="32dp"
         android:paddingEnd="@dimen/padding_large"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
