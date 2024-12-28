@@ -15,7 +15,7 @@ ksp-version = "2.0.21-1.0.27"
 hilt = "2.51.1"
 retrofit = "2.9.0"
 webrtc = "123.0.0"
-websocket = "1.5.3"
+socket = "2.0.1"
 gson = "2.10.1"
 navigationFragmentKtx = "2.8.4"
 navigationUiKtx = "2.8.4"
@@ -40,7 +40,7 @@ hilt-android = { module = "com.google.dagger:hilt-android", version.ref = "hilt"
 hilt-compiler = { module = "com.google.dagger:hilt-compiler", version.ref = "hilt" }
 retrofit = { module = "com.squareup.retrofit2:retrofit", version.ref = "retrofit" }
 webrtc = { module = "com.dafruits:webrtc", version.ref = "webrtc" }
-websocket = { module = "org.java-websocket:Java-WebSocket", version.ref = "websocket" }
+socket = { module = "io.socket:socket.io-client", version.ref = "socket" }
 gson = { module = "com.google.code.gson:gson", version.ref = "gson" }
 androidx-navigation-fragment-ktx = { group = "androidx.navigation", name = "navigation-fragment-ktx", version.ref = "navigationFragmentKtx" }
 androidx-navigation-ui-ktx = { group = "androidx.navigation", name = "navigation-ui-ktx", version.ref = "navigationUiKtx" }

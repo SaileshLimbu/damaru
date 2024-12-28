@@ -59,10 +59,10 @@
 //        webrtcClient.call(target)
 //    }
 //
-//    fun sendCallEndedToOtherPeer(){
+//    fun sEndSessionEndedToOtherPeer(){
 //        socketClient.sendMessageToSocket(
 //            DataModel(
-//                type = DataModelType.EndCall,
+//                type = DataModelType.EndSession,
 //                username = username,
 //                target = target,
 //                null
@@ -111,7 +111,7 @@
 //                //notify ui, conneciton request is being made, so show it
 //                listener?.onConnectionRequestReceived(model.username)
 //            }
-//            DataModelType.EndCall -> {
+//            DataModelType.EndSession -> {
 //                //notify ui call is ended
 //                listener?.onCallEndReceived()
 //            }
