@@ -21,8 +21,8 @@ class MyDevicesAdapter(
         init {
             binding.root.setOnClickListener {
                 val intent = Intent(binding.root.context, DeviceControlActivity::class.java)
-                    .putExtra(DeviceControlActivity.USER_NAME, "theone")
-                    .putExtra(DeviceControlActivity.TARGET_USER_NAME, deviceList[layoutPosition].deviceId)
+                    .putExtra(DeviceControlActivity.CLIENT_ID, "2")
+                    .putExtra(DeviceControlActivity.DEVICE_ID, deviceList[layoutPosition].deviceId)
                 binding.root.context.startActivity(intent)
             }
         }

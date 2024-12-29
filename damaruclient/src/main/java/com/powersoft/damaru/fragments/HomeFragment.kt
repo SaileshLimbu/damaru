@@ -20,13 +20,13 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
     private lateinit var deviceAdapter: MyDevicesAdapter
 
     private val dummyDevices = listOf(
-        Device("test-emulator",  "Samsung Galaxy s20 Ultra", R.drawable.screenshot1, 28),
-        Device("test-emulator",  "Xiomi Redmi Note 8", R.drawable.screenshot2, 28),
-        Device("test-emulator",  "Motorola Xr 250", R.drawable.screenshot3, 15),
-        Device("test-emulator",  "Nokia 2200", R.drawable.screenshot1, 0),
-        Device("test-emulator",  "Motorola GT", R.drawable.screenshot3, 3),
-        Device("test-emulator",  "Samsung Galaxy s22", R.drawable.screenshot1, 5),
-        Device("test-emulator",  "Xiomi Redmi Note 9 Pro", R.drawable.screenshot2, 7)
+        Device("theone001",  "Samsung Galaxy s20 Ultra", R.drawable.screenshot1, 28),
+        Device("theone001",  "Xiomi Redmi Note 8", R.drawable.screenshot2, 28),
+        Device("theone001",  "Motorola Xr 250", R.drawable.screenshot3, 15),
+        Device("theone001",  "Nokia 2200", R.drawable.screenshot1, 0),
+        Device("theone001",  "Motorola GT", R.drawable.screenshot3, 3),
+        Device("theone001",  "Samsung Galaxy s22", R.drawable.screenshot1, 5),
+        Device("theone001",  "Xiomi Redmi Note 9 Pro", R.drawable.screenshot2, 7)
     )
 
     override fun onCreateView(
