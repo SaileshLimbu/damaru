@@ -3,7 +3,6 @@ package com.powersoft.damaru.fragments
 import android.app.AlertDialog
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -11,12 +10,10 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.GridLayoutManager
 import com.google.gson.Gson
-import com.google.gson.GsonBuilder
 import com.powersoft.common.listeners.RecyclerViewItemClickListener
 import com.powersoft.common.model.DeviceEntity
 import com.powersoft.common.model.ResponseWrapper
 import com.powersoft.common.repository.UserRepo
-import com.powersoft.common.utils.Logg
 import com.powersoft.damaru.R
 import com.powersoft.damaru.adapters.MyDevicesAdapter
 import com.powersoft.damaru.databinding.FragmentHomeBinding
@@ -35,17 +32,6 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
 
     @Inject
     lateinit var userRepo: UserRepo
-
-
-//    private val dummyDevices = listOf(
-//        Device("test-emulator", "Samsung Galaxy s20 Ultra", R.drawable.screenshot1, 28),
-//        Device("test-emulator", "Xiomi Redmi Note 8", R.drawable.screenshot2, 28),
-//        Device("test-emulator", "Motorola Xr 250", R.drawable.screenshot3, 15),
-//        Device("test-emulator", "Nokia 2200", R.drawable.screenshot1, 0),
-//        Device("test-emulator", "Motorola GT", R.drawable.screenshot3, 3),
-//        Device("test-emulator", "Samsung Galaxy s22", R.drawable.screenshot1, 5),
-//        Device("test-emulator", "Xiomi Redmi Note 9 Pro", R.drawable.screenshot2, 7)
-//    )
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -74,6 +60,7 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
                         override fun onItemClick(position: Int, data: DeviceEntity) {
                             if (userRepo.seasonEntity.value?.isRootUser == true) {
                                 val dialog: AlertDialog.Builder = AlertDialog.Builder(activity)
+                                dialog.setTitle("Options")
                                 dialog.setItems(arrayOf("Connect to device", "Device Details")) { dialogInterface, itemPos ->
                                     dialogInterface.dismiss()
                                     when (itemPos) {
@@ -85,7 +72,6 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
                                         }
 
                                         else -> {
-                                            Logg.e("FUck you  ------- ${Gson().toJson(data)}")
                                             startActivity(Intent(context, DeviceDetailsActivity::class.java).putExtra("device", Gson().toJson(data)))
                                         }
                                     }
@@ -104,12 +90,16 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
 
                     b.loader.root.visibility = View.GONE
                     b.errorView.root.visibility = View.GONE
+
+                    b.swipeRefresh.isRefreshing = false
                 }
 
                 is ResponseWrapper.Error -> {
                     b.loader.root.visibility = View.GONE
                     b.errorView.tvError.text = it.errorResponse.message?.message
                     b.errorView.root.visibility = View.VISIBLE
+
+                    b.swipeRefresh.isRefreshing = false
                 }
 
                 is ResponseWrapper.Loading -> {

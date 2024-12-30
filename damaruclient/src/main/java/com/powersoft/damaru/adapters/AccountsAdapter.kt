@@ -2,6 +2,7 @@ package com.powersoft.damaru.adapters
 
 import android.annotation.SuppressLint
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.powersoft.common.listeners.RecyclerViewItemClickListener
@@ -26,6 +27,12 @@ class AccountsAdapter(
             binding.apply {
                 tvAccountName.text = account.accountName
                 tvEmail.text = account.pin
+                tvInitials.text = try {
+                    account.accountName?.first()?.uppercase().toString()
+                } catch (e: Exception) {
+                    ""
+                }
+                holderAdminAccount.visibility = if (account.isAdmin == true) View.VISIBLE else View.GONE
             }
         }
     }

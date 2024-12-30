@@ -1,4 +1,4 @@
-package com.powersoft.damaruadmin.ui
+package com.powersoft.damaru.ui
 
 import android.os.Bundle
 import androidx.activity.viewModels
@@ -7,24 +7,24 @@ import com.powersoft.common.base.BaseViewModel
 import com.powersoft.common.model.ErrorResponse
 import com.powersoft.common.ui.helper.AlertHelper
 import com.powersoft.common.ui.helper.ResponseCallback
-import com.powersoft.damaruadmin.R
-import com.powersoft.damaruadmin.databinding.ActivityAddUserBinding
-import com.powersoft.damaruadmin.viewmodels.AddUserViewModel
+import com.powersoft.damaru.R
+import com.powersoft.damaru.databinding.ActivityAddAccountBinding
+import com.powersoft.damaru.viewmodels.AddAccountViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class AddUserActivity : BaseActivity() {
-    private val vm: AddUserViewModel by viewModels()
-    private lateinit var binding: ActivityAddUserBinding
+class AddAccountActivity : BaseActivity() {
+    private val viewModel: AddAccountViewModel by viewModels()
+    private lateinit var binding: ActivityAddAccountBinding
 
     override fun getViewModel(): BaseViewModel {
-        return vm
+        return viewModel
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        binding = ActivityAddUserBinding.inflate(layoutInflater)
+        binding = ActivityAddAccountBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
         binding.btnBack.setOnClickListener {
@@ -32,12 +32,12 @@ class AddUserActivity : BaseActivity() {
         }
 
         binding.btnSubmit.setOnClickListener {
-            vm.addUser(binding.etName.text.toString(), binding.etEmail.text.toString(), binding.etPassword.text.toString(), binding.etConfirmPassword.text.toString(),
+            viewModel.addAccount(binding.etName.text.toString(),
                 object : ResponseCallback {
                     override fun onResponse(any: Any, errorResponse: ErrorResponse?) {
                         if (errorResponse != null) {
                             AlertHelper.showAlertDialog(
-                                this@AddUserActivity, (errorResponse.message?.error ?: getString(R.string.error)),
+                                this@AddAccountActivity, (errorResponse.message?.error ?: getString(R.string.error)),
                                 errorResponse.message?.message ?: ""
                             )
                         } else {

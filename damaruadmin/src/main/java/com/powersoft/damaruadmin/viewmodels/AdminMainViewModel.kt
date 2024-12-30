@@ -29,7 +29,7 @@ class AdminMainViewModel @Inject constructor(
         getALlMyUsers()
     }
 
-    private fun getALlMyUsers() {
+    fun getALlMyUsers() {
         viewModelScope.launch {
             try {
                 val response = apiService.getAllUsers()

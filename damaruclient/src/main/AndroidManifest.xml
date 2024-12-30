@@ -39,6 +39,7 @@
         <activity android:name=".ui.DeviceControlActivity" />
         <activity android:name=".ui.AddUserActivity" />
         <activity android:name="com.powersoft.damaru.ui.DeviceDetailsActivity" />
+        <activity android:name="com.powersoft.damaru.ui.AddAccountActivity" />
 
         <meta-data
             android:name="preloaded_fonts"

@@ -21,10 +21,10 @@ data class Message(
     val statusCode: Int?
 )
 
-fun getUnknownError(msg : String = "UnknownError") : ErrorResponse{
+fun getUnknownError(msg : String = "UnknownError", title : String = "Error") : ErrorResponse{
     return ErrorResponse(
         Message(
-            error = "UnknownError",
+            error = title,
             message = msg,
             statusCode = 500
         ), 500

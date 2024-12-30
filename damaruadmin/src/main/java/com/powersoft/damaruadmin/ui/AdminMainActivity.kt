@@ -3,6 +3,7 @@ package com.powersoft.damaruadmin.ui
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -21,6 +22,13 @@ class AdminMainActivity : BaseActivity() {
     private lateinit var binding: ActivityAdminMainBinding
     private val viewModel: AdminMainViewModel by viewModels()
 
+    private val startActivityForResultLauncher =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            if (result.resultCode == RESULT_OK) {
+                viewModel.getALlMyUsers()
+            }
+        }
+
     override fun getViewModel(): BaseViewModel {
         return viewModel
     }
@@ -32,7 +40,7 @@ class AdminMainActivity : BaseActivity() {
         setContentView(binding.root)
 
         binding.extendedFAB.setOnClickListener {
-            startActivity(Intent(this, AddUserActivity::class.java))
+            startActivityForResultLauncher.launch(Intent(this, AddUserActivity::class.java))
         }
 
         binding.recyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {

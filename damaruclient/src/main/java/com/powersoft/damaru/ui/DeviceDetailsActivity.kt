@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -14,7 +15,6 @@ import com.powersoft.common.listeners.RecyclerViewItemClickListener
 import com.powersoft.common.model.AccountEntity
 import com.powersoft.common.model.DeviceEntity
 import com.powersoft.common.model.ResponseWrapper
-import com.powersoft.common.utils.Logg
 import com.powersoft.damaru.adapters.AccountsAdapter
 import com.powersoft.damaru.databinding.ActivitDeviceDetailsBinding
 import com.powersoft.damaru.viewmodels.DeviceDetailsViewModel
@@ -24,6 +24,12 @@ import dagger.hilt.android.AndroidEntryPoint
 class DeviceDetailsActivity : BaseActivity() {
     private val vm: DeviceDetailsViewModel by viewModels()
     private lateinit var binding: ActivitDeviceDetailsBinding
+    private val startActivityForResultLauncher =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            if (result.resultCode == RESULT_OK) {
+                vm.getAllAccounts()
+            }
+        }
 
     override fun getViewModel(): BaseViewModel {
         return vm
@@ -52,7 +58,7 @@ class DeviceDetailsActivity : BaseActivity() {
         })
 
         binding.extendedFAB.setOnClickListener {
-            startActivity(Intent(applicationContext, AccountUsersActivity::class.java))
+            startActivityForResultLauncher.launch(Intent(applicationContext, AddAccountActivity::class.java))
         }
 
         binding.recyclerView.apply {
@@ -65,8 +71,8 @@ class DeviceDetailsActivity : BaseActivity() {
                     val accountAdapter = AccountsAdapter(it.data, object : RecyclerViewItemClickListener<AccountEntity> {
                         override fun onItemClick(position: Int, data: AccountEntity) {
                         }
-
                     })
+                    binding.tvTotalAccounts.text = it.data.size.toString()
                     binding.recyclerView.adapter = accountAdapter
 
                     binding.loader.root.visibility = View.GONE
@@ -87,12 +93,11 @@ class DeviceDetailsActivity : BaseActivity() {
         }
 
         //set device info
-        Logg.e("FUck you  ------- ${intent.getStringExtra("device")}")
-        val deviceEntity : DeviceEntity = Gson().fromJson(intent.getStringExtra("device"), DeviceEntity::class.java)
+        val deviceEntity: DeviceEntity = Gson().fromJson(intent.getStringExtra("device"), DeviceEntity::class.java)
         deviceEntity.let {
-            Logg.d("FUCKKKKKKKKKKKKKKKKKKKKK >>>>>>>>>>>>> ${it.deviceName}")
-            Logg.d("FUCKKKKKKKKKKKKKKKKKKKKK >>>>>>>>>>>>> ${binding.tvDeviceName}")
-            binding.tvDeviceName.text = "fff ${it.deviceName}"
+            binding.holderDevice.tvRemainingDays.text = "${deviceEntity.expiresAt} days"
+
+            binding.mynametv.text = it.deviceName
             binding.tvCreatedAt.text = "Subscribed on : ${it.createdAt}"
             binding.tvExpiresIn.text = "Expires In : ${it.expiresAt}"
         }

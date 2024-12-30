@@ -3,8 +3,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:fitsSystemWindows="true"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:fitsSystemWindows="true">
 
     <ImageButton
         android:id="@+id/imgBack"
@@ -12,6 +12,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="12dp"
         android:background="?selectableItemBackgroundBorderless"
+        android:contentDescription="@null"
         android:padding="16dp"
         android:src="@drawable/ic_back"
         app:layout_constraintStart_toStartOf="parent"
@@ -21,29 +22,33 @@
         android:id="@+id/holderDevice"
         layout="@layout/item_device"
         android:layout_width="170dp"
-        android:layout_marginStart="10dp"
         android:layout_height="320dp"
+        android:layout_marginStart="10dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/imgBack" />
 
     <TextView
-        android:id="@+id/tvDeviceName"
+        android:id="@+id/mynametv"
         android:layout_width="0dp"
-        app:layout_constraintStart_toEndOf="@+id/holderDevice"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/holderDevice"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:textColor="@color/colorPrimaryDark"
+        android:textSize="18sp"
         android:textStyle="bold"
-        android:textSize="112sp"
-        android:text="fuck"
-        android:layout_height="wrap_content" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/holderDevice"
+        app:layout_constraintTop_toTopOf="@+id/holderDevice"
+        tools:text="Device name" />
 
     <TextView
         android:id="@+id/tvCreatedAt"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
+        android:textColor="@color/black"
+        android:textSize="13sp"
         app:layout_constraintStart_toEndOf="@+id/holderDevice"
-        app:layout_constraintTop_toBottomOf="@+id/tvDeviceName"
+        app:layout_constraintTop_toBottomOf="@+id/mynametv"
         tools:text="Subscribed on : 2024-01-01" />
 
     <TextView
@@ -51,31 +56,49 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
+        android:textColor="@color/black"
+        android:textSize="13sp"
         app:layout_constraintStart_toEndOf="@+id/holderDevice"
         app:layout_constraintTop_toBottomOf="@+id/tvCreatedAt"
         tools:text="Expires In : 28 days" />
 
-    <TextView
-        android:id="@+id/lvlAccounts"
+    <com.google.android.material.card.MaterialCardView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:text="Accounts : "
         app:layout_constraintStart_toEndOf="@+id/holderDevice"
-        app:layout_constraintTop_toBottomOf="@+id/tvExpiresIn" />
+        app:contentPaddingLeft="24dp"
+        app:contentPaddingRight="24dp"
+        android:layout_marginTop="12dp"
+        app:cardCornerRadius="32dp"
+        app:cardBackgroundColor="@color/colorSecondaryVariant"
+        app:layout_constraintTop_toBottomOf="@+id/tvExpiresIn">
 
-    <TextView
-        android:id="@+id/tvTotalAccounts"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="12dp"
-        android:fontFamily="@font/sairacondensed_medium"
-        android:includeFontPadding="false"
-        android:textColor="@color/colorPrimaryVariant"
-        android:textSize="72sp"
-        app:layout_constraintStart_toEndOf="@+id/lvlAccounts"
-        app:layout_constraintTop_toTopOf="@+id/lvlAccounts"
-        tools:text="6" />
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/tvTotalAccounts"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="12dp"
+                android:includeFontPadding="false"
+                android:textColor="@color/white"
+                android:textSize="24sp"
+                android:textStyle="bold"
+                tools:text="6" />
+
+            <TextView
+                android:id="@+id/lvlAccounts"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/white"
+                android:textSize="13sp"
+                android:text="@string/accounts" />
+        </LinearLayout>
+    </com.google.android.material.card.MaterialCardView>
 
     <TextView
         android:id="@+id/lvlAllAccounts"
@@ -83,7 +106,9 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="24dp"
         android:layout_marginTop="8dp"
-        android:text="Accounts"
+        android:text="@string/accounts"
+        android:textStyle="bold"
+        android:textColor="@color/secondary"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/holderDevice" />
 
@@ -91,8 +116,6 @@
         android:id="@+id/recyclerView"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="24dp"
-        android:layout_marginEnd="24dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/lvlAllAccounts" />
@@ -102,7 +125,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_margin="@dimen/margin_medium"
-        android:text="@string/text_add_device"
+        android:text="@string/text_add_account"
         android:textColor="@color/white"
         app:backgroundTint="@color/secondary"
         app:icon="@drawable/ic_add"
@@ -129,6 +152,5 @@
         android:layout_height="200dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/lvlAllAccounts" />
-
 
 </androidx.constraintlayout.widget.ConstraintLayout>

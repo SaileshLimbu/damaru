@@ -13,7 +13,9 @@ import com.powersoft.damaru.adapters.DeviceUserAdapter
 import com.powersoft.damaru.adapters.User
 import com.powersoft.damaru.databinding.ActivityAccountUsersBinding
 import com.powersoft.damaru.viewmodels.AccountUsersViewModel
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class AccountUsersActivity : BaseActivity() {
     private lateinit var b: ActivityAccountUsersBinding
     private val viewModel: AccountUsersViewModel by viewModels()

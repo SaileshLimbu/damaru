@@ -30,4 +30,8 @@
     <string name="delete">Delete</string>
     <string name="lock_icon">Lock Icon</string>
     <string name="error">Error</string>
+    <string name="accounts">Accounts</string>
+    <string name="text_add_account">Add Account</string>
+    <string name="admin">Admin</string>
+    <string name="note">Note</string>
 </resources>

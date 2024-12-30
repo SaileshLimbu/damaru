@@ -2,8 +2,10 @@
     <string name="app_name">damaruadmin</string>
     <string name="add_user">Add User</string>
     <string name="my_system_users">My System Users</string>
-    <string name="name">Name</string>
     <string name="add">Add</string>
     <string name="confirm_password">Confirm Password</string>
     <string name="please_enter_name">Please enter name</string>
+    <string name="please_enter_email">Please enter email</string>
+    <string name="password_dont_match">Password doesn\'t match</string>
+    <string name="error">Error</string>
 </resources>

@@ -4,19 +4,47 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_margin="12dp"
-    app:contentPadding="8dp"
-    app:cardElevation="6dp">
+    android:layout_marginTop="12dp"
+    android:layout_marginBottom="12dp"
+    app:cardElevation="4dp"
+    app:cardCornerRadius="22dp"
+    android:layout_marginStart="22dp"
+    android:layout_marginEnd="22dp"
+    app:contentPadding="12dp">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/holderCircle"
+            android:layout_width="56dp"
+            android:layout_height="56dp"
+            app:cardBackgroundColor="@color/primary"
+            app:cardCornerRadius="20dp"
+            app:cardElevation="0dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <TextView
+                android:id="@+id/tvInitials"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:fontFamily="@font/adlam_display"
+                android:gravity="center"
+                android:textColor="@color/white"
+                android:textSize="24sp"
+                tools:text="A" />
+        </com.google.android.material.card.MaterialCardView>
+
         <TextView
             android:id="@+id/tvAccountName"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:layout_constraintStart_toStartOf="parent"
+            android:layout_marginStart="18dp"
+            android:textStyle="bold"
+            android:textColor="@color/colorSecondaryVariant"
+            app:layout_constraintStart_toEndOf="@+id/holderCircle"
             app:layout_constraintTop_toTopOf="parent"
             tools:text="Account Name" />
 
@@ -24,8 +52,35 @@
             android:id="@+id/tvEmail"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:layout_constraintStart_toStartOf="parent"
+            android:textColor="@color/black"
+            android:layout_marginStart="18dp"
+            app:layout_constraintStart_toEndOf="@+id/holderCircle"
             app:layout_constraintTop_toBottomOf="@+id/tvAccountName"
             tools:text="a@b.com" />
+
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="18dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="12dp"
+            android:id="@+id/holderAdminAccount"
+            android:visibility="gone"
+            tools:visibility="visible"
+            app:cardBackgroundColor="@color/colorError"
+            app:cardCornerRadius="24dp"
+            app:layout_constraintStart_toEndOf="@+id/holderCircle"
+            app:layout_constraintTop_toBottomOf="@+id/tvEmail">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingStart="8dp"
+                android:paddingEnd="8dp"
+                android:textColor="@color/white"
+                android:textSize="10sp"
+                android:text="@string/admin"
+                tools:ignore="SmallSp" />
+        </com.google.android.material.card.MaterialCardView>
     </androidx.constraintlayout.widget.ConstraintLayout>
 </com.google.android.material.card.MaterialCardView>

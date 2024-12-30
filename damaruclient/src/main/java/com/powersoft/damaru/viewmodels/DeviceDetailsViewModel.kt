@@ -28,7 +28,7 @@ class DeviceDetailsViewModel @Inject constructor(
         getAllAccounts()
     }
 
-    private fun getAllAccounts() {
+    fun getAllAccounts() {
         viewModelScope.launch {
             try {
                 _allAccounts.postValue(ResponseWrapper.loading())
