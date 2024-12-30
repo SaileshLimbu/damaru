@@ -6,25 +6,19 @@ import android.app.Service
 import android.content.Intent
 import android.os.Build
 import android.os.IBinder
-import android.util.DisplayMetrics
 import android.util.Log
 import androidx.core.app.NotificationCompat
 import com.google.gson.Gson
 import com.powersoft.common.model.DataModel
 import com.powersoft.common.model.DataModelType
-import com.powersoft.common.model.GestureCommand
 import com.powersoft.common.socket.SocketClient
 import com.powersoft.common.socket.SocketListener
-import com.powersoft.common.utils.AspectRatioUtils
-import com.powersoft.common.webrtc.MyPeerObserver
-import com.powersoft.common.webrtc.WebRTCClient
 import com.powersoft.common.webrtc.WebRTCListener
 import com.powersoft.damaruserver.R
+import com.powersoft.damaruserver.webrtc.WebRTCClient
 import dagger.hilt.android.AndroidEntryPoint
-import org.webrtc.DataChannel
 import org.webrtc.IceCandidate
 import org.webrtc.SessionDescription
-import java.nio.charset.StandardCharsets
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -40,16 +34,13 @@ class ScreenCaptureForegroundService : Service(), SocketListener, WebRTCListener
     lateinit var gson: Gson
 
     private lateinit var notificationManager: NotificationManager
-    private lateinit var targetUser: String
-//    @SuppressLint("HardwareIds")
-//    val user: String = Settings.Secure.getString(this.contentResolver, Settings.Secure.ANDROID_ID)
-    private val user = "test-emulator"
 
-    private lateinit var screen: DisplayMetrics
+    //    @SuppressLint("HardwareIds")
+//    val user: String = Settings.Secure.getString(this.contentResolver, Settings.Secure.ANDROID_ID)
+    private val user = "theone001"
 
     override fun onCreate() {
         super.onCreate()
-        screen = resources.displayMetrics
         notificationManager = getSystemService(NotificationManager::class.java)
         startServiceWithNotification()
     }
@@ -58,57 +49,11 @@ class ScreenCaptureForegroundService : Service(), SocketListener, WebRTCListener
         if (intent != null && ACTION_START_CAPTURE == intent.action) {
             val data = intent.getParcelableExtra<Intent>(EXTRA_RESULT_DATA)
             if (data != null) {
-                socketClient.init(user, this)
-                webRTCClient.init(
-                    webRTCListener = this,
-                    username = user,
-                    intent = data,
-                    observer = object : MyPeerObserver() {
-                        override fun onIceCandidate(cadidate: IceCandidate?) {
-                            super.onIceCandidate(cadidate)
-                            cadidate?.let { webRTCClient.sendIceCandidate(it, targetUser) }
-                        }
-
-                        override fun onDataChannel(dataChannel: DataChannel?) {
-                            super.onDataChannel(dataChannel)
-
-                            dataChannel?.registerObserver(object : DataChannel.Observer {
-                                override fun onBufferedAmountChange(p0: Long) {
-                                }
-
-                                override fun onStateChange() {
-                                    Log.d(TAG, "onStateChange: ${dataChannel.state()}")
-                                    if (dataChannel.state() == DataChannel.State.OPEN){
-                                        DeviceControlService.getInstance()?.refreshScreen()
-                                    }
-                                }
-
-                                override fun onMessage(p0: DataChannel.Buffer?) {
-                                    p0?.let {
-                                        val message = convertBufferToString(p0)
-
-                                        val command = gson.fromJson(message, GestureCommand::class.java)
-                                        val normalizedCommand = AspectRatioUtils.normalizeServerCoordinate(
-                                            screen.widthPixels,
-                                            screen.heightPixels,
-                                            command
-                                        )
-                                        DeviceControlService.getInstance()?.performGesture(normalizedCommand)
-                                    }
-                                }
-
-                            })
-                        }
-                    })
+                socketClient.init(user, this, getString(R.string.token), true)
+                webRTCClient.startScreenCapturing(data)
             }
         }
         return START_STICKY
-    }
-
-    private fun convertBufferToString(buffer: DataChannel.Buffer): String {
-        val bytes = ByteArray(buffer.data.remaining())
-        buffer.data.get(bytes)
-        return String(bytes, StandardCharsets.UTF_8)
     }
 
     override fun onDestroy() {
@@ -133,39 +78,41 @@ class ScreenCaptureForegroundService : Service(), SocketListener, WebRTCListener
         }
     }
 
-    override fun onNewMessageReceived(model: DataModel) {
-        when (model.type) {
-            DataModelType.EndCall -> {
-                Log.d(TAG, "Connected ended by ${model.username}")
+    override fun onNewMessageReceived(type: DataModelType, model: DataModel) {
+        when (type) {
+            DataModelType.Disconnect -> {
+                Log.d(TAG, "Connection ended by ${model.target}")
+                model.username?.let { webRTCClient.disposePeerConnection(it) }
             }
 
             DataModelType.Offer -> {
-                //After receiving offer create and answer and send them
-                Log.d(TAG, "onNewMessageReceived: OFFER received from " + model.username)
-                this.targetUser = model.username
-                webRTCClient.setTargetUser(model.username)
-                webRTCClient.onRemoteSessionReceived(SessionDescription(SessionDescription.Type.OFFER, model.data.toString()))
-                webRTCClient.createAnswer(model.username)
+                model.username?.let {
+                    //After receiving offer create and answer and send them
+                    Log.d(TAG, "onNewMessageReceived: OFFER received from $it")
+                    webRTCClient.createPeerConnection(this, clientId = it)
+                    webRTCClient.setRemoteDescription(it, SessionDescription(SessionDescription.Type.OFFER, model.sdp.toString()))
+                    webRTCClient.createAnswer(clientId = it)
+                }
             }
 
-            DataModelType.IceCandidates -> {
-                val candidate = gson.fromJson(model.data.toString(), IceCandidate::class.java)
-                webRTCClient.addIceCandidate(candidate)
+            DataModelType.IceCandidate -> {
+                val candidate = gson.fromJson(model.iceCandidate.toString(), IceCandidate::class.java)
+                model.username?.let { webRTCClient.addIceCandidate(it, candidate) }
             }
 
             else -> Unit
         }
     }
 
-    override fun onWebSocketConnected() {
+    override fun onSocketConnected() {
     }
 
     override fun onDataChannelConnected() {
 
     }
 
-    override fun onTransferEventToSocket(data: DataModel) {
-        socketClient.sendMessageToSocket(data)
+    override fun onTransferEventToSocket(type: DataModelType, data: DataModel) {
+        socketClient.sendMessageToSocket(type, data)
     }
 
     override fun onChannelMessage(message: String) {

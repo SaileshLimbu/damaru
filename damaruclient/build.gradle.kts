@@ -58,7 +58,6 @@ dependencies {
     ksp(libs.hilt.compiler)
 
     implementation(libs.webrtc)
-    implementation(libs.websocket)
     implementation(libs.gson)
     implementation(libs.security.crypto)
 

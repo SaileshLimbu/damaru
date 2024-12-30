@@ -1,4 +1,5 @@
 <resources>
     <string name="app_name">Damaru Server</string>
     <string name="damaru_desc_remote_control_service">Service for remote control</string>
+    <string name="token">eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjUsImVtYWlsIjoiZW11bGF0b3JBZG1pbkBkYW1hcnUuY29tIiwicm9sZSI6IkVtdWxhdG9yQWRtaW4iLCJpYXQiOjE3MzUzNjUyMjMsImV4cCI6MTczNzk1NzIyM30.g4BI-4ezbEsuWi4BPw5EaJ0rvydb6ypRGJkIX5Y1Wew</string>
 </resources>

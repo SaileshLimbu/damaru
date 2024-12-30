@@ -4,8 +4,8 @@ import android.annotation.SuppressLint
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import com.powersoft.damaru.databinding.ActivityDeviceControlBinding
 import com.google.gson.Gson
 import com.powersoft.common.model.DataModel
 import com.powersoft.common.model.DataModelType
@@ -14,13 +14,15 @@ import com.powersoft.common.model.GestureCommand
 import com.powersoft.common.socket.SocketClient
 import com.powersoft.common.socket.SocketListener
 import com.powersoft.common.utils.AspectRatioUtils
-import com.powersoft.common.utils.GestureDetector
 import com.powersoft.common.webrtc.MyPeerObserver
 import com.powersoft.common.webrtc.WebRTCClient
 import com.powersoft.common.webrtc.WebRTCListener
+import com.powersoft.damaru.databinding.ActivityDeviceControlBinding
+import com.powersoft.damaru.utils.DraggableTouchListener
+import com.powersoft.damaru.utils.GestureDetector
+import com.powersoft.damaru.viewmodels.DeviceControlViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import org.webrtc.DataChannel
-import org.webrtc.EglBase
 import org.webrtc.IceCandidate
 import org.webrtc.MediaStream
 import org.webrtc.RendererCommon
@@ -30,6 +32,8 @@ import javax.inject.Inject
 
 @AndroidEntryPoint
 class DeviceControlActivity : AppCompatActivity(), SocketListener, WebRTCListener {
+
+    private val viewModel by viewModels<DeviceControlViewModel>()
 
     @Inject
     lateinit var socketClient: SocketClient
@@ -42,12 +46,10 @@ class DeviceControlActivity : AppCompatActivity(), SocketListener, WebRTCListene
 
     private lateinit var binding: ActivityDeviceControlBinding
     private lateinit var gestureDetector: GestureDetector
-    private var username: String? = null
-    private var targetUsername: String? = null
 
     companion object {
-        const val USER_NAME = "username"
-        const val TARGET_USER_NAME = "targetUser"
+        const val CLIENT_ID = "username"
+        const val DEVICE_ID = "targetUser"
     }
 
     @SuppressLint("ClickableViewAccessibility")
@@ -57,8 +59,8 @@ class DeviceControlActivity : AppCompatActivity(), SocketListener, WebRTCListene
         binding = ActivityDeviceControlBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        username = intent.getStringExtra(USER_NAME)
-        targetUsername = intent.getStringExtra(TARGET_USER_NAME)
+        intent.getStringExtra(CLIENT_ID)?.let { viewModel.clientId = it }
+        intent.getStringExtra(DEVICE_ID)?.let { viewModel.deviceId = it }
 
         binding.surfaceView.apply {
             init(webrtcClient.getEglBase().eglBaseContext, null)
@@ -69,12 +71,12 @@ class DeviceControlActivity : AppCompatActivity(), SocketListener, WebRTCListene
         init()
         initRemoteControl()
 
-        binding.btnDisconnect.setOnClickListener {
-            binding.surfaceView.release()
-            webrtcClient.closeConnection(targetUsername!!)
-            socketClient.closeSocket()
-            finish()
-        }
+        binding.btnDisconnect.setOnTouchListener(
+            DraggableTouchListener {
+                dispose()
+                finish()
+            }
+        )
     }
 
     @SuppressLint("ClickableViewAccessibility")
@@ -108,17 +110,17 @@ class DeviceControlActivity : AppCompatActivity(), SocketListener, WebRTCListene
         }
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     private fun init() {
-        socketClient.init(username!!, this)
+        socketClient.init(viewModel.clientId, this, "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjMsImFjY291bnROYW1lIjoiQW5kcm9pZCBBZG1pbiIsImVtYWlsIjoiYW5kcm9pZGFkbWluQGRhbWFydS5jb20iLCJyb2xlIjoiQW5kcm9pZFVzZXIiLCJhY2NvdW50SWQiOjIsInN1YlJvbGUiOiJBbmRyb2lkQWRtaW4iLCJpYXQiOjE3MzUzNjExNDUsImV4cCI6MTc2Njg5NzE0NX0.v6tA0y8RMRPS6CkZ6xCE5620NoRu-jNQUS0vaT-t_Xg", false)
 
         webrtcClient.init(
             webRTCListener = this,
-            username = username!!,
+            username = viewModel.clientId,
             observer = object : MyPeerObserver() {
                 override fun onIceCandidate(cadidate: IceCandidate?) {
                     super.onIceCandidate(cadidate)
-                    cadidate?.let { webrtcClient.sendIceCandidate(it, targetUsername!!) }
-                    Log.d("damaru", "onIceCandidate: ${cadidate.toString()}")
+                    cadidate?.let { webrtcClient.sendIceCandidate(it, viewModel.deviceId) }
                 }
 
                 override fun onAddStream(stream: MediaStream?) {
@@ -158,15 +160,14 @@ class DeviceControlActivity : AppCompatActivity(), SocketListener, WebRTCListene
     }
 
 
-
-    override fun onNewMessageReceived(model: DataModel) {
-        when (model.type) {
+    override fun onNewMessageReceived(type: DataModelType, model: DataModel) {
+        when (type) {
             DataModelType.Answer -> {
-                webrtcClient.onRemoteSessionReceived(SessionDescription(SessionDescription.Type.ANSWER, model.data.toString()))
+                webrtcClient.onRemoteSessionReceived(SessionDescription(SessionDescription.Type.ANSWER, model.sdp.toString()))
             }
 
-            DataModelType.IceCandidates -> {
-                val candidate = gson.fromJson(model.data.toString(), IceCandidate::class.java)
+            DataModelType.IceCandidate -> {
+                val candidate = gson.fromJson(model.iceCandidate.toString(), IceCandidate::class.java)
                 webrtcClient.addIceCandidate(candidate)
             }
 
@@ -174,22 +175,34 @@ class DeviceControlActivity : AppCompatActivity(), SocketListener, WebRTCListene
         }
     }
 
-    override fun onWebSocketConnected() {
-        webrtcClient.sendOffer(targetUsername!!)
+    override fun onSocketConnected() {
+        webrtcClient.sendOffer(viewModel.deviceId)
     }
 
     override fun onDataChannelConnected() {
-        runOnUiThread{
+        runOnUiThread {
             binding.viewConnecting.visibility = View.GONE
             binding.viewRemoteDevice.visibility = View.VISIBLE
         }
     }
 
-    override fun onTransferEventToSocket(data: DataModel) {
-        socketClient.sendMessageToSocket(data)
+    override fun onTransferEventToSocket(type: DataModelType, data: DataModel) {
+        socketClient.sendMessageToSocket(type, data)
     }
 
     override fun onChannelMessage(message: String) {
         // 2 way comm
+    }
+
+    private fun dispose() {
+        webrtcClient.disposeClient()
+        binding.surfaceView.release()
+        webrtcClient.closeConnection(viewModel.clientId, viewModel.deviceId)
+        socketClient.closeSocket()
+    }
+
+    override fun onDestroy() {
+        dispose()
+        super.onDestroy()
     }
 }

@@ -53,9 +53,11 @@ dependencies {
     ksp(libs.hilt.compiler)
 
     implementation(libs.webrtc)
-    implementation(libs.websocket)
     implementation(libs.gson)
     implementation(libs.security.crypto)
+    implementation(libs.socket){
+        exclude("org.json", "json")
+    }
     api(libs.retrofit)
     api(libs.converter.gson)
     api(libs.logging.interceptor)

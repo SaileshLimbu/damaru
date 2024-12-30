@@ -9,8 +9,9 @@ import org.webrtc.PeerConnectionFactory
 import org.webrtc.VideoSource
 import org.webrtc.VideoTrack
 import java.util.UUID
+import javax.inject.Inject
 
-class WebRTCManager(context: Context) {
+class WebRTCManager @Inject constructor(context: Context) {
     private val eglBase: EglBase = EglBase.create()
 
     private val peerConnectionFactory: PeerConnectionFactory
@@ -37,7 +38,7 @@ class WebRTCManager(context: Context) {
     fun getMyPeerConnectionFactory() = peerConnectionFactory
 
     fun createVideoSource(): VideoSource {
-        return peerConnectionFactory.createVideoSource(false)
+        return peerConnectionFactory.createVideoSource(true)
     }
 
     fun createPeerConnection(

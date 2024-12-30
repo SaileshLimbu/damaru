@@ -3,6 +3,7 @@ package com.powersoft.common.di
 import android.content.Context
 import com.google.gson.Gson
 import com.powersoft.common.utils.PrefsHelper
+import com.powersoft.common.webrtc.WebRTCManager
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

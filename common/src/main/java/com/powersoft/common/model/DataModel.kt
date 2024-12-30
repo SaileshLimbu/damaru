@@ -1,12 +1,16 @@
 package com.powersoft.common.model
 
+import com.google.gson.annotations.SerializedName
+
 enum class DataModelType{
-    SignIn, StartStreaming,EndCall, Offer, Answer, IceCandidates
+    StartStreaming, Disconnect, Offer, Answer, IceCandidate
 }
 
 data class DataModel(
-    val type: DataModelType?=null,
-    val username:String,
-    val target:String?=null,
-    val data:Any?=null
+    @SerializedName("clientId")
+    val username: String? = null,
+    @SerializedName("deviceId")
+    val target: String? = null,
+    val sdp: String? = null,
+    val iceCandidate: String? = null
 )
