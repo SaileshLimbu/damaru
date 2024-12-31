@@ -8,10 +8,10 @@ import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.powersoft.common.databinding.ItemDeviceBinding
 import com.powersoft.common.listeners.RecyclerViewItemClickListener
 import com.powersoft.common.model.DeviceEntity
 import com.powersoft.damaru.R
-import com.powersoft.damaru.databinding.ItemDeviceBinding
 
 class MyDevicesAdapter(
     private val deviceList: List<DeviceEntity>,
