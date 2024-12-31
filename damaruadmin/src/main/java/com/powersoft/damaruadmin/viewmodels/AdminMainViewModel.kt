@@ -9,6 +9,7 @@ import com.powersoft.common.model.ErrorResponse
 import com.powersoft.common.model.ResponseWrapper
 import com.powersoft.common.model.UserEntity
 import com.powersoft.common.model.getUnknownError
+import com.powersoft.common.utils.PrefsHelper
 import com.powersoft.damaruadmin.webservices.ApiServiceImpl
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
@@ -17,7 +18,8 @@ import javax.inject.Inject
 @HiltViewModel
 class AdminMainViewModel @Inject constructor(
     private val apiService: ApiServiceImpl,
-    private val gson: Gson
+    private val gson: Gson,
+    private val prefsHelper: PrefsHelper
 ) : BaseViewModel() {
 
     private val _allUsersList = MutableLiveData<ResponseWrapper<List<UserEntity>>>()
@@ -27,6 +29,10 @@ class AdminMainViewModel @Inject constructor(
 
     init {
         getALlMyUsers()
+    }
+
+    fun logout(){
+        prefsHelper.clear()
     }
 
     fun getALlMyUsers() {

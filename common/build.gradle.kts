@@ -13,7 +13,6 @@ android {
 
     defaultConfig {
         minSdk = 24
-        targetSdk = 35
         ndkVersion = "28.0.12674087"
 
         multiDexEnabled = true
@@ -80,7 +79,7 @@ dependencies {
     ksp(libs.hilt.compiler)
 
     api(libs.webrtc)
-    api(libs.websocket)
+    api(libs.socket)
     api(libs.gson)
     api(libs.security.crypto)
 

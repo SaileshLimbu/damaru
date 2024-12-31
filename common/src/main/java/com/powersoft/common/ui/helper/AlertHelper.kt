@@ -2,6 +2,8 @@ package com.powersoft.common.ui.helper
 
 import android.app.AlertDialog
 import android.content.Context
+import android.graphics.Color
+import android.provider.CalendarContract.Colors
 import android.view.Gravity
 import android.widget.Toast
 import com.google.android.material.snackbar.Snackbar
@@ -37,6 +39,8 @@ object AlertHelper {
         val dialog = builder.create()
         dialog.setCancelable(false)
         dialog.show()
+        dialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(Color.WHITE)
+        dialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(Color.WHITE)
     }
 
     fun showSnackbar(view: View, message: String, length: Int = LENGTH_SHORT) {

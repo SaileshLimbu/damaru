@@ -14,7 +14,11 @@ import com.powersoft.common.base.BaseViewModel
 import com.powersoft.common.listeners.RecyclerViewItemClickListener
 import com.powersoft.common.model.AccountEntity
 import com.powersoft.common.model.DeviceEntity
+import com.powersoft.common.model.ErrorResponse
 import com.powersoft.common.model.ResponseWrapper
+import com.powersoft.common.ui.helper.AlertHelper
+import com.powersoft.common.ui.helper.ResponseCallback
+import com.powersoft.damaru.R
 import com.powersoft.damaru.adapters.AccountsAdapter
 import com.powersoft.damaru.databinding.ActivitDeviceDetailsBinding
 import com.powersoft.damaru.viewmodels.DeviceDetailsViewModel
@@ -70,6 +74,23 @@ class DeviceDetailsActivity : BaseActivity() {
                 is ResponseWrapper.Success -> {
                     val accountAdapter = AccountsAdapter(it.data, object : RecyclerViewItemClickListener<AccountEntity> {
                         override fun onItemClick(position: Int, data: AccountEntity) {
+
+                            AlertHelper.showAlertDialog(
+                                this@DeviceDetailsActivity, title = getString(R.string.delete_account),
+                                message = getString(R.string.are_you_sure_you_want_to_delete_this_account),
+                                positiveButtonText = getString(R.string.delete),
+                                negativeButtonText = getString(R.string.cancle),
+                                onPositiveButtonClick = {
+                                    vm.deleteAccount(data.id!!, object : ResponseCallback {
+                                        override fun onResponse(any: Any, errorResponse: ErrorResponse?) {
+                                            AlertHelper.showAlertDialog(
+                                                this@DeviceDetailsActivity, title = errorResponse?.message?.error ?: getString(R.string.error),
+                                                message = errorResponse?.message?.message ?: getString(R.string.error),
+                                            )
+                                        }
+                                    })
+                                }
+                            )
                         }
                     })
                     binding.tvTotalAccounts.text = it.data.size.toString()

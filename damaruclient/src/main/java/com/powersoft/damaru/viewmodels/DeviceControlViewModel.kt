@@ -1,6 +1,6 @@
 package com.powersoft.damaru.viewmodels
 
-import com.powersoft.damaru.base.BaseViewModel
+import com.powersoft.common.base.BaseViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 

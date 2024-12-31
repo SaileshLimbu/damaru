@@ -4,12 +4,12 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginTop="12dp"
-    android:layout_marginBottom="12dp"
-    app:cardElevation="4dp"
-    app:cardCornerRadius="22dp"
     android:layout_marginStart="22dp"
+    android:layout_marginTop="12dp"
     android:layout_marginEnd="22dp"
+    android:layout_marginBottom="12dp"
+    app:cardCornerRadius="22dp"
+    app:cardElevation="4dp"
     app:contentPadding="12dp">
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -42,8 +42,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="18dp"
-            android:textStyle="bold"
             android:textColor="@color/colorSecondaryVariant"
+            android:textStyle="bold"
             app:layout_constraintStart_toEndOf="@+id/holderCircle"
             app:layout_constraintTop_toTopOf="parent"
             tools:text="Account Name" />
@@ -52,35 +52,49 @@
             android:id="@+id/tvEmail"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textColor="@color/black"
             android:layout_marginStart="18dp"
+            android:textColor="@color/black"
             app:layout_constraintStart_toEndOf="@+id/holderCircle"
             app:layout_constraintTop_toBottomOf="@+id/tvAccountName"
             tools:text="a@b.com" />
 
         <com.google.android.material.card.MaterialCardView
+            android:id="@+id/holderAdminAccount"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="18dp"
             android:layout_marginTop="8dp"
             android:layout_marginEnd="12dp"
-            android:id="@+id/holderAdminAccount"
             android:visibility="gone"
-            tools:visibility="visible"
-            app:cardBackgroundColor="@color/colorError"
+            app:cardBackgroundColor="@color/colorPrimaryVariant"
             app:cardCornerRadius="24dp"
             app:layout_constraintStart_toEndOf="@+id/holderCircle"
-            app:layout_constraintTop_toBottomOf="@+id/tvEmail">
+            app:layout_constraintTop_toBottomOf="@+id/tvEmail"
+            tools:visibility="visible">
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:paddingStart="8dp"
                 android:paddingEnd="8dp"
+                android:text="@string/admin"
                 android:textColor="@color/white"
                 android:textSize="10sp"
-                android:text="@string/admin"
                 tools:ignore="SmallSp" />
         </com.google.android.material.card.MaterialCardView>
+
+        <ImageButton
+            android:id="@+id/imgDelete"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:backgroundTint="@android:color/transparent"
+            android:contentDescription="@null"
+            android:src="@drawable/ic_delete"
+            android:padding="12dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:tint="@color/colorError" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </com.google.android.material.card.MaterialCardView>

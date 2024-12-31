@@ -66,8 +66,8 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
                                     when (itemPos) {
                                         0 -> {
                                             val intent = Intent(context, DeviceControlActivity::class.java)
-                                                .putExtra(DeviceControlActivity.USER_NAME, "theone")
-                                                .putExtra(DeviceControlActivity.TARGET_USER_NAME, data.deviceId)
+//                                                .putExtra(DeviceControlActivity.USER_NAME, "theone")
+//                                                .putExtra(DeviceControlActivity.TARGET_USER_NAME, data.deviceId)
                                             startActivity(intent)
                                         }
 
@@ -79,8 +79,8 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
                                 dialog.show()
                             } else {
                                 val intent = Intent(context, DeviceControlActivity::class.java)
-                                    .putExtra(DeviceControlActivity.USER_NAME, "theone")
-                                    .putExtra(DeviceControlActivity.TARGET_USER_NAME, data.deviceId)
+//                                    .putExtra(DeviceControlActivity.USER_NAME, "theone")
+//                                    .putExtra(DeviceControlActivity.TARGET_USER_NAME, data.deviceId)
                                 startActivity(intent)
                             }
                         }

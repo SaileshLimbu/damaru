@@ -33,6 +33,9 @@ class AccountsAdapter(
                     ""
                 }
                 holderAdminAccount.visibility = if (account.isAdmin == true) View.VISIBLE else View.GONE
+                imgDelete.setOnClickListener {
+                    clickListener.onItemClick(layoutPosition, account)
+                }
             }
         }
     }

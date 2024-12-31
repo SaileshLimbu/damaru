@@ -42,33 +42,7 @@ android {
 }
 
 dependencies {
-
-    implementation(libs.androidx.core.ktx)
-    implementation(libs.androidx.appcompat)
-    implementation(libs.material)
-    implementation(libs.androidx.activity)
-    implementation(libs.androidx.constraintlayout)
-    implementation(libs.androidx.navigation.fragment.ktx)
-    implementation(libs.androidx.navigation.ui.ktx)
-
-    implementation(libs.lifecycle.viewmodel)
-    implementation(libs.lifecycle.livedata)
-    implementation(libs.activity.ktx)
-    implementation(libs.fragment.ktx)
-
     implementation(libs.hilt.android)
     ksp(libs.hilt.compiler)
-
-    implementation(libs.webrtc)
-    implementation(libs.websocket)
-    implementation(libs.gson)
-    implementation(libs.security.crypto)
-
-    implementation(libs.coroutine.core)
-    implementation(libs.coroutine.android)
-
-    implementation(libs.lottie)
-    implementation(libs.kotlinx.serialization.json)
-
     implementation(project(":common"))
 }

@@ -20,6 +20,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="32dp"
             android:background="?selectableItemBackground"
+            android:contentDescription="@null"
             android:padding="16dp"
             android:src="@drawable/ic_back" />
 
@@ -80,7 +81,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="24dp"
             android:layout_marginEnd="24dp"
-            android:text="User can login with the same email and password of main account, just pin will be different for each account created. You can get auto genetated pin after account creation which can be chaned on first login."
+            android:text="@string/add_account_note"
             android:textColor="@color/secondary"
             android:textStyle="bold" />
 
@@ -95,6 +96,7 @@
             android:paddingStart="64dp"
             android:paddingEnd="64dp"
             android:text="@string/text_add_account"
+            app:iconTint="@color/white"
             android:textColor="@color/white"
             android:textStyle="bold"
             app:cornerRadius="8dp"

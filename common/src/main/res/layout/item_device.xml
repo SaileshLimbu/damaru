@@ -78,9 +78,6 @@
                 android:textSize="@dimen/text_size_large"
                 android:visibility="gone"
                 tools:visibility="visible" />
-
         </RelativeLayout>
-
     </androidx.cardview.widget.CardView>
-
 </RelativeLayout>

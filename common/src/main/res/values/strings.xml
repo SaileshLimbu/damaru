@@ -27,4 +27,11 @@
     <string name="name">Name</string>
     <string name="error">Error</string>
 
+    <string name="text_expired">Expired</string>
+    <string name="text_device_name">Samsung s20</string>
+    <string name="text_remaining_days">28 days</string>
+    <string name="accounts">Accounts</string>
+    <string name="text_add_account">Add Account</string>
+
+
 </resources>

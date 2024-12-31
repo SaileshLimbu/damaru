@@ -1,23 +1,24 @@
 package com.powersoft.common.model
 
 
+import com.google.gson.annotations.SerializedName
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
 data class UserEntity(
-    @SerialName("accounts")
+    @SerializedName("accounts")
     val accounts: List<AccountEntity?>?,
-    @SerialName("created_at")
+    @SerializedName("created_at")
     val createdAt: String?,
-    @SerialName("email")
+    @SerializedName("email")
     val email: String?,
-    @SerialName("id")
+    @SerializedName("id")
     val id: Int?,
-    @SerialName("name")
+    @SerializedName("name")
     val name: String?,
-    @SerialName("password")
+    @SerializedName("password")
     val password: String?,
-    @SerialName("updated_at")
+    @SerializedName("updated_at")
     val updatedAt: String?
 )

@@ -14,12 +14,12 @@ import com.powersoft.common.model.GestureCommand
 import com.powersoft.common.socket.SocketClient
 import com.powersoft.common.socket.SocketListener
 import com.powersoft.common.utils.AspectRatioUtils
+import com.powersoft.common.utils.GestureDetector
 import com.powersoft.common.webrtc.MyPeerObserver
 import com.powersoft.common.webrtc.WebRTCClient
 import com.powersoft.common.webrtc.WebRTCListener
 import com.powersoft.damaru.databinding.ActivityDeviceControlBinding
 import com.powersoft.damaru.utils.DraggableTouchListener
-import com.powersoft.damaru.utils.GestureDetector
 import com.powersoft.damaru.viewmodels.DeviceControlViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import org.webrtc.DataChannel

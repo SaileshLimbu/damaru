@@ -1,8 +1,5 @@
 <resources>
     <string name="app_name">Damaru</string>
-    <string name="text_expired">Expired</string>
-    <string name="text_device_name">Samsung s20</string>
-    <string name="text_remaining_days">28 days</string>
     <string name="text_nav_home">Home</string>
     <string name="text_nav_more">More</string>
     <string name="text_add_device">Add Device</string>
@@ -30,8 +27,10 @@
     <string name="delete">Delete</string>
     <string name="lock_icon">Lock Icon</string>
     <string name="error">Error</string>
-    <string name="accounts">Accounts</string>
-    <string name="text_add_account">Add Account</string>
     <string name="admin">Admin</string>
     <string name="note">Note</string>
+    <string name="add_account_note">User can login with the same email and password of main account, just pin will be different for each account created. You can get auto genetated pin after account creation which can be chaned on first login.</string>
+    <string name="delete_account">Delete Account ??</string>
+    <string name="are_you_sure_you_want_to_delete_this_account">Are you sure you want to delete this account?</string>
+    <string name="cancle">Cancel</string>
 </resources>

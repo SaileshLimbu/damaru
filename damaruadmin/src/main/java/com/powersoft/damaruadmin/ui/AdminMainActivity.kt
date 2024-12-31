@@ -22,7 +22,14 @@ class AdminMainActivity : BaseActivity() {
     private lateinit var binding: ActivityAdminMainBinding
     private val viewModel: AdminMainViewModel by viewModels()
 
-    private val startActivityForResultLauncher =
+    private val addUserForResultLauncher =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            if (result.resultCode == RESULT_OK) {
+                viewModel.getALlMyUsers()
+            }
+        }
+
+    private val userDetailResultLauncher =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
             if (result.resultCode == RESULT_OK) {
                 viewModel.getALlMyUsers()
@@ -39,8 +46,16 @@ class AdminMainActivity : BaseActivity() {
         binding = ActivityAdminMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        binding.imgLogout.setOnClickListener {
+            viewModel.logout()
+            startActivity(
+                Intent(this, LoginActivityImpl::class.java)
+                    .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_CLEAR_TASK)
+            )
+        }
+
         binding.extendedFAB.setOnClickListener {
-            startActivityForResultLauncher.launch(Intent(this, AddUserActivity::class.java))
+            addUserForResultLauncher.launch(Intent(this, AddUserActivity::class.java))
         }
 
         binding.recyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
@@ -62,6 +77,7 @@ class AdminMainActivity : BaseActivity() {
                     binding.recyclerView.adapter = UserAdapter(it.data,
                         object : RecyclerViewItemClickListener<UserEntity> {
                             override fun onItemClick(position: Int, data: UserEntity) {
+//                                userDetailResultLauncher.launch(Intent(this@AdminMainActivity, UserDetailActivity::class.java))
                             }
                         })
                     binding.loader.root.visibility = View.GONE
@@ -81,6 +97,4 @@ class AdminMainActivity : BaseActivity() {
             }
         }
     }
-
-
 }
