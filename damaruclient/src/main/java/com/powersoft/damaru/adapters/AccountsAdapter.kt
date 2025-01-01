@@ -10,21 +10,20 @@ import com.powersoft.common.model.AccountEntity
 import com.powersoft.damaru.databinding.ItemAccountBinding
 
 class AccountsAdapter(
+    private val isRootUser: Boolean,
     private val deviceList: List<AccountEntity>,
-    private val clickListener: RecyclerViewItemClickListener<AccountEntity>
+    private val clickListener: RecyclerViewItemClickListener<AccountEntity>,
 ) : RecyclerView.Adapter<AccountsAdapter.ViewHolder>() {
 
     inner class ViewHolder(private val binding: ItemAccountBinding) :
         RecyclerView.ViewHolder(binding.root) {
-        init {
-            binding.root.setOnClickListener {
-                clickListener.onItemClick(layoutPosition, deviceList[layoutPosition])
-            }
-        }
 
         @SuppressLint("SetTextI18n")
         fun bind(account: AccountEntity) {
             binding.apply {
+                binding.root.setOnClickListener {
+                    clickListener.onItemClick(it.id, layoutPosition, account)
+                }
                 tvAccountName.text = account.accountName
                 tvEmail.text = account.pin
                 tvInitials.text = try {
@@ -34,7 +33,12 @@ class AccountsAdapter(
                 }
                 holderAdminAccount.visibility = if (account.isAdmin == true) View.VISIBLE else View.GONE
                 imgDelete.setOnClickListener {
-                    clickListener.onItemClick(layoutPosition, account)
+                    clickListener.onItemClick(it.id, layoutPosition, account)
+                }
+                if (isRootUser && account.isAdmin == false) {
+                    imgDelete.visibility = View.VISIBLE
+                } else {
+                    imgDelete.visibility = View.GONE
                 }
             }
         }

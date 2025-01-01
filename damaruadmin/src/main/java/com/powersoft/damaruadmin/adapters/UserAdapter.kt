@@ -18,7 +18,7 @@ class UserAdapter(
         RecyclerView.ViewHolder(binding.root) {
         init {
             binding.root.setOnClickListener {
-                listener.onItemClick(layoutPosition, deviceList[layoutPosition])
+                listener.onItemClick(it.id, layoutPosition, deviceList[layoutPosition])
             }
         }
 

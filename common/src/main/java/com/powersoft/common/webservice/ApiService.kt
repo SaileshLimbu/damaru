@@ -5,6 +5,7 @@ import com.powersoft.common.model.LoginEntity
 import okhttp3.RequestBody
 import retrofit2.Response
 import retrofit2.http.Body
+import retrofit2.http.DELETE
 import retrofit2.http.GET
 import retrofit2.http.POST
 import retrofit2.http.PUT
@@ -19,4 +20,7 @@ interface ApiService {
 
     @PUT("accounts/{accountId}")
     suspend fun resetPinTask(@Path("accountId") accountId : String, @Body payload: RequestBody): Response<LoginEntity>
+
+    @DELETE("accounts/{id}")
+    suspend fun deleteAccount(@Path("id") id : String): Response<Any>
 }

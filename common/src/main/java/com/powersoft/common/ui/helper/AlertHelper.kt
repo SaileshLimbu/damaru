@@ -39,8 +39,6 @@ object AlertHelper {
         val dialog = builder.create()
         dialog.setCancelable(false)
         dialog.show()
-        dialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(Color.WHITE)
-        dialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(Color.WHITE)
     }
 
     fun showSnackbar(view: View, message: String, length: Int = LENGTH_SHORT) {

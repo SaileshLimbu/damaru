@@ -91,6 +91,8 @@
             android:backgroundTint="@android:color/transparent"
             android:contentDescription="@null"
             android:src="@drawable/ic_delete"
+            android:visibility="gone"
+            tools:visibility="visible"
             android:padding="12dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"

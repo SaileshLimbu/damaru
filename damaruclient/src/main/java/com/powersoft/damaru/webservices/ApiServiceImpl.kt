@@ -19,7 +19,4 @@ interface ApiServiceImpl : ApiService {
     @POST("accounts")
     suspend fun addAccount(@Body requestBody: RequestBody): Response<Any>
 
-    @DELETE("accounts/{id}")
-    suspend fun deleteAccount(@Path("id") id : String): Response<Any>
-
 }

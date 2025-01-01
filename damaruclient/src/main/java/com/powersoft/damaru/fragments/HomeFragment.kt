@@ -57,7 +57,7 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
             when (it) {
                 is ResponseWrapper.Success -> {
                     deviceAdapter = MyDevicesAdapter(it.data, object : RecyclerViewItemClickListener<DeviceEntity> {
-                        override fun onItemClick(position: Int, data: DeviceEntity) {
+                        override fun onItemClick(viewId : Int, position: Int, data: DeviceEntity) {
                             if (userRepo.seasonEntity.value?.isRootUser == true) {
                                 val dialog: AlertDialog.Builder = AlertDialog.Builder(activity)
                                 dialog.setTitle("Options")

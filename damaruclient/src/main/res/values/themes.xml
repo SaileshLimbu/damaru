@@ -1,6 +1,5 @@
 <resources>
-<!--    <style name="Theme.ProjectZ" parent="Theme.MaterialComponents.DayNight.NoActionBar">-->
-    <style name="Theme.ProjectZ" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+    <style name="Theme.ProjectZ" parent="Theme.MaterialComponents.Light.NoActionBar">
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorPrimaryVariant">@color/colorPrimaryVariant</item>
@@ -23,9 +22,5 @@
         <item name="android:windowTranslucentStatus">true</item>
         <item name="android:windowLightStatusBar">true</item>
     </style>
-  <!-- Base application theme. -->
-    <style name="Base.Theme.ProjectZ" parent="Theme.Material3.DayNight.NoActionBar">
-        <!-- Customize your light theme here. -->
-        <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
-    </style>
+
 </resources>

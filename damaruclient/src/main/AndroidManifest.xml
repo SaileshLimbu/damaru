@@ -40,6 +40,8 @@
         <activity android:name=".ui.AddUserActivity" />
         <activity android:name="com.powersoft.damaru.ui.DeviceDetailsActivity" />
         <activity android:name="com.powersoft.damaru.ui.AddAccountActivity" />
+        <activity android:name="com.powersoft.damaru.ui.AccountDetailActivity" />
+        <activity android:name="com.powersoft.damaru.ui.ChangePinActivity" />
 
         <meta-data
             android:name="preloaded_fonts"

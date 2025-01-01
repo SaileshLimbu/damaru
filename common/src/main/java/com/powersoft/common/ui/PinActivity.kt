@@ -1,6 +1,7 @@
 package com.powersoft.common.ui
 
 import android.os.Bundle
+import android.view.View
 import androidx.activity.viewModels
 import com.powersoft.common.R
 import com.powersoft.common.base.BaseActivity
@@ -17,12 +18,13 @@ abstract class PinActivity : BaseActivity() {
     private val viewModel: PinViewModel by viewModels()
     private lateinit var binding: ActivityPinBinding
     private val enteredPin = StringBuilder()
-    var resetPin = false
     private var pinOnce = ""
 
     abstract fun onPinVerified()
     abstract fun onPinResetResponse(any: Any, errorResponse: ErrorResponse?)
     abstract fun onLogout(any: Any, errorResponse: ErrorResponse?)
+    abstract fun getAccountId(): Int?
+    abstract fun isChangePin(): Boolean
 
     override fun getViewModel(): BaseViewModel {
         return viewModel
@@ -36,17 +38,16 @@ abstract class PinActivity : BaseActivity() {
 
         setupKeypad()
 
-        resetPin = intent.getBooleanExtra("resetPin", false)
-        if (resetPin) {
-            binding.pinPrompt.text = getString(R.string.enter_your_new_pin)
-        }
-
         binding.btnLogout.setOnClickListener {
             viewModel.logout(object : ResponseCallback {
                 override fun onResponse(any: Any, errorResponse: ErrorResponse?) {
                     onLogout(any, errorResponse)
                 }
             })
+        }
+
+        if (isChangePin()) {
+            binding.btnLogout.visibility = View.GONE
         }
     }
 
@@ -68,12 +69,12 @@ abstract class PinActivity : BaseActivity() {
     }
 
     private fun addDigit(digit: Int) {
-        if (enteredPin.length < 4) {
+        if (enteredPin.length < 5) {
             enteredPin.append(digit)
             updatePinDots()
         }
 
-        if (enteredPin.length == 4) {
+        if (enteredPin.length == 5) {
             verifyPin()
         }
     }
@@ -87,7 +88,7 @@ abstract class PinActivity : BaseActivity() {
 
     private fun updatePinDots() {
         val pinDots = listOf(
-            binding.input1, binding.input2, binding.input3, binding.input4
+            binding.input1, binding.input2, binding.input3, binding.input4, binding.input5
         )
 
         pinDots.forEachIndexed { index, dot ->
@@ -100,32 +101,29 @@ abstract class PinActivity : BaseActivity() {
     }
 
     private fun verifyPin() {
-        if (resetPin) {
-            if (pinOnce.isEmpty()) {
-                pinOnce = enteredPin.toString()
+        if (pinOnce.isEmpty()) {
+            pinOnce = enteredPin.toString()
+            enteredPin.clear()
+            binding.pinPrompt.text = getString(R.string.re_enter_your_pin)
+            updatePinDots()
+        } else {
+            if (pinOnce == enteredPin.toString()) {
+                viewModel.resetPin(getAccountId(), enteredPin.toString(), object : ResponseCallback {
+                    override fun onResponse(any: Any, errorResponse: ErrorResponse?) {
+                        onPinResetResponse(any, errorResponse)
+                    }
+                })
+                pinOnce = ""
                 enteredPin.clear()
-                binding.pinPrompt.text = getString(R.string.re_enter_your_pin)
                 updatePinDots()
             } else {
-                if (pinOnce == enteredPin.toString()) {
-                    viewModel.resetPin(enteredPin.toString(), object : ResponseCallback {
-                        override fun onResponse(any: Any, errorResponse: ErrorResponse?) {
-                            onPinResetResponse(any, errorResponse)
-                        }
-                    })
-                    pinOnce = ""
-                    enteredPin.clear()
-                    updatePinDots()
-                } else {
-                    pinOnce = ""
-                    enteredPin.clear()
-                    binding.pinPrompt.text = getString(R.string.enter_your_new_pin)
-                    updatePinDots()
-                    AlertHelper.showSnackbar(binding.root, getString(R.string.pin_does_not_matches))
-                }
+                pinOnce = ""
+                enteredPin.clear()
+                binding.pinPrompt.text = getString(R.string.enter_your_new_pin)
+                updatePinDots()
+                AlertHelper.showSnackbar(binding.root, getString(R.string.pin_does_not_matches))
             }
-            return
         }
-        //do something
+        return
     }
 }

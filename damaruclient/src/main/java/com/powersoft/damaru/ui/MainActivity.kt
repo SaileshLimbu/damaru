@@ -6,11 +6,12 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import androidx.viewpager2.widget.ViewPager2
+import com.powersoft.common.ui.helper.AlertHelper
 import com.powersoft.common.utils.PrefsHelper
 import com.powersoft.damaru.R
 import com.powersoft.damaru.databinding.ActivityMainBinding
+import com.powersoft.damaru.fragments.AccountsFragment
 import com.powersoft.damaru.fragments.HomeFragment
-import com.powersoft.damaru.fragments.MoreFragment
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
@@ -39,7 +40,7 @@ class MainActivity : AppCompatActivity() {
                     true
                 }
 
-                R.id.tabMore -> {
+                R.id.tabAccounts -> {
                     binding.viewPager.currentItem = 1
                     true
                 }
@@ -52,19 +53,22 @@ class MainActivity : AppCompatActivity() {
             override fun onPageSelected(position: Int) {
                 binding.bottomNavigationView.selectedItemId = when (position) {
                     0 -> R.id.tabHome
-                    1 -> R.id.tabMore
+                    1 -> R.id.tabAccounts
                     else -> R.id.tabHome
                 }
             }
         })
 
         binding.imgLogout.setOnClickListener {
-            prefsHelper.clear()
-            startActivity(
-                Intent(applicationContext, LoginActivityImpl::class.java).setFlags(
-                    Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-                )
-            )
+            AlertHelper.showAlertDialog(this@MainActivity, getString(R.string.logout), getString(R.string.are_you_sure_you_want_to_logout), getString(R.string.yes), getString(R.string.no),
+                onPositiveButtonClick = {
+                    prefsHelper.clear()
+                    startActivity(
+                        Intent(applicationContext, LoginActivityImpl::class.java).setFlags(
+                            Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                        )
+                    )
+                })
         }
     }
 
@@ -75,7 +79,7 @@ class MainActivity : AppCompatActivity() {
         override fun createFragment(position: Int): Fragment {
             return when (position) {
                 0 -> HomeFragment()
-                1 -> MoreFragment()
+                1 -> AccountsFragment()
                 else -> throw IllegalStateException("Invalid position $position")
             }
         }
