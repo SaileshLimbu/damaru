@@ -16,7 +16,4 @@ interface ApiServiceImpl : ApiService {
     @GET("emulators")
     suspend fun getMyEmulators(): Response<List<DeviceEntity>>
 
-    @POST("accounts")
-    suspend fun addAccount(@Body requestBody: RequestBody): Response<Any>
-
 }

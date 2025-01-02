@@ -77,7 +77,7 @@ class AdminMainActivity : BaseActivity() {
                     binding.recyclerView.adapter = UserAdapter(it.data,
                         object : RecyclerViewItemClickListener<UserEntity> {
                             override fun onItemClick(viewId : Int, position: Int, data: UserEntity) {
-//                                userDetailResultLauncher.launch(Intent(this@AdminMainActivity, UserDetailActivity::class.java))
+                                userDetailResultLauncher.launch(Intent(this@AdminMainActivity, UserDetailActivity::class.java))
                             }
                         })
                     binding.loader.root.visibility = View.GONE

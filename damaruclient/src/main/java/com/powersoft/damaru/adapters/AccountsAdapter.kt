@@ -35,10 +35,18 @@ class AccountsAdapter(
                 imgDelete.setOnClickListener {
                     clickListener.onItemClick(it.id, layoutPosition, account)
                 }
+                imgEdit.setOnClickListener {
+                    clickListener.onItemClick(it.id, layoutPosition, account)
+                }
                 if (isRootUser && account.isAdmin == false) {
                     imgDelete.visibility = View.VISIBLE
                 } else {
                     imgDelete.visibility = View.GONE
+                }
+                if (isRootUser || account.isAdmin == true) {
+                    imgEdit.visibility = View.VISIBLE
+                } else {
+                    imgEdit.visibility = View.GONE
                 }
             }
         }

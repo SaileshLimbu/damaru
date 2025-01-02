@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.google.gson.Gson
 import com.powersoft.common.base.BaseViewModel
 import com.powersoft.common.model.ResponseWrapper
+import com.powersoft.common.repository.AccountsRepo
 import com.powersoft.common.repository.AuthRepo
 import com.powersoft.common.repository.UserRepo
 import com.powersoft.common.ui.helper.ResponseCallback
@@ -18,7 +19,7 @@ import javax.inject.Inject
 @HiltViewModel
 class PinViewModel @Inject constructor(
     @ApplicationContext val context: Context,
-    private val repo : AuthRepo,
+    private val repo : AccountsRepo,
     private val prefsHelper: PrefsHelper,
     private val gson: Gson,
     private val userRepo : UserRepo
@@ -27,7 +28,10 @@ class PinViewModel @Inject constructor(
     fun resetPin(accountId : Int?, pin: String, responseCallback: ResponseCallback) {
         showLoader()
         viewModelScope.launch {
-            when (val response = repo.resetPinTask(accountId.toString(), pin)) {
+            val map = mapOf(
+                "pin" to pin
+            )
+            when (val response = repo.updateAccountTask(accountId!!, map)) {
                 is ResponseWrapper.Success -> {
                     prefsHelper.putString(PrefsHelper.USER, gson.toJson(response.data))
                     responseCallback.onResponse(response.data)

@@ -38,30 +38,30 @@ class AuthRepo @Inject constructor(private val apiService: ApiService, private v
         }
     }
 
-    suspend fun resetPinTask(accountId : String, pin: String): ResponseWrapper<LoginEntity> {
-        return try {
-            val params = hashMapOf(
-                "pin" to pin
-            )
-            val response = apiService.resetPinTask(accountId, gson.toJson(params).toRequestBody())
-            if (response.isSuccessful) {
-                response.body()?.let {
-                    ResponseWrapper.success(it)
-                } ?: ResponseWrapper.error(getUnknownError("Something went wrong (Code 342)"))
-            } else {
-                val errorResponse = try {
-                    val errorBody = response.errorBody()?.string()
-                    val error = gson.fromJson(errorBody, ErrorResponse::class.java)
-                    error
-                } catch (e: Exception) {
-                    getUnknownError()
-                }
-
-                ResponseWrapper.error(errorResponse)
-            }
-        } catch (e: Exception) {
-            ResponseWrapper.error(getUnknownError("Something went wrong (Code 726)"))
-        }
-    }
+//    suspend fun resetPinTask(accountId : String, pin: String): ResponseWrapper<LoginEntity> {
+//        return try {
+//            val params = hashMapOf(
+//                "pin" to pin
+//            )
+//            val response = apiService.updateAccountApi(accountId, gson.toJson(params).toRequestBody())
+//            if (response.isSuccessful) {
+//                response.body()?.let {
+//                    ResponseWrapper.success(it)
+//                } ?: ResponseWrapper.error(getUnknownError("Something went wrong (Code 342)"))
+//            } else {
+//                val errorResponse = try {
+//                    val errorBody = response.errorBody()?.string()
+//                    val error = gson.fromJson(errorBody, ErrorResponse::class.java)
+//                    error
+//                } catch (e: Exception) {
+//                    getUnknownError()
+//                }
+//
+//                ResponseWrapper.error(errorResponse)
+//            }
+//        } catch (e: Exception) {
+//            ResponseWrapper.error(getUnknownError("Something went wrong (Code 726)"))
+//        }
+//    }
 
 }

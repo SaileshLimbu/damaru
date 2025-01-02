@@ -11,17 +11,15 @@ import javax.inject.Inject
 
 @AndroidEntryPoint
 class PinActivityImpl : PinActivity() {
-    @Inject lateinit var userRepo: UserRepo
+    @Inject
+    lateinit var userRepo: UserRepo
 
     override fun onPinVerified() {
-
     }
 
     override fun onPinResetResponse(any: Any, errorResponse: ErrorResponse?) {
         if (errorResponse == null) {
-            if (resetPin) {
-                startActivity(Intent(this@PinActivityImpl, AdminMainActivity::class.java))
-            }
+            startActivity(Intent(this@PinActivityImpl, AdminMainActivity::class.java))
             return
         } else {
             AlertHelper.showAlertDialog(
@@ -40,7 +38,7 @@ class PinActivityImpl : PinActivity() {
     }
 
     override fun getAccountId(): Int? {
-       return userRepo.seasonEntity.value?.accountId
+        return userRepo.seasonEntity.value?.accountId
     }
 
     override fun isChangePin(): Boolean {

@@ -1,12 +1,10 @@
 package com.powersoft.damaruadmin.adapters
 
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.powersoft.common.listeners.RecyclerViewItemClickListener
 import com.powersoft.common.model.UserEntity
-import com.powersoft.common.utils.Logg
 import com.powersoft.damaruadmin.databinding.ItemUserBinding
 
 class UserAdapter(
@@ -24,10 +22,7 @@ class UserAdapter(
 
         fun bind(user: UserEntity) {
             binding.apply {
-                Logg.e("FUCK >>>>>>>>>> ${user.email} <<<<<<<<<<< ${tvUserEmailFuck.visibility == View.VISIBLE}")
                 tvUsername.text = user.name
-                //lado jasto randi ko baan machickne asshole rakdiko android studio machickne google lado kha machickne
-                // lado jasto euta settext hunna lado jast kai issue nahuda ni randi ko baan
                 tvUserEmailFuck.text = user.email
                 tvTotalDevices.text = "${user.accounts?.size ?: 0}"
                 tvTotalAccounts.text = "${user.accounts?.size ?: 0}"

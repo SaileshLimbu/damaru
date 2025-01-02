@@ -43,4 +43,7 @@
     <string name="assigned_devices">Assigned Devices</string>
     <string name="created_at">Created At : %1$s</string>
     <string name="pin">PIN :</string>
+    <string name="update">Update</string>
+    <string name="update_account">Update Account</string>
+    <string name="link_device">Link Device</string>
 </resources>

@@ -45,7 +45,7 @@
 
     <TextView
         android:id="@id/tvAccountName"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="32dp"
         android:fontFamily="@font/adlam_display"
@@ -54,7 +54,25 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/btnBack"
         android:layout_marginTop="24dp"
+        android:maxWidth="320dp"
         tools:text="theone sharma" />
+
+    <ImageButton
+        android:id="@+id/imgEdit"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:backgroundTint="@android:color/transparent"
+        android:contentDescription="@null"
+        android:src="@drawable/ic_edit"
+        android:visibility="gone"
+        tools:visibility="visible"
+        android:paddingStart="12dp"
+        android:paddingEnd="12dp"
+        android:layout_marginStart="12dp"
+        app:layout_constraintBottom_toBottomOf="@+id/tvAccountName"
+        app:layout_constraintStart_toEndOf="@+id/tvAccountName"
+        app:tint="@color/colorSecondaryVariant" />
 
     <TextView
         android:id="@+id/lvlPin"
@@ -127,7 +145,7 @@
         app:cornerRadius="24dp"
         app:icon="@drawable/ic_delete"
         app:iconSize="14dp"
-        app:layout_constraintBottom_toBottomOf="@+id/btnChangePin"
+        app:layout_constraintTop_toBottomOf="@+id/tvCreatedAt"
         app:layout_constraintStart_toEndOf="@+id/btnChangePin"
         tools:visibility="visible" />
 
@@ -153,6 +171,19 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/lvlAllAccounts" />
+
+    <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+        android:id="@+id/extendedFAB"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/margin_medium"
+        android:text="@string/link_device"
+        android:textColor="@color/white"
+        app:backgroundTint="@color/secondary"
+        app:icon="@drawable/ic_add"
+        app:iconTint="@color/white"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
 
     <include
         android:id="@+id/errorView"

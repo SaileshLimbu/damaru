@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.view.View
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
+import androidx.recyclerview.widget.RecyclerView
 import com.google.gson.Gson
 import com.powersoft.common.base.BaseActivity
 import com.powersoft.common.base.BaseViewModel
@@ -35,6 +36,15 @@ class AccountDetailActivity : BaseActivity() {
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
             if (result.resultCode == RESULT_OK) {
                 setResult(RESULT_OK)
+                if (result.data?.hasExtra("edited_name") == true) {
+                    binding.tvAccountName.text = result.data?.getStringExtra("edited_name")
+                }
+            }
+        }
+
+    private val linkDeviceResultLauncher =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            if (result.resultCode == RESULT_OK) {
             }
         }
 
@@ -56,18 +66,30 @@ class AccountDetailActivity : BaseActivity() {
         binding.tvAccountName.text = account.accountName
         binding.tvPin.text = account.pin
         binding.tvCreatedAt.text = getString(R.string.created_at, account.createdAt)
-        if (userRepo.seasonEntity.value?.isRootUser == true && account.isAdmin == false) {
-            binding.holderAdminAccount.visibility = View.VISIBLE
-            binding.btnDelete.visibility = View.VISIBLE
-            binding.btnChangePin.visibility = View.VISIBLE
+        if (userRepo.seasonEntity.value?.isRootUser == true || account.isAdmin == true) {
             binding.lvlPin.visibility = View.VISIBLE
             binding.tvPin.visibility = View.VISIBLE
         } else {
-            binding.holderAdminAccount.visibility = View.GONE
             binding.btnDelete.visibility = View.GONE
-            binding.btnChangePin.visibility = View.GONE
             binding.lvlPin.visibility = View.GONE
             binding.tvPin.visibility = View.GONE
+        }
+        if (userRepo.seasonEntity.value?.isRootUser == true && account.isAdmin == false) {
+            binding.btnDelete.visibility = View.VISIBLE
+        } else {
+            binding.btnDelete.visibility = View.GONE
+        }
+        if (userRepo.seasonEntity.value?.accountId == account.id || userRepo.seasonEntity.value?.isRootUser == true || account.isAdmin == true) {
+            binding.btnChangePin.visibility = View.VISIBLE
+            binding.imgEdit.visibility = View.VISIBLE
+        } else {
+            binding.btnChangePin.visibility = View.GONE
+            binding.imgEdit.visibility = View.GONE
+        }
+        if (account.isAdmin == true) {
+            binding.holderAdminAccount.visibility = View.VISIBLE
+        } else {
+            binding.holderAdminAccount.visibility = View.GONE
         }
 
         binding.btnDelete.setOnClickListener {
@@ -86,8 +108,27 @@ class AccountDetailActivity : BaseActivity() {
             })
         }
 
+        binding.imgEdit.setOnClickListener {
+            changePinResultLauncher.launch(Intent(applicationContext, AddAccountActivity::class.java).putExtra("account", gson.toJson(account)))
+        }
+
         binding.btnChangePin.setOnClickListener {
             changePinResultLauncher.launch(Intent(applicationContext, ChangePinActivity::class.java).putExtra("account", gson.toJson(account)))
+        }
+
+        binding.recyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                super.onScrolled(recyclerView, dx, dy)
+                if (dy > 0) {
+                    binding.extendedFAB.shrink()
+                } else if (dy < 0) {
+                    binding.extendedFAB.extend()
+                }
+            }
+        })
+
+        binding.extendedFAB.setOnClickListener {
+//            startActivityForResultLauncher.launch(Intent(applicationContext, AddAccountActivity::class.java))
         }
 
         binding.btnDelete.setOnClickListener {

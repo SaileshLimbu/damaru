@@ -98,5 +98,21 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:tint="@color/colorError" />
+
+        <ImageButton
+            android:id="@+id/imgEdit"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:backgroundTint="@android:color/transparent"
+            android:contentDescription="@null"
+            android:src="@drawable/ic_edit"
+            android:visibility="gone"
+            tools:visibility="visible"
+            android:padding="12dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/imgDelete"
+            app:layout_constraintTop_toTopOf="parent"
+            app:tint="@color/colorSecondaryVariant" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </com.google.android.material.card.MaterialCardView>

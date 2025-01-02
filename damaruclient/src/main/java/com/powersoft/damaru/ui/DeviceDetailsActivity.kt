@@ -1,11 +1,9 @@
 package com.powersoft.damaru.ui
 
 import android.annotation.SuppressLint
-import android.content.Intent
 import android.os.Bundle
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import com.google.gson.Gson
 import com.powersoft.common.base.BaseActivity
 import com.powersoft.common.base.BaseViewModel
@@ -15,12 +13,10 @@ import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class DeviceDetailsActivity : BaseActivity() {
-//    private val vm: DeviceDetailsViewModel by viewModels()
     private lateinit var binding: ActivitDeviceDetailsBinding
     private val startActivityForResultLauncher =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
             if (result.resultCode == RESULT_OK) {
-//                vm.getAllAccounts()
             }
         }
 
@@ -37,21 +33,6 @@ class DeviceDetailsActivity : BaseActivity() {
 
         binding.imgBack.setOnClickListener {
             finish()
-        }
-
-        binding.recyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
-            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
-                super.onScrolled(recyclerView, dx, dy)
-                if (dy > 0) {
-                    binding.extendedFAB.shrink()
-                } else if (dy < 0) {
-                    binding.extendedFAB.extend()
-                }
-            }
-        })
-
-        binding.extendedFAB.setOnClickListener {
-            startActivityForResultLauncher.launch(Intent(applicationContext, AddAccountActivity::class.java))
         }
 
         binding.recyclerView.apply {

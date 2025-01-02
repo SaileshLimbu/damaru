@@ -6,6 +6,7 @@ import com.powersoft.common.model.ErrorResponse
 import com.powersoft.common.model.ResponseWrapper
 import com.powersoft.common.model.getUnknownError
 import com.powersoft.common.webservice.ApiService
+import okhttp3.RequestBody.Companion.toRequestBody
 import javax.inject.Inject
 
 class AccountsRepo @Inject constructor(private val apiService: ApiService, private val gson: Gson) {
@@ -54,6 +55,55 @@ class AccountsRepo @Inject constructor(private val apiService: ApiService, priva
             }
         } catch (e: Exception) {
             ResponseWrapper.error(getUnknownError("Something went wrong (Code 37265)"))
+        }
+    }
+
+    suspend fun addAccountTask(accountName : String) : ResponseWrapper<Any>{
+        return try {
+            val params = mapOf(
+                "account_name" to accountName
+            )
+            val response = apiService.addAccount(gson.toJson(params).toRequestBody())
+            if (response.isSuccessful) {
+                response.body()?.let {
+                    ResponseWrapper.success(it)
+                } ?: ResponseWrapper.error(getUnknownError("Something went wrong (Code 2143)"))
+            } else {
+                val errorResponse = try {
+                    val errorBody = response.errorBody()?.string()
+                    val error = gson.fromJson(errorBody, ErrorResponse::class.java)
+                    error
+                } catch (e: Exception) {
+                    getUnknownError()
+                }
+
+                ResponseWrapper.error(errorResponse)
+            }
+        } catch (e: Exception) {
+            ResponseWrapper.error(getUnknownError("Something went wrong (Code 8437)"))
+        }
+    }
+
+    suspend fun updateAccountTask(accountId : Int, data : Map<String, String>) : ResponseWrapper<Any>{
+        return try {
+            val response = apiService.updateAccountApi(accountId.toString(), gson.toJson(data).toRequestBody())
+            if (response.isSuccessful) {
+                response.body()?.let {
+                    ResponseWrapper.success(it)
+                } ?: ResponseWrapper.error(getUnknownError("Something went wrong (Code 2143)"))
+            } else {
+                val errorResponse = try {
+                    val errorBody = response.errorBody()?.string()
+                    val error = gson.fromJson(errorBody, ErrorResponse::class.java)
+                    error
+                } catch (e: Exception) {
+                    getUnknownError()
+                }
+
+                ResponseWrapper.error(errorResponse)
+            }
+        } catch (e: Exception) {
+            ResponseWrapper.error(getUnknownError("Something went wrong (Code 8437)"))
         }
     }
 }

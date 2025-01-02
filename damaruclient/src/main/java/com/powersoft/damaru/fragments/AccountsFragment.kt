@@ -125,6 +125,10 @@ class AccountsFragment : Fragment(R.layout.fragment_accounts) {
                                     }
                                 }
 
+                                R.id.imgEdit ->{
+                                    accountDetailResultLauncher.launch(Intent(context, AddAccountActivity::class.java).putExtra("account", gson.toJson(data)))
+                                }
+
                                 else -> {
                                     accountDetailResultLauncher.launch(Intent(context, AccountDetailActivity::class.java).putExtra("account", gson.toJson(data)))
                                 }

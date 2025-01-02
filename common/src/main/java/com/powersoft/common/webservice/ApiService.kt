@@ -19,8 +19,11 @@ interface ApiService {
     suspend fun getAccountsApi(): Response<List<AccountEntity>>
 
     @PUT("accounts/{accountId}")
-    suspend fun resetPinTask(@Path("accountId") accountId : String, @Body payload: RequestBody): Response<LoginEntity>
+    suspend fun updateAccountApi(@Path("accountId") accountId : String, @Body payload: RequestBody): Response<LoginEntity>
 
     @DELETE("accounts/{id}")
     suspend fun deleteAccount(@Path("id") id : String): Response<Any>
+
+    @POST("accounts")
+    suspend fun addAccount(@Body requestBody: RequestBody): Response<Any>
 }

@@ -13,7 +13,6 @@
         android:background="@drawable/drawable_bg_header"
         android:elevation="5dp"
         android:paddingStart="@dimen/padding_large"
-        android:paddingTop="@dimen/padding_with_status_bar_and_header"
         android:paddingEnd="@dimen/padding_large"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
