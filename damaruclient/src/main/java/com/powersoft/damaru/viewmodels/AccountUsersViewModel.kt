@@ -5,8 +5,9 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.powersoft.common.base.BaseViewModel
+import com.powersoft.common.model.AccountEntity
 import com.powersoft.common.model.ResponseWrapper
-import com.powersoft.damaru.repository.DeviceRepo
+import com.powersoft.common.repository.AccountsRepo
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.launch
@@ -15,12 +16,12 @@ import javax.inject.Inject
 @HiltViewModel
 class AccountUsersViewModel @Inject constructor(
     @ApplicationContext val context: Context,
-    private val repo: DeviceRepo,
+    private val repo: AccountsRepo,
 ) : BaseViewModel() {
 
-    private var _mutableLiveData = MutableLiveData<ResponseWrapper<Any>>()
+    private var _mutableLiveData = MutableLiveData<ResponseWrapper<List<AccountEntity>>>()
 
-    val liveData: LiveData<ResponseWrapper<Any>>
+    val liveData: LiveData<ResponseWrapper<List<AccountEntity>>>
         get() = _mutableLiveData
 
     init {
@@ -30,7 +31,7 @@ class AccountUsersViewModel @Inject constructor(
     fun getAccountUsers() {
         showLoader()
         viewModelScope.launch {
-            _mutableLiveData.value = repo.accountsListTask()
+            _mutableLiveData.value = repo.getAccountsTask()
             hideLoader()
         }
     }

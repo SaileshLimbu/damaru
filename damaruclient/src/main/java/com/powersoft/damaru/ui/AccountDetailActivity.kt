@@ -5,16 +5,21 @@ import android.os.Bundle
 import android.view.View
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
+import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.gson.Gson
 import com.powersoft.common.base.BaseActivity
 import com.powersoft.common.base.BaseViewModel
+import com.powersoft.common.listeners.RecyclerViewItemClickListener
 import com.powersoft.common.model.AccountEntity
+import com.powersoft.common.model.DeviceEntity
 import com.powersoft.common.model.ErrorResponse
+import com.powersoft.common.model.ResponseWrapper
 import com.powersoft.common.repository.UserRepo
 import com.powersoft.common.ui.helper.AlertHelper
 import com.powersoft.common.ui.helper.ResponseCallback
 import com.powersoft.damaru.R
+import com.powersoft.damaru.adapters.MyDevicesAdapter
 import com.powersoft.damaru.databinding.ActivityAccountDetailBinding
 import com.powersoft.damaru.viewmodels.AccountDetailViewModel
 import dagger.hilt.android.AndroidEntryPoint
@@ -153,6 +158,60 @@ class AccountDetailActivity : BaseActivity() {
                     })
                 }
             )
+        }
+
+        binding.recyclerView.apply {
+            layoutManager = GridLayoutManager(context, 2)
+        }
+
+        vm.allDevices.observe(this) {
+            when (it) {
+                is ResponseWrapper.Success -> {
+                    val deviceAdapter = MyDevicesAdapter(it.data, object : RecyclerViewItemClickListener<DeviceEntity> {
+                        override fun onItemClick(viewId: Int, position: Int, data: DeviceEntity) {
+//                            if (userRepo.seasonEntity.value?.isRootUser == true) {
+//                                val dialog: AlertDialog.Builder = AlertDialog.Builder(this@AccountDetailActivity)
+//                                dialog.setTitle("Options")
+//                                dialog.setItems(arrayOf("Connect to device", "Device Details")) { dialogInterface, itemPos ->
+//                                    dialogInterface.dismiss()
+//                                    when (itemPos) {
+//                                        0 -> {
+//                                            val intent = Intent(applicationContext, DeviceControlActivity::class.java)
+//                                            startActivity(intent)
+//                                        }
+//
+//                                        else -> {
+//                                            startActivity(Intent(applicationContext, DeviceDetailsActivity::class.java).putExtra("device", Gson().toJson(data)))
+//                                        }
+//                                    }
+//                                }
+//                                dialog.show()
+//                            } else {
+//                                val intent = Intent(applicationContext, DeviceControlActivity::class.java)
+////                                    .putExtra(DeviceControlActivity.USER_NAME, "theone")
+////                                    .putExtra(DeviceControlActivity.TARGET_USER_NAME, data.deviceId)
+//                                startActivity(intent)
+//                            }
+                        }
+
+                    })
+                    binding.recyclerView.adapter = deviceAdapter
+
+                    binding.loader.root.visibility = View.GONE
+                    binding.errorView.root.visibility = View.GONE
+                }
+
+                is ResponseWrapper.Error -> {
+                    binding.loader.root.visibility = View.GONE
+                    binding.errorView.tvError.text = it.errorResponse.message?.message
+                    binding.errorView.root.visibility = View.VISIBLE
+                }
+
+                is ResponseWrapper.Loading -> {
+                    binding.loader.root.visibility = View.VISIBLE
+                    binding.errorView.root.visibility = View.GONE
+                }
+            }
         }
     }
 }

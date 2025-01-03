@@ -1,19 +1,20 @@
 package com.powersoft.damaru.repository
 
 import com.google.gson.Gson
+import com.powersoft.common.model.DeviceEntity
 import com.powersoft.common.model.ErrorResponse
 import com.powersoft.common.model.ResponseWrapper
 import com.powersoft.common.model.getUnknownError
-import com.powersoft.common.webservice.ApiService
+import com.powersoft.damaru.webservices.ApiServiceImpl
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class DeviceRepo @Inject constructor(private val apiService: ApiService, private val gson: Gson) {
+class DeviceRepo @Inject constructor(private val apiService: ApiServiceImpl, private val gson: Gson) {
 
-    suspend fun accountsListTask(): ResponseWrapper<Any> {
+    suspend fun getHisEmulators(): ResponseWrapper<List<DeviceEntity>> {
         return try {
-            val response = apiService.getAccountsApi()
+            val response = apiService.getMyEmulators()
             if (response.isSuccessful) {
                 response.body()?.let {
                     ResponseWrapper.success(it)
