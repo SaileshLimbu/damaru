@@ -50,6 +50,7 @@ class DeviceControlActivity : AppCompatActivity(), SocketListener, WebRTCListene
     companion object {
         const val CLIENT_ID = "username"
         const val DEVICE_ID = "targetUser"
+        const val TOKEN = "token"
     }
 
     @SuppressLint("ClickableViewAccessibility")
@@ -61,6 +62,9 @@ class DeviceControlActivity : AppCompatActivity(), SocketListener, WebRTCListene
 
         intent.getStringExtra(CLIENT_ID)?.let { viewModel.clientId = it }
         intent.getStringExtra(DEVICE_ID)?.let { viewModel.deviceId = it }
+        intent.getStringExtra(TOKEN)?.let { viewModel.token = it }
+
+        Log.e("damaru", "onCreate: ${viewModel.clientId}", )
 
         binding.surfaceView.apply {
             init(webrtcClient.getEglBase().eglBaseContext, null)
@@ -112,7 +116,7 @@ class DeviceControlActivity : AppCompatActivity(), SocketListener, WebRTCListene
 
     @SuppressLint("ClickableViewAccessibility")
     private fun init() {
-        socketClient.init(viewModel.clientId, this, "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjMsImFjY291bnROYW1lIjoiQW5kcm9pZCBBZG1pbiIsImVtYWlsIjoiYW5kcm9pZGFkbWluQGRhbWFydS5jb20iLCJyb2xlIjoiQW5kcm9pZFVzZXIiLCJhY2NvdW50SWQiOjIsInN1YlJvbGUiOiJBbmRyb2lkQWRtaW4iLCJpYXQiOjE3MzUzNjExNDUsImV4cCI6MTc2Njg5NzE0NX0.v6tA0y8RMRPS6CkZ6xCE5620NoRu-jNQUS0vaT-t_Xg", false)
+        socketClient.init(viewModel.clientId, this, viewModel.token, false)
 
         webrtcClient.init(
             webRTCListener = this,
@@ -120,7 +124,7 @@ class DeviceControlActivity : AppCompatActivity(), SocketListener, WebRTCListene
             observer = object : MyPeerObserver() {
                 override fun onIceCandidate(cadidate: IceCandidate?) {
                     super.onIceCandidate(cadidate)
-                    cadidate?.let { webrtcClient.sendIceCandidate(it, viewModel.deviceId) }
+                    cadidate?.let { webrtcClient.sendIceCandidate(it, viewModel.clientId, viewModel.deviceId) }
                 }
 
                 override fun onAddStream(stream: MediaStream?) {
@@ -168,6 +172,7 @@ class DeviceControlActivity : AppCompatActivity(), SocketListener, WebRTCListene
 
             DataModelType.IceCandidate -> {
                 val candidate = gson.fromJson(model.iceCandidate.toString(), IceCandidate::class.java)
+                Log.i("ICE_TAG", "Received from Server: $model")
                 webrtcClient.addIceCandidate(candidate)
             }
 

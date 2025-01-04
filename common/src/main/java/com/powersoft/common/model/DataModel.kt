@@ -12,5 +12,6 @@ data class DataModel(
     @SerializedName("deviceId")
     val target: String? = null,
     val sdp: String? = null,
-    val iceCandidate: String? = null
+    val iceCandidate: String? = null,
+    val isEmulator: Boolean = false
 )

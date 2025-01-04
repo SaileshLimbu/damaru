@@ -32,4 +32,6 @@
     <color name="red">#F44336</color>
     <color name="green">#8BC34A</color>
     <color name="redTransparent">#88FF0000</color>
+
+    <color name="colorLightBlue">#B5CFE9</color>
 </resources>

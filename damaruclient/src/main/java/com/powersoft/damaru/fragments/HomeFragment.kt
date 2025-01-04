@@ -3,6 +3,7 @@ package com.powersoft.damaru.fragments
 import android.app.AlertDialog
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -53,6 +54,9 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
             layoutManager = GridLayoutManager(requireContext(), 2)
         }
 
+        val accountId = userRepo.seasonEntity.value?.accountId
+        val token = userRepo.seasonEntity.value?.accessToken
+
         vm.allDevices.observe(viewLifecycleOwner) {
             when (it) {
                 is ResponseWrapper.Success -> {
@@ -66,8 +70,9 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
                                     when (itemPos) {
                                         0 -> {
                                             val intent = Intent(context, DeviceControlActivity::class.java)
-//                                                .putExtra(DeviceControlActivity.USER_NAME, "theone")
-//                                                .putExtra(DeviceControlActivity.TARGET_USER_NAME, data.deviceId)
+                                                .putExtra(DeviceControlActivity.CLIENT_ID, accountId.toString())
+                                                .putExtra(DeviceControlActivity.DEVICE_ID, data.deviceId)
+                                                .putExtra(DeviceControlActivity.TOKEN, token)
                                             startActivity(intent)
                                         }
 
@@ -79,8 +84,9 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
                                 dialog.show()
                             } else {
                                 val intent = Intent(context, DeviceControlActivity::class.java)
-//                                    .putExtra(DeviceControlActivity.USER_NAME, "theone")
-//                                    .putExtra(DeviceControlActivity.TARGET_USER_NAME, data.deviceId)
+                                    .putExtra(DeviceControlActivity.CLIENT_ID, accountId.toString())
+                                    .putExtra(DeviceControlActivity.DEVICE_ID, data.deviceId)
+                                    .putExtra(DeviceControlActivity.TOKEN, token)
                                 startActivity(intent)
                             }
                         }

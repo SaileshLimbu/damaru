@@ -33,7 +33,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="12dp"
-                android:text="LADO muji"
+                android:text="email@damaru.com"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/tvUsername" />
 
@@ -42,11 +42,11 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="12dp"
                 android:layout_marginTop="12dp"
+                android:visibility="gone"
                 app:cardBackgroundColor="@color/primaryLight"
                 app:cardCornerRadius="120dp"
                 app:contentPaddingBottom="2dp"
                 app:contentPaddingLeft="24dp"
-                android:visibility="gone"
                 app:contentPaddingRight="24dp"
                 app:contentPaddingTop="2dp"
                 app:layout_constraintStart_toStartOf="parent"
@@ -80,10 +80,10 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="12dp"
-                android:fontFamily="@font/sairacondensed_medium"
+                android:fontFamily="@font/adlam_display"
                 android:includeFontPadding="false"
                 android:textColor="@color/colorSecondaryVariant"
-                android:textSize="72sp"
+                android:textSize="56sp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 tools:text="2" />
@@ -92,8 +92,9 @@
                 android:id="@+id/imgDevice"
                 android:layout_width="wrap_content"
                 android:layout_height="24dp"
-                android:layout_marginBottom="28dp"
+                android:adjustViewBounds="true"
                 android:src="@drawable/ic_device"
+                app:layout_constraintTop_toTopOf="@id/tvTotalDevices"
                 app:layout_constraintBottom_toBottomOf="@+id/tvTotalDevices"
                 app:layout_constraintEnd_toStartOf="@+id/tvTotalDevices" />
 
@@ -102,10 +103,10 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="12dp"
-                android:fontFamily="@font/sairacondensed_medium"
+                android:fontFamily="@font/adlam_display"
                 android:includeFontPadding="false"
                 android:textColor="@color/colorSecondaryVariant"
-                android:textSize="72sp"
+                android:textSize="56sp"
                 app:layout_constraintEnd_toStartOf="@+id/imgDevice"
                 app:layout_constraintTop_toTopOf="parent"
                 tools:text="6" />
@@ -113,8 +114,9 @@
             <ImageView
                 android:layout_width="wrap_content"
                 android:layout_height="24dp"
-                android:layout_marginBottom="28dp"
+                android:adjustViewBounds="true"
                 android:src="@drawable/ic_accounts"
+                app:layout_constraintTop_toTopOf="@id/tvTotalAccounts"
                 app:layout_constraintBottom_toBottomOf="@+id/tvTotalAccounts"
                 app:layout_constraintEnd_toStartOf="@+id/tvTotalAccounts"
                 app:tint="@color/primary" />

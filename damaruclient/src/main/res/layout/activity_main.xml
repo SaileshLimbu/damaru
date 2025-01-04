@@ -49,7 +49,7 @@
             android:background="@drawable/drawable_bg_border"
             android:clickable="true"
             android:focusable="true"
-            android:padding="@dimen/padding_medium"
+            android:padding="@dimen/padding_small"
             android:src="@drawable/ic_logout"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"

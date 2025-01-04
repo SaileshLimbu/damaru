@@ -8,4 +8,5 @@ import javax.inject.Inject
 class DeviceControlViewModel @Inject constructor() : BaseViewModel() {
     var clientId : String = ""
     var deviceId : String = ""
+    var token : String = ""
 }

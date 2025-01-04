@@ -11,6 +11,8 @@ import com.powersoft.common.model.GestureCommand
 import com.powersoft.common.utils.AspectRatioUtils
 import com.powersoft.common.webrtc.MyPeerObserver
 import com.powersoft.common.webrtc.MySdpObserver
+import com.powersoft.common.webrtc.WebRTCClient
+import com.powersoft.common.webrtc.WebRTCClient.Companion
 import com.powersoft.common.webrtc.WebRTCListener
 import com.powersoft.common.webrtc.WebRTCManager
 import com.powersoft.damaruserver.service.DeviceControlService
@@ -52,13 +54,13 @@ class WebRTCClient @Inject constructor(
             .createIceServer()
     )
 
-    fun createPeerConnection(webRTCListener: WebRTCListener, clientId: String) {
+    fun createPeerConnection(webRTCListener: WebRTCListener, clientId: String, deviceId: String) {
         this.webRTCListener = webRTCListener
         val peerConnection = webRTCManager.createPeerConnection(iceServers, object : MyPeerObserver() {
             override fun onIceCandidate(cadidate: IceCandidate?) {
                 super.onIceCandidate(cadidate)
                 Log.d(TAG, "onIceCandidate: $cadidate")
-                cadidate?.let { sendIceCandidate(it, clientId) }
+                cadidate?.let { sendIceCandidate(it, clientId, deviceId) }
             }
 
             override fun onDataChannel(dataChannel: DataChannel?) {
@@ -189,7 +191,7 @@ class WebRTCClient @Inject constructor(
      * add this to the peerConnection
      */
     fun addIceCandidate(target: String, iceCandidate: IceCandidate) {
-        Log.e(TAG, "Received from Server: $iceCandidate")
+        Log.e(TAG, "Received from Client: $iceCandidate")
         val peerConnection = peerConnectionList[target]
         peerConnection?.addIceCandidate(iceCandidate)
     }
@@ -197,13 +199,15 @@ class WebRTCClient @Inject constructor(
     /**
      * Send the ICE candidate received from webRTC to target user
      */
-    fun sendIceCandidate(candidate: IceCandidate, clientId: String) {
-        Log.e(TAG, "sendIceCandidate from Server: $candidate")
+    fun sendIceCandidate(candidate: IceCandidate, clientId: String, deviceId: String) {
+        Log.d(TAG, "sendIceCandidate from Server: $candidate clientId : $clientId")
         webRTCListener.onTransferEventToSocket(
             DataModelType.IceCandidate,
             DataModel(
                 username = clientId,
-                iceCandidate = gson.toJson(candidate)
+                target = deviceId,
+                iceCandidate = gson.toJson(candidate),
+                isEmulator = true
             )
         )
     }

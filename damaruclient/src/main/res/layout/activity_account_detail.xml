@@ -67,9 +67,10 @@
         android:src="@drawable/ic_edit"
         android:visibility="gone"
         tools:visibility="visible"
-        android:paddingStart="12dp"
-        android:paddingEnd="12dp"
+        android:paddingStart="4dp"
+        android:paddingEnd="4dp"
         android:layout_marginStart="12dp"
+        app:layout_constraintTop_toTopOf="@id/tvAccountName"
         app:layout_constraintBottom_toBottomOf="@+id/tvAccountName"
         app:layout_constraintStart_toEndOf="@+id/tvAccountName"
         app:tint="@color/colorSecondaryVariant" />

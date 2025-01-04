@@ -15,6 +15,7 @@ import com.powersoft.common.socket.SocketClient
 import com.powersoft.common.socket.SocketListener
 import com.powersoft.common.webrtc.WebRTCListener
 import com.powersoft.damaruserver.R
+import com.powersoft.damaruserver.utils.DeviceUtils
 import com.powersoft.damaruserver.webrtc.WebRTCClient
 import dagger.hilt.android.AndroidEntryPoint
 import org.webrtc.IceCandidate
@@ -35,9 +36,7 @@ class ScreenCaptureForegroundService : Service(), SocketListener, WebRTCListener
 
     private lateinit var notificationManager: NotificationManager
 
-    //    @SuppressLint("HardwareIds")
-//    val user: String = Settings.Secure.getString(this.contentResolver, Settings.Secure.ANDROID_ID)
-    private val user = "theone001"
+    private lateinit var deviceId: String
 
     override fun onCreate() {
         super.onCreate()
@@ -48,8 +47,9 @@ class ScreenCaptureForegroundService : Service(), SocketListener, WebRTCListener
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         if (intent != null && ACTION_START_CAPTURE == intent.action) {
             val data = intent.getParcelableExtra<Intent>(EXTRA_RESULT_DATA)
+            deviceId = intent.getStringExtra(EXTRA_DEVICE_ID) ?: DeviceUtils.getDeviceId(this)
             if (data != null) {
-                socketClient.init(user, this, getString(R.string.token), true)
+                socketClient.init(deviceId, this, getString(R.string.token), true)
                 webRTCClient.startScreenCapturing(data)
             }
         }
@@ -89,7 +89,7 @@ class ScreenCaptureForegroundService : Service(), SocketListener, WebRTCListener
                 model.username?.let {
                     //After receiving offer create and answer and send them
                     Log.d(TAG, "onNewMessageReceived: OFFER received from $it")
-                    webRTCClient.createPeerConnection(this, clientId = it)
+                    webRTCClient.createPeerConnection(this, clientId = it, deviceId)
                     webRTCClient.setRemoteDescription(it, SessionDescription(SessionDescription.Type.OFFER, model.sdp.toString()))
                     webRTCClient.createAnswer(clientId = it)
                 }
@@ -97,6 +97,7 @@ class ScreenCaptureForegroundService : Service(), SocketListener, WebRTCListener
 
             DataModelType.IceCandidate -> {
                 val candidate = gson.fromJson(model.iceCandidate.toString(), IceCandidate::class.java)
+                Log.i("ICE_TAG", "Received from Client: $model")
                 model.username?.let { webRTCClient.addIceCandidate(it, candidate) }
             }
 
@@ -122,6 +123,7 @@ class ScreenCaptureForegroundService : Service(), SocketListener, WebRTCListener
         const val TAG = "DAMARU_SERVER"
         const val ACTION_START_CAPTURE = "ACTION_START_CAPTURE"
         const val EXTRA_RESULT_DATA = "EXTRA_RESULT_DATA"
+        const val EXTRA_DEVICE_ID = "EXTRA_DEVICE_ID"
         private const val CHANNEL_ID = "ScreenCaptureServiceChannel"
     }
 }

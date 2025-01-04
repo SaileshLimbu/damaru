@@ -85,8 +85,8 @@ class SocketClient @Inject constructor(private val gson: Gson) {
         }
 
         socket.on(ICE_CANDIDATE) { message ->
-            val iceCandidate = message[0] as JSONObject
-            val model = gson.fromJson(iceCandidate.toString(), DataModel::class.java)
+            val dataModel = message[0] as JSONObject
+            val model = gson.fromJson(dataModel.toString(), DataModel::class.java)
             listener.onNewMessageReceived(DataModelType.IceCandidate, model)
         }
 

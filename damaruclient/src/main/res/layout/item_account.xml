@@ -8,7 +8,7 @@
     android:layout_marginTop="12dp"
     android:layout_marginEnd="22dp"
     android:layout_marginBottom="12dp"
-    app:cardCornerRadius="22dp"
+    app:cardCornerRadius="8dp"
     app:cardElevation="4dp"
     app:contentPadding="12dp">
 
@@ -21,7 +21,7 @@
             android:layout_width="56dp"
             android:layout_height="56dp"
             app:cardBackgroundColor="@color/primary"
-            app:cardCornerRadius="20dp"
+            app:cardCornerRadius="8dp"
             app:cardElevation="0dp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent">
@@ -42,7 +42,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="18dp"
-            android:textColor="@color/colorSecondaryVariant"
+            android:textColor="@color/colorPrimary"
             android:textStyle="bold"
             app:layout_constraintStart_toEndOf="@+id/holderCircle"
             app:layout_constraintTop_toTopOf="parent"
@@ -58,61 +58,54 @@
             app:layout_constraintTop_toBottomOf="@+id/tvAccountName"
             tools:text="a@b.com" />
 
-        <com.google.android.material.card.MaterialCardView
+        <TextView
             android:id="@+id/holderAdminAccount"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="18dp"
-            android:layout_marginTop="8dp"
-            android:layout_marginEnd="12dp"
+            android:background="@drawable/drawable_bg_round_corner"
+            android:backgroundTint="@color/colorPrimaryVariant"
+            android:layout_marginTop="4dp"
+            android:paddingStart="8dp"
+            android:paddingEnd="8dp"
+            android:text="@string/admin"
+            android:textColor="@color/white"
+            android:textSize="10sp"
             android:visibility="gone"
-            app:cardBackgroundColor="@color/colorPrimaryVariant"
-            app:cardCornerRadius="24dp"
             app:layout_constraintStart_toEndOf="@+id/holderCircle"
             app:layout_constraintTop_toBottomOf="@+id/tvEmail"
-            tools:visibility="visible">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:paddingStart="8dp"
-                android:paddingEnd="8dp"
-                android:text="@string/admin"
-                android:textColor="@color/white"
-                android:textSize="10sp"
-                tools:ignore="SmallSp" />
-        </com.google.android.material.card.MaterialCardView>
+            tools:ignore="SmallSp"
+            tools:visibility="visible" />
 
         <ImageButton
             android:id="@+id/imgDelete"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:backgroundTint="@android:color/transparent"
+            android:background="@drawable/drawable_bg_border"
             android:contentDescription="@null"
+            android:padding="12dp"
             android:src="@drawable/ic_delete"
             android:visibility="gone"
-            tools:visibility="visible"
-            android:padding="12dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:tint="@color/colorError" />
+            app:tint="@color/colorError"
+            tools:visibility="visible" />
 
         <ImageButton
             android:id="@+id/imgEdit"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:backgroundTint="@android:color/transparent"
+            android:layout_marginEnd="8dp"
+            android:background="@drawable/drawable_bg_border"
             android:contentDescription="@null"
+            android:padding="12dp"
             android:src="@drawable/ic_edit"
             android:visibility="gone"
-            tools:visibility="visible"
-            android:padding="12dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/imgDelete"
             app:layout_constraintTop_toTopOf="parent"
-            app:tint="@color/colorSecondaryVariant" />
+            app:tint="@color/colorSecondaryVariant"
+            tools:visibility="visible" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </com.google.android.material.card.MaterialCardView>

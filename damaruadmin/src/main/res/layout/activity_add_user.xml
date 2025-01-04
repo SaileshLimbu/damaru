@@ -36,149 +36,78 @@
             android:textSize="24sp" />
 
         <com.google.android.material.textfield.TextInputLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            style="@style/CustomTextInputLayout"
             android:layout_marginStart="16dp"
             android:layout_marginTop="32dp"
             android:layout_marginEnd="16dp"
             android:layout_marginBottom="16dp"
             android:hint="@string/name"
-            app:boxBackgroundColor="@android:color/transparent"
-            app:boxBackgroundMode="outline"
-            app:boxCornerRadiusBottomEnd="8dp"
-            app:boxCornerRadiusBottomStart="8dp"
-            app:boxCornerRadiusTopEnd="8dp"
-            app:boxCornerRadiusTopStart="8dp"
-            app:boxStrokeColor="@color/colorPrimaryDark"
-            app:boxStrokeWidth="1dp"
-            app:boxStrokeWidthFocused="2dp"
             app:startIconDrawable="@drawable/ic_account">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/etName"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:inputType="textPersonName"
-                android:paddingStart="24dp"
-                android:paddingEnd="24dp"
-                android:padding="0dp"
-                android:minHeight="44dp"
-                android:paddingBottom="16dp" />
+                style="@style/CustomTextInputEditText"
+                android:inputType="textPersonName" />
 
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            style="@style/CustomTextInputLayout"
             android:layout_marginStart="16dp"
             android:layout_marginTop="12dp"
             android:layout_marginEnd="16dp"
             android:layout_marginBottom="16dp"
             android:hint="@string/email"
-            app:boxBackgroundColor="@android:color/transparent"
-            app:boxBackgroundMode="outline"
-            app:boxCornerRadiusBottomEnd="8dp"
-            app:boxCornerRadiusBottomStart="8dp"
-            app:boxCornerRadiusTopEnd="8dp"
-            app:boxCornerRadiusTopStart="8dp"
-            app:boxStrokeColor="@color/colorPrimaryDark"
-            app:boxStrokeWidth="1dp"
-            app:boxStrokeWidthFocused="2dp"
             app:startIconDrawable="@drawable/ic_email">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/etEmail"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:inputType="textPersonName"
-                android:padding="0dp"
-                android:minHeight="44dp"
-                android:paddingStart="24dp"
-                android:paddingEnd="24dp"
-                android:paddingBottom="16dp" />
+                style="@style/CustomTextInputEditText"
+                android:inputType="textPersonName" />
 
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            style="@style/CustomTextInputLayout"
             android:layout_marginStart="16dp"
             android:layout_marginTop="12dp"
             android:layout_marginEnd="16dp"
             android:layout_marginBottom="16dp"
             android:hint="@string/password"
-            app:boxBackgroundColor="@android:color/transparent"
-            app:boxBackgroundMode="outline"
-            app:boxCornerRadiusBottomEnd="8dp"
-            app:boxCornerRadiusBottomStart="8dp"
-            app:boxCornerRadiusTopEnd="8dp"
-            app:boxCornerRadiusTopStart="8dp"
-            app:boxStrokeColor="@color/colorPrimaryDark"
-            app:boxStrokeWidth="1dp"
-            app:boxStrokeWidthFocused="2dp"
-            app:startIconDrawable="@drawable/ic_password">
+            app:startIconDrawable="@drawable/ic_lock">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/etPassword"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:inputType="textPersonName"
-                android:paddingStart="24dp"
-                android:paddingEnd="24dp"
-                android:padding="0dp"
-                android:minHeight="44dp"
-                android:paddingBottom="16dp" />
+                style="@style/CustomTextInputEditText"
+                android:inputType="textPersonName" />
 
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            style="@style/CustomTextInputLayout"
             android:layout_marginStart="16dp"
             android:layout_marginTop="12dp"
             android:layout_marginEnd="16dp"
             android:layout_marginBottom="16dp"
             android:hint="@string/confirm_password"
-            app:boxBackgroundColor="@android:color/transparent"
-            app:boxBackgroundMode="outline"
-            app:boxCornerRadiusBottomEnd="8dp"
-            app:boxCornerRadiusBottomStart="8dp"
-            app:boxCornerRadiusTopEnd="8dp"
-            app:boxCornerRadiusTopStart="8dp"
-            app:boxStrokeColor="@color/colorPrimaryDark"
-            app:boxStrokeWidth="1dp"
-            app:boxStrokeWidthFocused="2dp"
-            app:startIconDrawable="@drawable/ic_password">
+            app:startIconDrawable="@drawable/ic_lock">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/etConfirmPassword"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:inputType="textPersonName"
-                android:paddingStart="24dp"
-                android:padding="0dp"
-                android:minHeight="44dp"
-                android:paddingEnd="24dp"
-                android:paddingBottom="16dp" />
+                style="@style/CustomTextInputEditText"
+                android:inputType="textPersonName" />
 
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnSubmit"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            style="@style/CustomMaterialButton"
             android:layout_gravity="center"
             android:layout_marginTop="24dp"
             android:layout_marginBottom="64dp"
             android:backgroundTint="@color/primary"
-            android:paddingStart="64dp"
-            android:paddingEnd="64dp"
             android:text="@string/add"
-            android:textColor="@color/white"
-            android:textStyle="bold"
-            app:cornerRadius="8dp"
-            app:icon="@drawable/ic_forward_dot"
-            app:iconGravity="textEnd" />
+            app:cornerRadius="8dp" />
 
     </LinearLayout>
 </androidx.core.widget.NestedScrollView>

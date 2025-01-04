@@ -12,6 +12,7 @@
     <string name="re_enter_your_pin">Re-enter your PIN</string>
     <string name="pin_does_not_matches">Pin does not matches</string>
     <string name="enter_your_pin">Enter Your PIN</string>
+    <string name="login_label">Please sign in to continue.</string>
     <string name="_1">1</string>
     <string name="_2">2</string>
     <string name="_3">3</string>

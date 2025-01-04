@@ -39,7 +39,7 @@ class AddAccountActivity : BaseActivity() {
             account = gson.fromJson(intent.getStringExtra("account"), AccountEntity::class.java)
             binding.etName.setText(account?.accountName)
             binding.btnSubmit.text = getString(R.string.update)
-            binding.lvlNote.visibility = View.GONE
+            binding.viewNote.visibility = View.GONE
             binding.noteDetail.visibility = View.GONE
             binding.title.text = getString(R.string.update_account)
         }

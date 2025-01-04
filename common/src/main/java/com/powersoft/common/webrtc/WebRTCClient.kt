@@ -30,7 +30,7 @@ class WebRTCClient @Inject constructor(
     }
 
     private val iceServers = listOf(
-        PeerConnection.IceServer.builder("stun:stun.l.google.com:19302").createIceServer(),
+//        PeerConnection.IceServer.builder("stun:stun.l.google.com:19302").createIceServer(),
         PeerConnection.IceServer.builder("turn:openrelay.metered.ca:443?transport=tcp")
             .setUsername("openrelayproject")
             .setPassword("openrelayproject")
@@ -127,11 +127,12 @@ class WebRTCClient @Inject constructor(
     /**
      * Send the ICE candidate received from webRTC to target user
      */
-    fun sendIceCandidate(candidate: IceCandidate, deviceId: String) {
-        Log.e(TAG, "sendIceCandidate from Client: $candidate Client id : $deviceId")
+    fun sendIceCandidate(candidate: IceCandidate, clientId: String, deviceId: String) {
+        Log.d(TAG, "sendIceCandidate from Client: $candidate Device id : $deviceId")
         webRTCListener.onTransferEventToSocket(
             DataModelType.IceCandidate,
             DataModel(
+                username = clientId,
                 target = deviceId,
                 iceCandidate = Gson().toJson(candidate)
             )

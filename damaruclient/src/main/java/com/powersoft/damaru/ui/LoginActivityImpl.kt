@@ -39,8 +39,8 @@ class LoginActivityImpl : LoginActivity() {
             //superadmin@damaru.com
             //superAdmin@123
             //SuperAdmin, AndroidUser
-            b.etUsername.setText("fuck2@gmail.com")
-            b.etPassword.setText("Test@123")
+            b.etUsername.setText("test@gmail.com")
+            b.etPassword.setText("password123")
             b.etPin.setText("00000")
         }
     }
