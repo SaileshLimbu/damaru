@@ -32,7 +32,7 @@ class HomeViewmodel @Inject constructor(
         viewModelScope.launch {
             try {
                 _allDevices.postValue(ResponseWrapper.loading())
-                val response = apiService.getMyEmulators()
+                val response = apiService.getAllEmulators()
                 if (response.isSuccessful) {
                     _allDevices.postValue(response.body()?.let {
                         if (response.body().isNullOrEmpty()) {

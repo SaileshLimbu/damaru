@@ -101,7 +101,8 @@ class AccountsFragment : Fragment(R.layout.fragment_accounts) {
             when (it) {
                 is ResponseWrapper.Success -> {
                     b.swipeRefresh.isRefreshing = false
-                    val accountAdapter = AccountsAdapter(userRepo.seasonEntity.value?.isRootUser ?: false, it.data, object : RecyclerViewItemClickListener<AccountEntity> {
+                    val accountAdapter = AccountsAdapter(AccountsAdapter.Companion.For.ACCOUNT_LIST, userRepo.seasonEntity.value?.isRootUser ?: false, it.data,
+                        object : RecyclerViewItemClickListener<AccountEntity> {
                         override fun onItemClick(viewId: Int, position: Int, data: AccountEntity) {
                             when (viewId) {
                                 R.id.imgDelete -> {

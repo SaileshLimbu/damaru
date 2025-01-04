@@ -12,9 +12,32 @@ import javax.inject.Singleton
 @Singleton
 class DeviceRepo @Inject constructor(private val apiService: ApiServiceImpl, private val gson: Gson) {
 
-    suspend fun getHisEmulators(): ResponseWrapper<List<DeviceEntity>> {
+    suspend fun getAllDevices(): ResponseWrapper<List<DeviceEntity>> {
         return try {
-            val response = apiService.getMyEmulators()
+            val response = apiService.getAllEmulators()
+            if (response.isSuccessful) {
+                response.body()?.let {
+                    ResponseWrapper.success(it)
+                } ?: ResponseWrapper.error(getUnknownError("Something went wrong (Code 632)"))
+            } else {
+                val errorResponse = try {
+                    val errorBody = response.errorBody()?.string()
+                    val error = gson.fromJson(errorBody, ErrorResponse::class.java)
+                    error
+                } catch (e: Exception) {
+                    getUnknownError()
+                }
+
+                ResponseWrapper.error(errorResponse)
+            }
+        } catch (e: Exception) {
+            ResponseWrapper.error(getUnknownError("Something went wrong (Code 34523)"))
+        }
+    }
+
+    suspend fun getEmulatorOfAccount(accountId : String): ResponseWrapper<List<DeviceEntity>> {
+        return try {
+            val response = apiService.getHisEmulator(accountId)
             if (response.isSuccessful) {
                 response.body()?.let {
                     ResponseWrapper.success(it)

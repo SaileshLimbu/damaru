@@ -10,6 +10,7 @@ import retrofit2.http.GET
 import retrofit2.http.POST
 import retrofit2.http.PUT
 import retrofit2.http.Path
+import retrofit2.http.Query
 
 interface ApiService {
     @POST("auth/login")
@@ -26,4 +27,13 @@ interface ApiService {
 
     @POST("accounts")
     suspend fun addAccount(@Body requestBody: RequestBody): Response<Any>
+
+    @GET("emulators/linkedAccounts")
+    suspend fun getAccountsLinkedToDevice(@Query("deviceId") deviceId : String): Response<List<AccountEntity>>
+
+    @GET("emulators/unassign-multi-accounts")
+    suspend fun unlinkAccountFromDevice(@Body requestBody: RequestBody): Response<Any>
+
+    @POST("emulators/assign-multi-emulators")
+    suspend fun linkDevicesToAccount(@Body requestBody: RequestBody): Response<Any>
 }

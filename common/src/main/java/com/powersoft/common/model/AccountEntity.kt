@@ -16,7 +16,7 @@ data class AccountEntity(
     @SerializedName("id")
     val id: Int?,
     @SerializedName("is_admin")
-    val isAdmin: Boolean?,
+    val isAdmin: Boolean = false,
     @SerializedName("last_login")
     val lastLogin: String?,
     @SerializedName("pin")

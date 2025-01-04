@@ -14,10 +14,13 @@ import com.powersoft.common.listeners.RecyclerViewItemClickListener
 import com.powersoft.common.model.AccountEntity
 import com.powersoft.common.model.DeviceEntity
 import com.powersoft.common.model.ErrorResponse
+import com.powersoft.common.model.PickerEntity
 import com.powersoft.common.model.ResponseWrapper
 import com.powersoft.common.repository.UserRepo
+import com.powersoft.common.ui.PickerActivity
 import com.powersoft.common.ui.helper.AlertHelper
 import com.powersoft.common.ui.helper.ResponseCallback
+import com.powersoft.common.utils.Logg
 import com.powersoft.damaru.R
 import com.powersoft.damaru.adapters.MyDevicesAdapter
 import com.powersoft.damaru.databinding.ActivityAccountDetailBinding
@@ -50,6 +53,24 @@ class AccountDetailActivity : BaseActivity() {
     private val linkDeviceResultLauncher =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
             if (result.resultCode == RESULT_OK) {
+                val items: ArrayList<PickerEntity>? = result.data?.getParcelableArrayListExtra<PickerEntity>(PickerActivity.Companion.EXTRA_SELECTED_ITEMS)
+                Logg.d("Fuck there  >>>>> ${items?.map { pickerEntity ->
+                    gson.fromJson(pickerEntity.dataJson, DeviceEntity::class.java).deviceId.toString()
+                }}")
+                if (items?.isNotEmpty() == false) {
+                    vm.linkDevices(items.map { pickerEntity ->
+                        gson.fromJson(pickerEntity.dataJson, DeviceEntity::class.java).deviceId.toString()
+                    }.toList(), userRepo.seasonEntity.value?.accountId.toString(), account.id.toString(), object : ResponseCallback {
+                        override fun onResponse(any: Any, errorResponse: ErrorResponse?) {
+                            setResult(RESULT_OK)
+                            if (errorResponse != null) {
+                                AlertHelper.showAlertDialog(this@AccountDetailActivity, title = getString(R.string.error), message = errorResponse.message?.message ?: "")
+                            } else {
+                                AlertHelper.showSnackbar(binding.root, getString(R.string.linked_success))
+                            }
+                        }
+                    })
+                }
             }
         }
 
@@ -133,7 +154,11 @@ class AccountDetailActivity : BaseActivity() {
         })
 
         binding.extendedFAB.setOnClickListener {
-//            startActivityForResultLauncher.launch(Intent(applicationContext, AddAccountActivity::class.java))
+            if (vm.allDevices.value is ResponseWrapper.Success && (vm.allDevices.value as ResponseWrapper.Success).data.isNotEmpty()) {
+                openPicker()
+            } else {
+                vm.getAllDevices()
+            }
         }
 
         binding.btnDelete.setOnClickListener {
@@ -164,7 +189,7 @@ class AccountDetailActivity : BaseActivity() {
             layoutManager = GridLayoutManager(context, 2)
         }
 
-        vm.allDevices.observe(this) {
+        vm.allLinkedDevices.observe(this) {
             when (it) {
                 is ResponseWrapper.Success -> {
                     val deviceAdapter = MyDevicesAdapter(it.data, object : RecyclerViewItemClickListener<DeviceEntity> {
@@ -213,5 +238,36 @@ class AccountDetailActivity : BaseActivity() {
                 }
             }
         }
+
+        vm.allDevices.observe(this) {
+            when (it) {
+                is ResponseWrapper.Success -> {
+                    openPicker()
+                }
+
+                is ResponseWrapper.Error -> {
+                    AlertHelper.showAlertDialog(
+                        this@AccountDetailActivity, title = getString(R.string.error),
+                        message = it.errorResponse.message?.message ?: ""
+                    )
+                }
+
+                is ResponseWrapper.Loading -> {
+
+                }
+            }
+        }
+
+        vm.getLinkedDevices(account.id.toString())
+    }
+
+    private fun openPicker() {
+        PickerActivity.Companion.startForResult(
+            this@AccountDetailActivity,
+            (vm.allDevices.value as ResponseWrapper.Success).data.map {
+                PickerEntity(it.deviceName.toString(), gson.toJson(it))
+            }.toList(),
+            true, linkDeviceResultLauncher
+        )
     }
 }

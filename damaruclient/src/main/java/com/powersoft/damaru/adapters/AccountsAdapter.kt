@@ -10,10 +10,17 @@ import com.powersoft.common.model.AccountEntity
 import com.powersoft.damaru.databinding.ItemAccountBinding
 
 class AccountsAdapter(
+    private val adapterFor : For,
     private val isRootUser: Boolean,
     private val deviceList: List<AccountEntity>,
     private val clickListener: RecyclerViewItemClickListener<AccountEntity>,
 ) : RecyclerView.Adapter<AccountsAdapter.ViewHolder>() {
+
+    companion object{
+        enum class For{
+            LINKED_ACCOUNTS, ACCOUNT_LIST
+        }
+    }
 
     inner class ViewHolder(private val binding: ItemAccountBinding) :
         RecyclerView.ViewHolder(binding.root) {
@@ -43,7 +50,7 @@ class AccountsAdapter(
                 } else {
                     imgDelete.visibility = View.GONE
                 }
-                if (isRootUser || account.isAdmin == true) {
+                if ((isRootUser || account.isAdmin == true) && adapterFor != For.LINKED_ACCOUNTS) {
                     imgEdit.visibility = View.VISIBLE
                 } else {
                     imgEdit.visibility = View.GONE

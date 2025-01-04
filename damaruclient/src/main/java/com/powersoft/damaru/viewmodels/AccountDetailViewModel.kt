@@ -25,16 +25,29 @@ class AccountDetailViewModel @Inject constructor(
     val allDevices: LiveData<ResponseWrapper<List<DeviceEntity>>>
         get() = _allDevices
 
-    init {
-        getHisDevices()
-    }
+    private val _allLinkedDevices = MutableLiveData<ResponseWrapper<List<DeviceEntity>>>()
 
-    private fun getHisDevices() {
+    val allLinkedDevices: LiveData<ResponseWrapper<List<DeviceEntity>>>
+        get() = _allLinkedDevices
+
+    fun getAllDevices() {
+        showLoader()
         _allDevices.postValue(ResponseWrapper.loading())
         viewModelScope.launch {
-            val response = deviceRepo.getHisEmulators()
+            val response = deviceRepo.getAllDevices()
             withContext(Dispatchers.Main){
+                hideLoader()
                 _allDevices.postValue(response)
+            }
+        }
+    }
+
+    fun getLinkedDevices(accountId : String) {
+        _allLinkedDevices.postValue(ResponseWrapper.loading())
+        viewModelScope.launch {
+            val response = deviceRepo.getEmulatorOfAccount(accountId)
+            withContext(Dispatchers.Main){
+                _allLinkedDevices.postValue(response)
             }
         }
     }
@@ -48,6 +61,29 @@ class AccountDetailViewModel @Inject constructor(
                 when (response) {
                     is ResponseWrapper.Success -> {
                         responseCallback.onResponse(response.data, null)
+                    }
+
+                    is ResponseWrapper.Error -> {
+                        responseCallback.onResponse(Any(), response.errorResponse)
+                    }
+
+                    is ResponseWrapper.Loading -> {
+
+                    }
+                }
+            }
+        }
+    }
+
+    fun linkDevices(deviceIds: List<String>, userId: String, accountId: String, responseCallback: ResponseCallback) {
+        showLoader()
+        viewModelScope.launch {
+            val response = accountRepo.linkDevicesToAccount(deviceIds, userId, accountId)
+            withContext(Dispatchers.Main) {
+                hideLoader()
+                when (response) {
+                    is ResponseWrapper.Success -> {
+                        responseCallback.onResponse(response.data ?: Any(), null)
                     }
 
                     is ResponseWrapper.Error -> {
