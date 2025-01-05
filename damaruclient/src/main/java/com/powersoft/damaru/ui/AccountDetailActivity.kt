@@ -62,10 +62,10 @@ class AccountDetailActivity : BaseActivity() {
                         }
                     }"
                 )
-                if (items?.isNotEmpty() == false) {
+                if (items?.isNotEmpty() == true) {
                     vm.linkDevices(items.map { pickerEntity ->
                         gson.fromJson(pickerEntity.dataJson, DeviceEntity::class.java).deviceId.toString()
-                    }.toList(), userRepo.seasonEntity.value?.accountId.toString(), account.id.toString(), object : ResponseCallback {
+                    }.toList(), userRepo.seasonEntity.value?.userId.toString(), account.id.toString(), object : ResponseCallback {
                         override fun onResponse(any: Any, errorResponse: ErrorResponse?) {
                             setResult(RESULT_OK)
                             if (errorResponse != null) {

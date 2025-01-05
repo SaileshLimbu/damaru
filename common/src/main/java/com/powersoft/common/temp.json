@@ -1,0 +1,33 @@
+{
+  "status": true,
+  "message" : "",
+  "data" : [],
+
+  "id": 3,
+  "account_name": "Test One",
+  "first_login": false,
+  "is_admin": false,
+  "pin": "11111",
+  "created_at": "2025-01-03 23:49:25",
+  "updated_at": "2025-01-05 02:18:55",
+  "last_login": "2025-01-05",
+  "user": {
+    "id": 4,
+    "email": "test@gmail.com",
+    "name": "Sailesh",
+    "password": "$2b$10$mkBtTNgZMU6lSloVYGbh9OwCmuElSZNkd1CbhYPzfYW6.hqnI9Emu",
+    "created_at": "2025-01-03 23:48:43",
+    "updated_at": "2025-01-03 23:48:43"
+  },
+  "devices": [
+    {
+      "device_id": "cb894a4afd72c00b",
+      "device_name": "Vivo V2242A",
+      "status": "online",
+      "state": "REGISTERED",
+      "created_at": "2025-01-04 22:59:42",
+      "updated_at": "2025-01-05 04:58:59",
+      "screenshot": "http://13.201.152.191:3000/default.png"
+    }
+  ]
+}

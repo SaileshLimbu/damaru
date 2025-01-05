@@ -7,6 +7,7 @@ import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.POST
+import retrofit2.http.Path
 import retrofit2.http.Query
 
 interface ApiServiceImpl : ApiService {
@@ -14,7 +15,7 @@ interface ApiServiceImpl : ApiService {
     @GET("emulators")
     suspend fun getAllEmulators(): Response<List<DeviceEntity>>
 
-    @GET("emulators")
-    suspend fun getHisEmulator(@Query("accountId") accountId : String): Response<List<DeviceEntity>>
+    @GET("accounts/{id}")
+    suspend fun getHisEmulator(@Path("id") accountId : String): Response<List<DeviceEntity>>
 
 }
