@@ -22,8 +22,8 @@ abstract class PinActivity : BaseActivity() {
     private var pinOnce = ""
 
     abstract fun onPinVerified()
-    abstract fun onPinResetResponse(any: Any, errorResponse: ErrorResponse?)
-    abstract fun onLogout(any: Any, errorResponse: ErrorResponse?)
+    abstract fun onPinResetResponse(any: Any, errorMessage: String?)
+    abstract fun onLogout(any: Any, errorMessage: String?)
     abstract fun getAccountId(): Int?
     abstract fun isChangePin(): Boolean
 
@@ -41,8 +41,8 @@ abstract class PinActivity : BaseActivity() {
 
         binding.btnLogout.setOnClickListener {
             viewModel.logout(object : ResponseCallback {
-                override fun onResponse(any: Any, errorResponse: ErrorResponse?) {
-                    onLogout(any, errorResponse)
+                override fun onResponse(any: Any, errorMessage: String?) {
+                    onLogout(any, errorMessage)
                 }
             })
         }
@@ -110,8 +110,8 @@ abstract class PinActivity : BaseActivity() {
         } else {
             if (pinOnce == enteredPin.toString()) {
                 viewModel.resetPin(getAccountId(), enteredPin.toString(), object : ResponseCallback {
-                    override fun onResponse(any: Any, errorResponse: ErrorResponse?) {
-                        onPinResetResponse(any, errorResponse)
+                    override fun onResponse(any: Any, errorMessage: String?) {
+                        onPinResetResponse(any, errorMessage)
                     }
                 })
                 pinOnce = ""

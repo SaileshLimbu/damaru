@@ -2,7 +2,6 @@ package com.powersoft.damaru.ui
 
 import android.content.Intent
 import com.powersoft.common.R
-import com.powersoft.common.model.ErrorResponse
 import com.powersoft.common.repository.UserRepo
 import com.powersoft.common.ui.PinActivity
 import com.powersoft.common.ui.helper.AlertHelper
@@ -18,19 +17,18 @@ class PinActivityImpl : PinActivity() {
 
     }
 
-    override fun onPinResetResponse(any: Any, errorResponse: ErrorResponse?) {
-        if (errorResponse == null) {
+    override fun onPinResetResponse(any: Any, errorMessage: String?) {
+        if (errorMessage == null) {
             startActivity(Intent(this@PinActivityImpl, MainActivity::class.java))
             return
         } else {
             AlertHelper.showAlertDialog(
-                this@PinActivityImpl, errorResponse.message?.error ?: getString(R.string.error),
-                errorResponse.message?.message ?: getString(R.string.error)
+                this@PinActivityImpl, getString(R.string.error), errorMessage
             )
         }
     }
 
-    override fun onLogout(any: Any, errorResponse: ErrorResponse?) {
+    override fun onLogout(any: Any, errorMessage: String?) {
         startActivity(
             Intent(this@PinActivityImpl, LoginActivityImpl::class.java).setFlags(
                 Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK

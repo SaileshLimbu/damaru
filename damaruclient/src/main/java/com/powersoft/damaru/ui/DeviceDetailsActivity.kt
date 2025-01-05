@@ -2,7 +2,6 @@ package com.powersoft.damaru.ui
 
 import android.annotation.SuppressLint
 import android.os.Bundle
-import android.view.View
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -12,7 +11,6 @@ import com.powersoft.common.base.BaseViewModel
 import com.powersoft.common.listeners.RecyclerViewItemClickListener
 import com.powersoft.common.model.AccountEntity
 import com.powersoft.common.model.DeviceEntity
-import com.powersoft.common.model.ErrorResponse
 import com.powersoft.common.model.ResponseWrapper
 import com.powersoft.common.repository.UserRepo
 import com.powersoft.common.ui.helper.AlertHelper
@@ -80,7 +78,7 @@ class DeviceDetailsActivity : BaseActivity() {
 
                     is ResponseWrapper.Error -> {
                         binding.loader.root.hide()
-                        binding.errorView.tvError.text = response.errorResponse.message?.message
+                        binding.errorView.tvError.text = response.message
                         binding.errorView.root.show()
                     }
 
@@ -108,10 +106,9 @@ class DeviceDetailsActivity : BaseActivity() {
                             onPositiveButtonClick = {
                                 vm.unlinkAccount(vm.deviceId, userRepo.seasonEntity.value?.userId.toString(), listOf(data.id.toString()),
                                     object : ResponseCallback {
-                                        override fun onResponse(any: Any, errorResponse: ErrorResponse?) {
+                                        override fun onResponse(any: Any, errorMessage: String?) {
                                             AlertHelper.showAlertDialog(
-                                                this@DeviceDetailsActivity, title = errorResponse?.message?.error ?: getString(R.string.error),
-                                                message = errorResponse?.message?.message ?: getString(R.string.error),
+                                                this@DeviceDetailsActivity, getString(R.string.error), errorMessage ?: getString(R.string.error),
                                             )
                                         }
                                     })

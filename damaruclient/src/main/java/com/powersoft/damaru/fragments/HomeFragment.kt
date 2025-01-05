@@ -72,7 +72,7 @@ class HomeFragment : Fragment(R.layout.fragment_home), RecyclerViewItemClickList
 
                 is ResponseWrapper.Error -> {
                     b.loader.root.hide()
-                    b.errorView.tvError.text = it.errorResponse.message?.message
+                    b.errorView.tvError.text = it.message
                     b.errorView.root.show()
 
                     b.swipeRefresh.isRefreshing = false

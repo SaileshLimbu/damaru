@@ -113,7 +113,7 @@ class AccountsFragment : Fragment(R.layout.fragment_accounts) {
                 is ResponseWrapper.Error -> {
                     b.swipeRefresh.isRefreshing = false
                     b.loader.root.hide()
-                    b.errorView.tvError.text = it.errorResponse.message?.message
+                    b.errorView.tvError.text = it.message
                     b.errorView.root.show()
                 }
 
@@ -139,10 +139,10 @@ class AccountsFragment : Fragment(R.layout.fragment_accounts) {
                                     negativeButtonText = getString(R.string.cancle),
                                     onPositiveButtonClick = {
                                         vm.deleteAccount(data.id!!, object : ResponseCallback {
-                                            override fun onResponse(any: Any, errorResponse: ErrorResponse?) {
+                                            override fun onResponse(any: Any, errorMessage: String?) {
                                                 AlertHelper.showAlertDialog(
-                                                    context, title = errorResponse?.message?.error ?: getString(R.string.error),
-                                                    message = errorResponse?.message?.message ?: getString(R.string.error),
+                                                    context, getString(R.string.error),
+                                                    errorMessage ?: getString(R.string.error),
                                                 )
                                             }
                                         })

@@ -3,21 +3,18 @@ package com.powersoft.damaru.viewmodels
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
-import com.google.gson.Gson
 import com.powersoft.common.base.BaseViewModel
 import com.powersoft.common.model.DeviceEntity
-import com.powersoft.common.model.ErrorResponse
 import com.powersoft.common.model.ResponseWrapper
-import com.powersoft.common.model.getUnknownError
-import com.powersoft.damaru.webservices.ApiServiceImpl
+import com.powersoft.damaru.repository.DeviceRepo
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class HomeViewmodel @Inject constructor(
-    private val apiService: ApiServiceImpl,
-    private val gson: Gson
+    private val repo: DeviceRepo
 ) : BaseViewModel() {
     private val _allDevices = MutableLiveData<ResponseWrapper<List<DeviceEntity>>>()
 
@@ -29,31 +26,10 @@ class HomeViewmodel @Inject constructor(
     }
 
     fun getMyEmulators() {
-        viewModelScope.launch {
-            try {
-                _allDevices.postValue(ResponseWrapper.loading())
-                val response = apiService.getAllEmulators()
-                if (response.isSuccessful) {
-                    _allDevices.postValue(response.body()?.let {
-                        if (response.body().isNullOrEmpty()) {
-                            ResponseWrapper.error(getUnknownError("No Emulators Found"))
-                        } else {
-                            ResponseWrapper.success(it)
-                        }
-                    } ?: ResponseWrapper.error(getUnknownError("Something went wrong (Code 342)")))
-                } else {
-                    val errorResponse = try {
-                        val errorBody = response.errorBody()?.string()
-                        val error = gson.fromJson(errorBody, ErrorResponse::class.java)
-                        error
-                    } catch (e: Exception) {
-                        getUnknownError()
-                    }
-                    _allDevices.postValue(ResponseWrapper.error(errorResponse))
-                }
-            } catch (e: Exception) {
-                _allDevices.postValue(ResponseWrapper.error(getUnknownError("Something went wrong (Code 37265)")))
-            }
+        viewModelScope.launch(Dispatchers.IO) {
+            _allDevices.postValue(ResponseWrapper.loading())
+            val response = repo.getAllDevices()
+            _allDevices.postValue(response)
         }
     }
 }

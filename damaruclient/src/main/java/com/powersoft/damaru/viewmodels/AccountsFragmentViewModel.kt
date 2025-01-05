@@ -45,7 +45,7 @@ class AccountsFragmentViewModel @Inject constructor(
                     }
 
                     is ResponseWrapper.Error -> {
-                        responseCallback.onResponse(Any(), response.errorResponse)
+                        responseCallback.onResponse(Any(), response.message)
                     }
 
                     is ResponseWrapper.Loading -> {

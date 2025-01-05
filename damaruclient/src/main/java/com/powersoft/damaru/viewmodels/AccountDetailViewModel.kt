@@ -64,7 +64,7 @@ class AccountDetailViewModel @Inject constructor(
                     }
 
                     is ResponseWrapper.Error -> {
-                        responseCallback.onResponse(Any(), response.errorResponse)
+                        responseCallback.onResponse(Any(), response.message)
                     }
 
                     is ResponseWrapper.Loading -> {
@@ -87,7 +87,7 @@ class AccountDetailViewModel @Inject constructor(
                     }
 
                     is ResponseWrapper.Error -> {
-                        responseCallback.onResponse(Any(), response.errorResponse)
+                        responseCallback.onResponse(Any(), response.message)
                     }
 
                     is ResponseWrapper.Loading -> {

@@ -11,7 +11,6 @@ import com.powersoft.common.base.BaseActivity
 import com.powersoft.common.base.BaseViewModel
 import com.powersoft.common.model.AccountEntity
 import com.powersoft.common.model.DeviceEntity
-import com.powersoft.common.model.ErrorResponse
 import com.powersoft.common.model.PickerEntity
 import com.powersoft.common.model.ResponseWrapper
 import com.powersoft.common.repository.UserRepo
@@ -66,10 +65,10 @@ class AccountDetailActivity : BaseActivity() {
                     vm.linkDevices(items.map { pickerEntity ->
                         gson.fromJson(pickerEntity.dataJson, DeviceEntity::class.java).deviceId.toString()
                     }.toList(), userRepo.seasonEntity.value?.accountId.toString(), account.id.toString(), object : ResponseCallback {
-                        override fun onResponse(any: Any, errorResponse: ErrorResponse?) {
+                        override fun onResponse(any: Any, errorMessage: String?) {
                             setResult(RESULT_OK)
-                            if (errorResponse != null) {
-                                AlertHelper.showAlertDialog(this@AccountDetailActivity, title = getString(R.string.error), message = errorResponse.message?.message ?: "")
+                            if (errorMessage != null) {
+                                AlertHelper.showAlertDialog(this@AccountDetailActivity, title = getString(R.string.error), message = errorMessage ?: "")
                             } else {
                                 AlertHelper.showSnackbar(binding.root, getString(R.string.linked_success))
                             }
@@ -113,14 +112,14 @@ class AccountDetailActivity : BaseActivity() {
 
         binding.btnDelete.setOnClickListener {
             vm.deleteAccount(account.id!!, object : ResponseCallback {
-                override fun onResponse(any: Any, errorResponse: ErrorResponse?) {
-                    if (errorResponse == null) {
+                override fun onResponse(any: Any, errorMessage: String?) {
+                    if (errorMessage == null) {
                         setResult(RESULT_OK)
                         finish()
                     } else {
                         AlertHelper.showAlertDialog(
-                            this@AccountDetailActivity, title = errorResponse.message?.error ?: getString(R.string.error),
-                            message = errorResponse.message?.message ?: getString(R.string.error),
+                            this@AccountDetailActivity, getString(R.string.error),
+                            message = errorMessage,
                         )
                     }
                 }
@@ -162,11 +161,10 @@ class AccountDetailActivity : BaseActivity() {
                 negativeButtonText = getString(R.string.cancle),
                 onPositiveButtonClick = {
                     vm.deleteAccount(account.id!!, object : ResponseCallback {
-                        override fun onResponse(any: Any, errorResponse: ErrorResponse?) {
-                            if (errorResponse != null) {
+                        override fun onResponse(any: Any, errorMessage: String?) {
+                            if (errorMessage != null) {
                                 AlertHelper.showAlertDialog(
-                                    this@AccountDetailActivity, title = errorResponse.message?.error ?: getString(R.string.error),
-                                    message = errorResponse.message?.message ?: getString(R.string.error),
+                                    this@AccountDetailActivity, getString(R.string.error), errorMessage
                                 )
                             } else {
                                 setResult(RESULT_OK)
@@ -195,7 +193,7 @@ class AccountDetailActivity : BaseActivity() {
 
                 is ResponseWrapper.Error -> {
                     binding.loader.root.hide()
-                    binding.errorView.tvError.text = it.errorResponse.message?.message
+                    binding.errorView.tvError.text = it.message
                     binding.errorView.root.show()
                 }
 
@@ -215,7 +213,7 @@ class AccountDetailActivity : BaseActivity() {
                 is ResponseWrapper.Error -> {
                     AlertHelper.showAlertDialog(
                         this@AccountDetailActivity, title = getString(R.string.error),
-                        message = it.errorResponse.message?.message ?: ""
+                        message = it.message
                     )
                 }
 

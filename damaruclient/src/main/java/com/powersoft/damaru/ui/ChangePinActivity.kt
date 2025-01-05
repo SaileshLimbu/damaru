@@ -4,7 +4,6 @@ import android.os.Bundle
 import com.google.gson.Gson
 import com.powersoft.common.R
 import com.powersoft.common.model.AccountEntity
-import com.powersoft.common.model.ErrorResponse
 import com.powersoft.common.ui.PinActivity
 import com.powersoft.common.ui.helper.AlertHelper
 import dagger.hilt.android.AndroidEntryPoint
@@ -21,20 +20,19 @@ class ChangePinActivity @Inject constructor() : PinActivity() {
 
     }
 
-    override fun onPinResetResponse(any: Any, errorResponse: ErrorResponse?) {
-        if (errorResponse == null) {
+    override fun onPinResetResponse(any: Any, errorMessage: String?) {
+        if (errorMessage == null) {
             setResult(RESULT_OK)
             finish()
             return
         } else {
             AlertHelper.showAlertDialog(
-                this@ChangePinActivity, errorResponse.message?.error ?: getString(R.string.error),
-                errorResponse.message?.message ?: getString(R.string.error)
+                this@ChangePinActivity, getString(R.string.error), errorMessage
             )
         }
     }
 
-    override fun onLogout(any: Any, errorResponse: ErrorResponse?) {
+    override fun onLogout(any: Any, errorMessage: String?) {
     }
 
     override fun getAccountId(): Int? {
