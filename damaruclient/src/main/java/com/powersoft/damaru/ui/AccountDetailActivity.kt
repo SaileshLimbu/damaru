@@ -2,7 +2,6 @@ package com.powersoft.damaru.ui
 
 import android.content.Intent
 import android.os.Bundle
-import android.view.View
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.recyclerview.widget.GridLayoutManager
@@ -10,7 +9,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.gson.Gson
 import com.powersoft.common.base.BaseActivity
 import com.powersoft.common.base.BaseViewModel
-import com.powersoft.common.listeners.RecyclerViewItemClickListener
 import com.powersoft.common.model.AccountEntity
 import com.powersoft.common.model.DeviceEntity
 import com.powersoft.common.model.ErrorResponse
@@ -21,8 +19,11 @@ import com.powersoft.common.ui.PickerActivity
 import com.powersoft.common.ui.helper.AlertHelper
 import com.powersoft.common.ui.helper.ResponseCallback
 import com.powersoft.common.utils.Logg
+import com.powersoft.common.utils.hide
+import com.powersoft.common.utils.show
+import com.powersoft.common.utils.visibility
 import com.powersoft.damaru.R
-import com.powersoft.damaru.adapters.MyDevicesAdapter
+import com.powersoft.damaru.adapters.DeviceListAdapter
 import com.powersoft.damaru.databinding.ActivityAccountDetailBinding
 import com.powersoft.damaru.viewmodels.AccountDetailViewModel
 import dagger.hilt.android.AndroidEntryPoint
@@ -54,9 +55,13 @@ class AccountDetailActivity : BaseActivity() {
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
             if (result.resultCode == RESULT_OK) {
                 val items: ArrayList<PickerEntity>? = result.data?.getParcelableArrayListExtra<PickerEntity>(PickerActivity.Companion.EXTRA_SELECTED_ITEMS)
-                Logg.d("Fuck there  >>>>> ${items?.map { pickerEntity ->
-                    gson.fromJson(pickerEntity.dataJson, DeviceEntity::class.java).deviceId.toString()
-                }}")
+                Logg.d(
+                    "Fuck there  >>>>> ${
+                        items?.map { pickerEntity ->
+                            gson.fromJson(pickerEntity.dataJson, DeviceEntity::class.java).deviceId.toString()
+                        }
+                    }"
+                )
                 if (items?.isNotEmpty() == false) {
                     vm.linkDevices(items.map { pickerEntity ->
                         gson.fromJson(pickerEntity.dataJson, DeviceEntity::class.java).deviceId.toString()
@@ -92,31 +97,19 @@ class AccountDetailActivity : BaseActivity() {
         binding.tvAccountName.text = account.accountName
         binding.tvPin.text = account.pin
         binding.tvCreatedAt.text = getString(R.string.created_at, account.createdAt)
-        if (userRepo.seasonEntity.value?.isRootUser == true || account.isAdmin == true) {
-            binding.lvlPin.visibility = View.VISIBLE
-            binding.tvPin.visibility = View.VISIBLE
-        } else {
-            binding.btnDelete.visibility = View.GONE
-            binding.lvlPin.visibility = View.GONE
-            binding.tvPin.visibility = View.GONE
-        }
-        if (userRepo.seasonEntity.value?.isRootUser == true && account.isAdmin == false) {
-            binding.btnDelete.visibility = View.VISIBLE
-        } else {
-            binding.btnDelete.visibility = View.GONE
-        }
-        if (userRepo.seasonEntity.value?.accountId == account.id || userRepo.seasonEntity.value?.isRootUser == true || account.isAdmin == true) {
-            binding.btnChangePin.visibility = View.VISIBLE
-            binding.imgEdit.visibility = View.VISIBLE
-        } else {
-            binding.btnChangePin.visibility = View.GONE
-            binding.imgEdit.visibility = View.GONE
-        }
-        if (account.isAdmin == true) {
-            binding.holderAdminAccount.visibility = View.VISIBLE
-        } else {
-            binding.holderAdminAccount.visibility = View.GONE
-        }
+
+        val isRootUserOrAdmin = userRepo.seasonEntity.value?.isRootUser == true || account.isAdmin
+        binding.lvlPin.visibility(isRootUserOrAdmin)
+        binding.tvPin.visibility(isRootUserOrAdmin)
+        binding.btnDelete.visibility(userRepo.seasonEntity.value?.isRootUser == true && !account.isAdmin)
+
+        val isMyAccountOrRootAccountOrAdmin = userRepo.seasonEntity.value?.accountId == account.id ||
+                userRepo.seasonEntity.value?.isRootUser == true ||
+                account.isAdmin
+        binding.btnChangePin.visibility(isMyAccountOrRootAccountOrAdmin)
+        binding.imgEdit.visibility(isMyAccountOrRootAccountOrAdmin)
+
+        binding.holderAdminAccount.visibility(account.isAdmin)
 
         binding.btnDelete.setOnClickListener {
             vm.deleteAccount(account.id!!, object : ResponseCallback {
@@ -192,49 +185,23 @@ class AccountDetailActivity : BaseActivity() {
         vm.allLinkedDevices.observe(this) {
             when (it) {
                 is ResponseWrapper.Success -> {
-                    val deviceAdapter = MyDevicesAdapter(it.data, object : RecyclerViewItemClickListener<DeviceEntity> {
-                        override fun onItemClick(viewId: Int, position: Int, data: DeviceEntity) {
-//                            if (userRepo.seasonEntity.value?.isRootUser == true) {
-//                                val dialog: AlertDialog.Builder = AlertDialog.Builder(this@AccountDetailActivity)
-//                                dialog.setTitle("Options")
-//                                dialog.setItems(arrayOf("Connect to device", "Device Details")) { dialogInterface, itemPos ->
-//                                    dialogInterface.dismiss()
-//                                    when (itemPos) {
-//                                        0 -> {
-//                                            val intent = Intent(applicationContext, DeviceControlActivity::class.java)
-//                                            startActivity(intent)
-//                                        }
-//
-//                                        else -> {
-//                                            startActivity(Intent(applicationContext, DeviceDetailsActivity::class.java).putExtra("device", Gson().toJson(data)))
-//                                        }
-//                                    }
-//                                }
-//                                dialog.show()
-//                            } else {
-//                                val intent = Intent(applicationContext, DeviceControlActivity::class.java)
-////                                    .putExtra(DeviceControlActivity.USER_NAME, "theone")
-////                                    .putExtra(DeviceControlActivity.TARGET_USER_NAME, data.deviceId)
-//                                startActivity(intent)
-//                            }
-                        }
-
-                    })
+                    val deviceAdapter = DeviceListAdapter(null)
+                    deviceAdapter.submitList(it.data)
                     binding.recyclerView.adapter = deviceAdapter
 
-                    binding.loader.root.visibility = View.GONE
-                    binding.errorView.root.visibility = View.GONE
+                    binding.loader.root.hide()
+                    binding.errorView.root.hide()
                 }
 
                 is ResponseWrapper.Error -> {
-                    binding.loader.root.visibility = View.GONE
+                    binding.loader.root.hide()
                     binding.errorView.tvError.text = it.errorResponse.message?.message
-                    binding.errorView.root.visibility = View.VISIBLE
+                    binding.errorView.root.show()
                 }
 
                 is ResponseWrapper.Loading -> {
-                    binding.loader.root.visibility = View.VISIBLE
-                    binding.errorView.root.visibility = View.GONE
+                    binding.loader.root.show()
+                    binding.errorView.root.hide()
                 }
             }
         }

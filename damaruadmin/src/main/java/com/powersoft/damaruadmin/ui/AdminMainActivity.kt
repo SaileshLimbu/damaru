@@ -12,6 +12,8 @@ import com.powersoft.common.base.BaseViewModel
 import com.powersoft.common.listeners.RecyclerViewItemClickListener
 import com.powersoft.common.model.ResponseWrapper
 import com.powersoft.common.model.UserEntity
+import com.powersoft.common.utils.hide
+import com.powersoft.common.utils.show
 import com.powersoft.damaruadmin.adapters.UserAdapter
 import com.powersoft.damaruadmin.databinding.ActivityAdminMainBinding
 import com.powersoft.damaruadmin.viewmodels.AdminMainViewModel
@@ -21,6 +23,7 @@ import dagger.hilt.android.AndroidEntryPoint
 class AdminMainActivity : BaseActivity() {
     private lateinit var binding: ActivityAdminMainBinding
     private val viewModel: AdminMainViewModel by viewModels()
+    private val userAdapter by lazy { createUserAdapter() }
 
     private val addUserForResultLauncher =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
@@ -70,31 +73,37 @@ class AdminMainActivity : BaseActivity() {
         })
 
         binding.recyclerView.layoutManager = LinearLayoutManager(this)
+        binding.recyclerView.adapter = userAdapter
 
         viewModel.allUsersList.observe(this) {
             when (it) {
                 is ResponseWrapper.Success -> {
-                    binding.recyclerView.adapter = UserAdapter(it.data,
-                        object : RecyclerViewItemClickListener<UserEntity> {
-                            override fun onItemClick(viewId : Int, position: Int, data: UserEntity) {
-                                userDetailResultLauncher.launch(Intent(this@AdminMainActivity, UserDetailActivity::class.java))
-                            }
-                        })
-                    binding.loader.root.visibility = View.GONE
-                    binding.errorView.root.visibility = View.GONE
+                    userAdapter.submitList(it.data)
+                    binding.loader.root.hide()
+                    binding.errorView.root.hide()
                 }
 
                 is ResponseWrapper.Error -> {
-                    binding.loader.root.visibility = View.GONE
+                    binding.loader.root.hide()
                     binding.errorView.tvError.text = it.errorResponse.message?.message
-                    binding.errorView.root.visibility = View.VISIBLE
+                    binding.errorView.root.show()
                 }
 
                 is ResponseWrapper.Loading -> {
-                    binding.loader.root.visibility = View.VISIBLE
-                    binding.errorView.root.visibility = View.GONE
+                    binding.loader.root.show()
+                    binding.errorView.root.hide()
                 }
             }
         }
     }
+
+
+    private fun createUserAdapter(): UserAdapter {
+        return UserAdapter(object : RecyclerViewItemClickListener<UserEntity> {
+            override fun onItemClick(viewId: Int, position: Int, data: UserEntity) {
+                userDetailResultLauncher.launch(Intent(this@AdminMainActivity, UserDetailActivity::class.java))
+            }
+        })
+    }
+
 }

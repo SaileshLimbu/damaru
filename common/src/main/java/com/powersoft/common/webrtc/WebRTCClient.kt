@@ -5,9 +5,9 @@ import android.util.Log
 import com.google.gson.Gson
 import com.powersoft.common.model.DataModel
 import com.powersoft.common.model.DataModelType
+import com.powersoft.common.utils.WebRTCUtils
 import org.webrtc.DataChannel
 import org.webrtc.IceCandidate
-import org.webrtc.MediaConstraints
 import org.webrtc.PeerConnection
 import org.webrtc.PeerConnection.Observer
 import org.webrtc.SessionDescription
@@ -24,18 +24,8 @@ class WebRTCClient @Inject constructor(
     private lateinit var webRTCListener: WebRTCListener
     private lateinit var username: String
 
-    private val mediaConstraint = MediaConstraints().apply {
-        mandatory.add(MediaConstraints.KeyValuePair("OfferToReceiveVideo", "true"))
-        mandatory.add(MediaConstraints.KeyValuePair("OfferToReceiveAudio", "false"))
-    }
-
-    private val iceServers = listOf(
-//        PeerConnection.IceServer.builder("stun:stun.l.google.com:19302").createIceServer(),
-        PeerConnection.IceServer.builder("turn:openrelay.metered.ca:443?transport=tcp")
-            .setUsername("openrelayproject")
-            .setPassword("openrelayproject")
-            .createIceServer()
-    )
+    private val mediaConstraint = WebRTCUtils.getMediaConstraints()
+    private val iceServers = WebRTCUtils.getIceServers()
 
     fun init(webRTCListener: WebRTCListener, username: String, observer: Observer) {
         this.webRTCListener = webRTCListener
@@ -105,6 +95,7 @@ class WebRTCClient @Inject constructor(
                                 sdp = desc?.description
                             )
                         )
+                        Log.d(TAG, "Sending Offer to $deviceId")
                     }
                 }, desc)
             }
@@ -120,15 +111,17 @@ class WebRTCClient @Inject constructor(
      * add this to the peerConnection
      */
     fun addIceCandidate(iceCandidate: IceCandidate) {
-        Log.e(TAG, "Received from Server: $iceCandidate")
-        peerConnection?.addIceCandidate(iceCandidate)
+        if (peerConnection?.remoteDescription != null) {
+            peerConnection?.addIceCandidate(iceCandidate)
+        } else {
+            Log.e(TAG, "Please wait for remoteDescription before adding IceCandidate")
+        }
     }
 
     /**
      * Send the ICE candidate received from webRTC to target user
      */
     fun sendIceCandidate(candidate: IceCandidate, clientId: String, deviceId: String) {
-        Log.d(TAG, "sendIceCandidate from Client: $candidate Device id : $deviceId")
         webRTCListener.onTransferEventToSocket(
             DataModelType.IceCandidate,
             DataModel(

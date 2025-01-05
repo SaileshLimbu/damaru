@@ -10,6 +10,7 @@ import com.powersoft.common.databinding.ActivityPinBinding
 import com.powersoft.common.model.ErrorResponse
 import com.powersoft.common.ui.helper.AlertHelper
 import com.powersoft.common.ui.helper.ResponseCallback
+import com.powersoft.common.utils.hide
 import com.powersoft.common.viewmodels.PinViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -47,7 +48,7 @@ abstract class PinActivity : BaseActivity() {
         }
 
         if (isChangePin()) {
-            binding.btnLogout.visibility = View.GONE
+            binding.btnLogout.hide()
         }
     }
 

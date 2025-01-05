@@ -9,10 +9,9 @@ import com.powersoft.common.model.DataModel
 import com.powersoft.common.model.DataModelType
 import com.powersoft.common.model.GestureCommand
 import com.powersoft.common.utils.AspectRatioUtils
+import com.powersoft.common.utils.WebRTCUtils
 import com.powersoft.common.webrtc.MyPeerObserver
 import com.powersoft.common.webrtc.MySdpObserver
-import com.powersoft.common.webrtc.WebRTCClient
-import com.powersoft.common.webrtc.WebRTCClient.Companion
 import com.powersoft.common.webrtc.WebRTCListener
 import com.powersoft.common.webrtc.WebRTCManager
 import com.powersoft.damaruserver.service.DeviceControlService
@@ -30,6 +29,7 @@ import org.webrtc.VideoTrack
 import java.nio.charset.StandardCharsets
 import javax.inject.Inject
 
+
 class WebRTCClient @Inject constructor(
     private val context: Context,
     private val gson: Gson,
@@ -39,27 +39,19 @@ class WebRTCClient @Inject constructor(
     private lateinit var webRTCListener: WebRTCListener
     private lateinit var localVideoTrack: VideoTrack
     private lateinit var localStream: MediaStream
-    private val localStreamId = "local_stream"
-    private val mediaConstraint = MediaConstraints().apply {
-        mandatory.add(MediaConstraints.KeyValuePair("OfferToReceiveVideo", "true"))
-        mandatory.add(MediaConstraints.KeyValuePair("OfferToReceiveAudio", "false"))
-    }
-    private val screen by lazy { context.resources.displayMetrics }
 
-    private val iceServers = listOf(
-//        PeerConnection.IceServer.builder("stun:stun.l.google.com:19302").createIceServer(),
-        PeerConnection.IceServer.builder("turn:openrelay.metered.ca:443?transport=tcp")
-            .setUsername("openrelayproject")
-            .setPassword("openrelayproject")
-            .createIceServer()
-    )
+    private val localStreamId = "local_stream"
+    private val mediaConstraint = WebRTCUtils.getMediaConstraints()
+    private val iceServers = WebRTCUtils.getIceServers()
+
+    private val screen by lazy { context.resources.displayMetrics }
 
     fun createPeerConnection(webRTCListener: WebRTCListener, clientId: String, deviceId: String) {
         this.webRTCListener = webRTCListener
+
         val peerConnection = webRTCManager.createPeerConnection(iceServers, object : MyPeerObserver() {
             override fun onIceCandidate(cadidate: IceCandidate?) {
                 super.onIceCandidate(cadidate)
-                Log.d(TAG, "onIceCandidate: $cadidate")
                 cadidate?.let { sendIceCandidate(it, clientId, deviceId) }
             }
 
@@ -92,11 +84,13 @@ class WebRTCClient @Inject constructor(
                 })
             }
         })
+        Log.d(TAG, "Peer Connection Created")
 
         localStream.addTrack(localVideoTrack)
-        localStream.let { peerConnection?.addTrack(localVideoTrack, listOf(localStreamId)) }
+        peerConnection?.addTrack(localVideoTrack, listOf(localStreamId))
 
         peerConnection?.setVideoBitrate(1_500_000, 8_000_000)
+
         peerConnectionList[clientId] = peerConnection
     }
 
@@ -115,10 +109,16 @@ class WebRTCClient @Inject constructor(
             Thread.currentThread().name, webRTCManager.getEglBase().eglBaseContext
         )
 
-        val screenCapturer = ScreenCapturerAndroid(intent, object : MediaProjection.Callback() {})
+        val screenCapturer = ScreenCapturerAndroid(intent, object : MediaProjection.Callback() {
+            override fun onStop() {
+                super.onStop()
+                Log.e(TAG, "onStop: Screen capture Stopped")
+                startScreenCapturing(intent)
+            }
+        })
         val videoSource = webRTCManager.createVideoSource()
         screenCapturer.initialize(surfaceTextureHelper, context, videoSource.capturerObserver)
-        screenCapturer.startCapture(screenWidthPixels, screenHeightPixels, 60)
+        screenCapturer.startCapture(screenWidthPixels, screenHeightPixels, 30)
 
         localVideoTrack = webRTCManager.createVideoTrack(videoSource)
         localStream = webRTCManager.getMyPeerConnectionFactory().createLocalMediaStream(localStreamId)
@@ -131,8 +131,6 @@ class WebRTCClient @Inject constructor(
      * 1. Creates an Answer response based on the received Offer.
      * 2. Sets the Answer as the localDescription on the peerConnection.
      * 3. Sends the generated Answer back to the client app via a socket connection.
-     *
-     * @param target The identifier of the target peer (e.g., username or device ID) to which the offer is sent.
      */
     fun createAnswer(clientId: String) {
         val peerConnection = peerConnectionList[clientId]
@@ -149,6 +147,7 @@ class WebRTCClient @Inject constructor(
                                 sdp = desc?.description
                             )
                         )
+                        Log.d(TAG, "Answer sent to $clientId")
                     }
                 }, desc)
             }
@@ -191,16 +190,18 @@ class WebRTCClient @Inject constructor(
      * add this to the peerConnection
      */
     fun addIceCandidate(target: String, iceCandidate: IceCandidate) {
-        Log.e(TAG, "Received from Client: $iceCandidate")
         val peerConnection = peerConnectionList[target]
-        peerConnection?.addIceCandidate(iceCandidate)
+        if (peerConnection?.remoteDescription != null) {
+            peerConnection.addIceCandidate(iceCandidate)
+        }else{
+            Log.e(TAG, "Please wait for remoteDescription before adding IceCandidate")
+        }
     }
 
     /**
      * Send the ICE candidate received from webRTC to target user
      */
     fun sendIceCandidate(candidate: IceCandidate, clientId: String, deviceId: String) {
-        Log.d(TAG, "sendIceCandidate from Server: $candidate clientId : $clientId")
         webRTCListener.onTransferEventToSocket(
             DataModelType.IceCandidate,
             DataModel(

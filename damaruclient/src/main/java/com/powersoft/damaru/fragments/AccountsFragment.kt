@@ -19,6 +19,9 @@ import com.powersoft.common.model.ResponseWrapper
 import com.powersoft.common.repository.UserRepo
 import com.powersoft.common.ui.helper.AlertHelper
 import com.powersoft.common.ui.helper.ResponseCallback
+import com.powersoft.common.utils.hide
+import com.powersoft.common.utils.show
+import com.powersoft.common.utils.visibility
 import com.powersoft.damaru.R
 import com.powersoft.damaru.adapters.AccountsAdapter
 import com.powersoft.damaru.databinding.FragmentAccountsBinding
@@ -46,6 +49,7 @@ class AccountsFragment : Fragment(R.layout.fragment_accounts) {
                 vm.getAllAccounts()
             }
         }
+    private lateinit var accountsAdapter: AccountsAdapter
 
     @Inject
     lateinit var userRepo: UserRepo
@@ -84,76 +88,84 @@ class AccountsFragment : Fragment(R.layout.fragment_accounts) {
             }
         })
 
-        if (userRepo.seasonEntity.value?.isRootUser == true) {
-            b.extendedFAB.visibility = View.VISIBLE
-        } else {
-            b.extendedFAB.visibility = View.GONE
-        }
+        b.extendedFAB.visibility(userRepo.seasonEntity.value?.isRootUser == true)
+
         b.extendedFAB.setOnClickListener {
             addAccountResultLauncher.launch(Intent(context, AddAccountActivity::class.java))
         }
 
+        accountsAdapter = createAccountAdapter()
+
         b.recyclerView.apply {
             layoutManager = LinearLayoutManager(context)
+            adapter = accountsAdapter
         }
 
         vm.allAccounts.observe(viewLifecycleOwner) {
             when (it) {
                 is ResponseWrapper.Success -> {
+                    accountsAdapter.submitList(it.data)
                     b.swipeRefresh.isRefreshing = false
-                    val accountAdapter = AccountsAdapter(AccountsAdapter.Companion.For.ACCOUNT_LIST, userRepo.seasonEntity.value?.isRootUser ?: false, it.data,
-                        object : RecyclerViewItemClickListener<AccountEntity> {
-                        override fun onItemClick(viewId: Int, position: Int, data: AccountEntity) {
-                            when (viewId) {
-                                R.id.imgDelete -> {
-                                    context?.let { context ->
-                                        AlertHelper.showAlertDialog(
-                                            context, title = getString(R.string.delete_account) + " ??",
-                                            message = getString(R.string.are_you_sure_you_want_to_delete_this_account),
-                                            positiveButtonText = getString(R.string.delete),
-                                            negativeButtonText = getString(R.string.cancle),
-                                            onPositiveButtonClick = {
-                                                vm.deleteAccount(data.id!!, object : ResponseCallback {
-                                                    override fun onResponse(any: Any, errorResponse: ErrorResponse?) {
-                                                        AlertHelper.showAlertDialog(
-                                                            context, title = errorResponse?.message?.error ?: getString(R.string.error),
-                                                            message = errorResponse?.message?.message ?: getString(R.string.error),
-                                                        )
-                                                    }
-                                                })
-                                            }
-                                        )
-                                    }
-                                }
-
-                                R.id.imgEdit ->{
-                                    accountDetailResultLauncher.launch(Intent(context, AddAccountActivity::class.java).putExtra("account", gson.toJson(data)))
-                                }
-
-                                else -> {
-                                    accountDetailResultLauncher.launch(Intent(context, AccountDetailActivity::class.java).putExtra("account", gson.toJson(data)))
-                                }
-                            }
-                        }
-                    })
-                    b.recyclerView.adapter = accountAdapter
-
-                    b.loader.root.visibility = View.GONE
-                    b.errorView.root.visibility = View.GONE
+                    b.loader.root.hide()
+                    b.errorView.root.hide()
                 }
 
                 is ResponseWrapper.Error -> {
                     b.swipeRefresh.isRefreshing = false
-                    b.loader.root.visibility = View.GONE
+                    b.loader.root.hide()
                     b.errorView.tvError.text = it.errorResponse.message?.message
-                    b.errorView.root.visibility = View.VISIBLE
+                    b.errorView.root.show()
                 }
 
                 is ResponseWrapper.Loading -> {
-                    b.loader.root.visibility = View.VISIBLE
-                    b.errorView.root.visibility = View.GONE
+                    b.loader.root.show()
+                    b.errorView.root.hide()
                 }
             }
         }
+    }
+
+    private fun createAccountAdapter(): AccountsAdapter {
+        return AccountsAdapter(AccountsAdapter.Companion.For.ACCOUNT_LIST, userRepo.seasonEntity.value?.isRootUser ?: false,
+            object : RecyclerViewItemClickListener<AccountEntity> {
+                override fun onItemClick(viewId: Int, position: Int, data: AccountEntity) {
+                    when (viewId) {
+                        R.id.imgDelete -> {
+                            context?.let { context ->
+                                AlertHelper.showAlertDialog(
+                                    context, title = getString(R.string.delete_account) + " ??",
+                                    message = getString(R.string.are_you_sure_you_want_to_delete_this_account),
+                                    positiveButtonText = getString(R.string.delete),
+                                    negativeButtonText = getString(R.string.cancle),
+                                    onPositiveButtonClick = {
+                                        vm.deleteAccount(data.id!!, object : ResponseCallback {
+                                            override fun onResponse(any: Any, errorResponse: ErrorResponse?) {
+                                                AlertHelper.showAlertDialog(
+                                                    context, title = errorResponse?.message?.error ?: getString(R.string.error),
+                                                    message = errorResponse?.message?.message ?: getString(R.string.error),
+                                                )
+                                            }
+                                        })
+                                    }
+                                )
+                            }
+                        }
+
+                        R.id.imgEdit -> {
+                            accountDetailResultLauncher.launch(
+                                Intent(context, AddAccountActivity::class.java)
+                                    .putExtra("account", gson.toJson(data))
+                            )
+                        }
+
+                        else -> {
+                            accountDetailResultLauncher.launch(
+                                Intent(context, AccountDetailActivity::class.java)
+                                    .putExtra("account", gson.toJson(data))
+                            )
+                        }
+                    }
+                }
+            })
     }
 }

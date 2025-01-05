@@ -18,7 +18,11 @@ data class DeviceEntity(
     @SerializedName("screenshot")
     val screenshot: String?,
     @SerializedName("status")
-    val status: String?,
+    val status: Status,
     @SerializedName("updated_at")
     val updatedAt: String?
 )
+
+enum class Status{
+    online, offline
+}

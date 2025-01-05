@@ -6,23 +6,25 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
+import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.powersoft.common.databinding.ItemDeviceBinding
 import com.powersoft.common.listeners.RecyclerViewItemClickListener
 import com.powersoft.common.model.DeviceEntity
+import com.powersoft.common.model.Status
 import com.powersoft.damaru.R
 
-class MyDevicesAdapter(
-    private val deviceList: List<DeviceEntity>,
-    private val clickListener : RecyclerViewItemClickListener<DeviceEntity>
-) : RecyclerView.Adapter<MyDevicesAdapter.ViewHolder>() {
+class DeviceListAdapter(
+    private val clickListener : RecyclerViewItemClickListener<DeviceEntity>? = null
+) : ListAdapter<DeviceEntity, DeviceListAdapter.ViewHolder>(DeviceDiffCallback()) {
 
     inner class ViewHolder(private val binding: ItemDeviceBinding) :
         RecyclerView.ViewHolder(binding.root) {
         init {
             binding.root.setOnClickListener {
-                clickListener.onItemClick(it.id, layoutPosition, deviceList[layoutPosition])
+                clickListener?.onItemClick(it.id, layoutPosition, getItem(layoutPosition))
             }
         }
 
@@ -39,8 +41,22 @@ class MyDevicesAdapter(
                     else -> null
                 }
 
+                val colorStateList : ColorStateList = if (device.status == Status.online){
+                    ColorStateList.valueOf(ContextCompat.getColor(itemView.context, com.powersoft.common.R.color.greenLight))
+                }else{
+                    ColorStateList.valueOf(ContextCompat.getColor(itemView.context, com.powersoft.common.R.color.primary_light))
+                }
+                imgStatus.imageTintList = colorStateList
+                tvStatus.text = device.status.name.capitalizeFirstLetter()
+
                 tvExpired.visibility = if (((device.expiresAt?.toIntOrNull()) ?: 0) < 1) View.VISIBLE else View.GONE
             }
+        }
+    }
+
+    fun String.capitalizeFirstLetter(): String {
+        return this.replaceFirstChar {
+            if (it.isLowerCase()) it.titlecase() else it.toString()
         }
     }
 
@@ -49,9 +65,18 @@ class MyDevicesAdapter(
         return ViewHolder(binding)
     }
 
-    override fun getItemCount() = deviceList.size
-
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        holder.bind(deviceList[position])
+        val device = getItem(position)
+        holder.bind(device)
+    }
+
+    internal class DeviceDiffCallback: DiffUtil.ItemCallback<DeviceEntity>(){
+        override fun areItemsTheSame(oldItem: DeviceEntity, newItem: DeviceEntity): Boolean {
+            return oldItem.deviceId == newItem.deviceId
+        }
+
+        override fun areContentsTheSame(oldItem: DeviceEntity, newItem: DeviceEntity): Boolean {
+            return oldItem == newItem
+        }
     }
 }

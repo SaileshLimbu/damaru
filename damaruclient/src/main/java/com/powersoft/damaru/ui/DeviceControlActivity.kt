@@ -15,6 +15,8 @@ import com.powersoft.common.socket.SocketClient
 import com.powersoft.common.socket.SocketListener
 import com.powersoft.common.utils.AspectRatioUtils
 import com.powersoft.common.utils.GestureDetector
+import com.powersoft.common.utils.hide
+import com.powersoft.common.utils.show
 import com.powersoft.common.webrtc.MyPeerObserver
 import com.powersoft.common.webrtc.WebRTCClient
 import com.powersoft.common.webrtc.WebRTCListener
@@ -48,6 +50,7 @@ class DeviceControlActivity : AppCompatActivity(), SocketListener, WebRTCListene
     private lateinit var gestureDetector: GestureDetector
 
     companion object {
+        const val TAG = "DAMARU"
         const val CLIENT_ID = "username"
         const val DEVICE_ID = "targetUser"
         const val TOKEN = "token"
@@ -64,16 +67,12 @@ class DeviceControlActivity : AppCompatActivity(), SocketListener, WebRTCListene
         intent.getStringExtra(DEVICE_ID)?.let { viewModel.deviceId = it }
         intent.getStringExtra(TOKEN)?.let { viewModel.token = it }
 
-        Log.e("damaru", "onCreate: ${viewModel.clientId}", )
-
         binding.surfaceView.apply {
-            init(webrtcClient.getEglBase().eglBaseContext, null)
             setScalingType(RendererCommon.ScalingType.SCALE_ASPECT_FIT)
             setEnableHardwareScaler(true)
         }
 
         init()
-        initRemoteControl()
 
         binding.btnDisconnect.setOnTouchListener(
             DraggableTouchListener {
@@ -81,6 +80,16 @@ class DeviceControlActivity : AppCompatActivity(), SocketListener, WebRTCListene
                 finish()
             }
         )
+    }
+
+    override fun onResume() {
+        super.onResume()
+        binding.surfaceView.init(webrtcClient.getEglBase().eglBaseContext, null)
+    }
+
+    override fun onPause() {
+        super.onPause()
+        binding.surfaceView.release()
     }
 
     @SuppressLint("ClickableViewAccessibility")
@@ -143,23 +152,6 @@ class DeviceControlActivity : AppCompatActivity(), SocketListener, WebRTCListene
                     streamArr?.get(0)?.videoTracks?.get(0)?.addSink(binding.surfaceView)
                     Log.e("damaru", "onAddStream ${streamArr?.get(0)?.videoTracks?.get(0)}")
                 }
-
-                @SuppressLint("ClickableViewAccessibility")
-                override fun onDataChannel(dataChannel: DataChannel?) {
-                    super.onDataChannel(dataChannel)
-                    Log.d("damaru", "onDataChannel: $dataChannel")
-                    dataChannel?.registerObserver(object : DataChannel.Observer {
-                        override fun onBufferedAmountChange(p0: Long) {
-                        }
-
-                        override fun onStateChange() {
-                        }
-
-                        override fun onMessage(p0: DataChannel.Buffer?) {
-                            Log.d("damaru", "onDataChannel onMessage (From Client): ${p0.toString()}")
-                        }
-                    })
-                }
             })
     }
 
@@ -167,12 +159,12 @@ class DeviceControlActivity : AppCompatActivity(), SocketListener, WebRTCListene
     override fun onNewMessageReceived(type: DataModelType, model: DataModel) {
         when (type) {
             DataModelType.Answer -> {
+                Log.d(TAG, "Answer received from ${model.target}")
                 webrtcClient.onRemoteSessionReceived(SessionDescription(SessionDescription.Type.ANSWER, model.sdp.toString()))
             }
 
             DataModelType.IceCandidate -> {
                 val candidate = gson.fromJson(model.iceCandidate.toString(), IceCandidate::class.java)
-                Log.i("ICE_TAG", "Received from Server: $model")
                 webrtcClient.addIceCandidate(candidate)
             }
 
@@ -186,9 +178,10 @@ class DeviceControlActivity : AppCompatActivity(), SocketListener, WebRTCListene
 
     override fun onDataChannelConnected() {
         runOnUiThread {
-            binding.viewConnecting.visibility = View.GONE
-            binding.viewRemoteDevice.visibility = View.VISIBLE
+            binding.viewConnecting.hide()
+            binding.viewRemoteDevice.show()
         }
+        initRemoteControl()
     }
 
     override fun onTransferEventToSocket(type: DataModelType, data: DataModel) {

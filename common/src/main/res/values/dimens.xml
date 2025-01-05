@@ -25,6 +25,6 @@
     <dimen name="icon_size">50dp</dimen>
     <dimen name="nav_icon_size">30dp</dimen>
 
-    <dimen name="device_height">400dp</dimen>
+    <dimen name="device_height">350dp</dimen>
     <dimen name="fab_margin">16dp</dimen>
 </resources>

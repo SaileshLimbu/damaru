@@ -2,21 +2,23 @@ package com.powersoft.damaruadmin.adapters
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.powersoft.common.listeners.RecyclerViewItemClickListener
+import com.powersoft.common.model.AccountEntity
 import com.powersoft.common.model.UserEntity
 import com.powersoft.damaruadmin.databinding.ItemUserBinding
 
 class UserAdapter(
-    private val deviceList: List<UserEntity>,
     private val listener: RecyclerViewItemClickListener<UserEntity>
-) : RecyclerView.Adapter<UserAdapter.ViewHolder>() {
+) : ListAdapter<UserEntity, UserAdapter.ViewHolder>(UserDiffCallback()) {
 
     inner class ViewHolder(private val binding: ItemUserBinding) :
         RecyclerView.ViewHolder(binding.root) {
         init {
             binding.root.setOnClickListener {
-                listener.onItemClick(it.id, layoutPosition, deviceList[layoutPosition])
+                listener.onItemClick(it.id, layoutPosition, getItem(layoutPosition))
             }
         }
 
@@ -35,9 +37,17 @@ class UserAdapter(
         return ViewHolder(binding)
     }
 
-    override fun getItemCount() = deviceList.size
-
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        holder.bind(deviceList[position])
+        holder.bind(getItem(position))
+    }
+
+    internal class UserDiffCallback: DiffUtil.ItemCallback<UserEntity>(){
+        override fun areItemsTheSame(oldItem: UserEntity, newItem: UserEntity): Boolean {
+            return oldItem.id == newItem.id
+        }
+
+        override fun areContentsTheSame(oldItem: UserEntity, newItem: UserEntity): Boolean {
+            return oldItem == newItem
+        }
     }
 }

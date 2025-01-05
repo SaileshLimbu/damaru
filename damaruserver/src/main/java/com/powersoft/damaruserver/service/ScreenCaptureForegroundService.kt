@@ -81,7 +81,7 @@ class ScreenCaptureForegroundService : Service(), SocketListener, WebRTCListener
     override fun onNewMessageReceived(type: DataModelType, model: DataModel) {
         when (type) {
             DataModelType.Disconnect -> {
-                Log.d(TAG, "Connection ended by ${model.target}")
+                Log.d(TAG, "Connection ended by ${model.username}")
                 model.username?.let { webRTCClient.disposePeerConnection(it) }
             }
 
@@ -97,7 +97,6 @@ class ScreenCaptureForegroundService : Service(), SocketListener, WebRTCListener
 
             DataModelType.IceCandidate -> {
                 val candidate = gson.fromJson(model.iceCandidate.toString(), IceCandidate::class.java)
-                Log.i("ICE_TAG", "Received from Client: $model")
                 model.username?.let { webRTCClient.addIceCandidate(it, candidate) }
             }
 

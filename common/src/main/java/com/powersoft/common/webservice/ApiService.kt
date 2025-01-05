@@ -31,7 +31,7 @@ interface ApiService {
     @GET("emulators/linkedAccounts")
     suspend fun getAccountsLinkedToDevice(@Query("deviceId") deviceId : String): Response<List<AccountEntity>>
 
-    @GET("emulators/unassign-multi-accounts")
+    @POST("emulators/unassign-multi-accounts")
     suspend fun unlinkAccountFromDevice(@Body requestBody: RequestBody): Response<Any>
 
     @POST("emulators/assign-multi-emulators")

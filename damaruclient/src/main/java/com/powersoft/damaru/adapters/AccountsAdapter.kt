@@ -2,19 +2,20 @@ package com.powersoft.damaru.adapters
 
 import android.annotation.SuppressLint
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
+import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.powersoft.common.listeners.RecyclerViewItemClickListener
 import com.powersoft.common.model.AccountEntity
+import com.powersoft.common.utils.visibility
 import com.powersoft.damaru.databinding.ItemAccountBinding
 
 class AccountsAdapter(
     private val adapterFor : For,
     private val isRootUser: Boolean,
-    private val deviceList: List<AccountEntity>,
     private val clickListener: RecyclerViewItemClickListener<AccountEntity>,
-) : RecyclerView.Adapter<AccountsAdapter.ViewHolder>() {
+) : ListAdapter<AccountEntity, AccountsAdapter.ViewHolder>(AccountDiffCallback()) {
 
     companion object{
         enum class For{
@@ -38,23 +39,15 @@ class AccountsAdapter(
                 } catch (e: Exception) {
                     ""
                 }
-                holderAdminAccount.visibility = if (account.isAdmin == true) View.VISIBLE else View.GONE
+                holderAdminAccount.visibility(account.isAdmin)
                 imgDelete.setOnClickListener {
                     clickListener.onItemClick(it.id, layoutPosition, account)
                 }
                 imgEdit.setOnClickListener {
                     clickListener.onItemClick(it.id, layoutPosition, account)
                 }
-                if (isRootUser && account.isAdmin == false) {
-                    imgDelete.visibility = View.VISIBLE
-                } else {
-                    imgDelete.visibility = View.GONE
-                }
-                if ((isRootUser || account.isAdmin == true) && adapterFor != For.LINKED_ACCOUNTS) {
-                    imgEdit.visibility = View.VISIBLE
-                } else {
-                    imgEdit.visibility = View.GONE
-                }
+                imgDelete.visibility(isRootUser && !account.isAdmin)
+                imgEdit.visibility((isRootUser || account.isAdmin) && adapterFor != For.LINKED_ACCOUNTS)
             }
         }
     }
@@ -64,9 +57,17 @@ class AccountsAdapter(
         return ViewHolder(binding)
     }
 
-    override fun getItemCount() = deviceList.size
-
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        holder.bind(deviceList[position])
+        holder.bind(getItem(position))
+    }
+
+    internal class AccountDiffCallback: DiffUtil.ItemCallback<AccountEntity>(){
+        override fun areItemsTheSame(oldItem: AccountEntity, newItem: AccountEntity): Boolean {
+            return oldItem.id == newItem.id
+        }
+
+        override fun areContentsTheSame(oldItem: AccountEntity, newItem: AccountEntity): Boolean {
+            return oldItem == newItem
+        }
     }
 }

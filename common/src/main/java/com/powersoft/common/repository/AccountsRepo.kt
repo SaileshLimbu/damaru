@@ -156,6 +156,7 @@ class AccountsRepo @Inject constructor(private val apiService: ApiService, priva
                 )
             }
         } catch (e: Exception) {
+            e.printStackTrace()
             ResponseWrapper.error(getUnknownError("Something went wrong (Code 7632)"))
         }
     }

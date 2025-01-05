@@ -36,7 +36,7 @@ class LoginActivityImpl : LoginActivity() {
         if (BuildConfig.DEBUG) {
             //SuperAdmin, AndroidUser
             b.etUsername.setText("superadmin@damaru.com")
-            b.etPassword.setText("superAdmin@123")
+            b.etPassword.setText("hello@123")
             b.etPin.setText("05007")
         }
     }

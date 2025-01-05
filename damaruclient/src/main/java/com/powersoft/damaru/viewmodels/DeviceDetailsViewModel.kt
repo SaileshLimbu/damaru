@@ -25,6 +25,8 @@ class DeviceDetailsViewModel @Inject constructor(
     val allAccounts: LiveData<ResponseWrapper<List<AccountEntity>>>
         get() = _allAccounts
 
+    var deviceId : String = ""
+
     fun getLinkedAccounts(deviceId : String) {
         viewModelScope.launch {
             _allAccounts.postValue(accountRepo.getLinkedAccountsToDevice(deviceId))

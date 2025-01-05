@@ -18,6 +18,28 @@
             android:layout_width="match_parent"
             android:layout_height="@dimen/device_height">
 
+            <ImageView
+                android:id="@+id/imgStatus"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:layout_marginStart="4dp"
+                android:contentDescription="@null"
+                android:elevation="@dimen/elevation_1dp"
+                android:src="@drawable/ic_presence"
+                app:tint="@color/greenLight" />
+
+            <TextView
+                android:id="@+id/tvStatus"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                tools:text="Online"
+                android:layout_toEndOf="@id/imgStatus"
+                android:elevation="@dimen/elevation_1dp"
+                android:layout_marginTop="4dp"
+                android:layout_marginStart="2dp"
+                android:textColor="@color/white"/>
+
             <TextView
                 android:id="@+id/tvRemainingDays"
                 android:layout_width="wrap_content"

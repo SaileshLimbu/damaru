@@ -11,6 +11,7 @@ import com.powersoft.common.model.AccountEntity
 import com.powersoft.common.model.ErrorResponse
 import com.powersoft.common.ui.helper.AlertHelper
 import com.powersoft.common.ui.helper.ResponseCallback
+import com.powersoft.common.utils.hide
 import com.powersoft.damaru.R
 import com.powersoft.damaru.databinding.ActivityAddAccountBinding
 import com.powersoft.damaru.viewmodels.AddAccountViewModel
@@ -39,8 +40,8 @@ class AddAccountActivity : BaseActivity() {
             account = gson.fromJson(intent.getStringExtra("account"), AccountEntity::class.java)
             binding.etName.setText(account?.accountName)
             binding.btnSubmit.text = getString(R.string.update)
-            binding.viewNote.visibility = View.GONE
-            binding.noteDetail.visibility = View.GONE
+            binding.viewNote.hide()
+            binding.noteDetail.hide()
             binding.title.text = getString(R.string.update_account)
         }
 

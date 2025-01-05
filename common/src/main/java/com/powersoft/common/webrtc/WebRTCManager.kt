@@ -12,7 +12,7 @@ import java.util.UUID
 import javax.inject.Inject
 
 class WebRTCManager @Inject constructor(context: Context) {
-    private val eglBase: EglBase = EglBase.create()
+    private val eglBase: EglBase = EglBase.create(null, EglBase.CONFIG_PLAIN);
 
     private val peerConnectionFactory: PeerConnectionFactory
 
@@ -38,14 +38,16 @@ class WebRTCManager @Inject constructor(context: Context) {
     fun getMyPeerConnectionFactory() = peerConnectionFactory
 
     fun createVideoSource(): VideoSource {
-        return peerConnectionFactory.createVideoSource(true)
+        return peerConnectionFactory.createVideoSource(false)
     }
 
     fun createPeerConnection(
         iceServers: List<PeerConnection.IceServer>,
         observer: PeerConnection.Observer
     ): PeerConnection? {
-        return peerConnectionFactory.createPeerConnection(iceServers, observer)
+        val rtcConfig = PeerConnection.RTCConfiguration(iceServers)
+        rtcConfig.sdpSemantics = PeerConnection.SdpSemantics.UNIFIED_PLAN
+        return peerConnectionFactory.createPeerConnection(rtcConfig, observer)
     }
 
     fun createVideoTrack(videoSource: VideoSource): VideoTrack {
