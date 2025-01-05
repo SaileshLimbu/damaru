@@ -14,7 +14,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.gson.Gson
 import com.powersoft.common.listeners.RecyclerViewItemClickListener
 import com.powersoft.common.model.AccountEntity
-import com.powersoft.common.model.ErrorResponse
 import com.powersoft.common.model.ResponseWrapper
 import com.powersoft.common.repository.UserRepo
 import com.powersoft.common.ui.helper.AlertHelper
@@ -36,19 +35,17 @@ class AccountsFragment : Fragment(R.layout.fragment_accounts) {
     private val vm: AccountsFragmentViewModel by viewModels()
     private var _binding: FragmentAccountsBinding? = null
     private val b get() = _binding!!
-    private val addAccountResultLauncher =
-        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-            if (result.resultCode == RESULT_OK) {
-                vm.getAllAccounts()
-            }
+    private val addAccountResultLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+        if (result.resultCode == RESULT_OK) {
+            vm.getAllAccounts()
         }
+    }
 
-    private val accountDetailResultLauncher =
-        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-            if (result.resultCode == RESULT_OK) {
-                vm.getAllAccounts()
-            }
+    private val accountDetailResultLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+        if (result.resultCode == RESULT_OK) {
+            vm.getAllAccounts()
         }
+    }
     private lateinit var accountsAdapter: AccountsAdapter
 
     @Inject
@@ -58,8 +55,7 @@ class AccountsFragment : Fragment(R.layout.fragment_accounts) {
     lateinit var gson: Gson
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
         _binding = FragmentAccountsBinding.inflate(inflater, container, false)
         return b.root
@@ -113,7 +109,7 @@ class AccountsFragment : Fragment(R.layout.fragment_accounts) {
                 is ResponseWrapper.Error -> {
                     b.swipeRefresh.isRefreshing = false
                     b.loader.root.hide()
-                    b.errorView.tvError.text = it.errorResponse.message?.message
+                    b.errorView.tvError.text = it.message
                     b.errorView.root.show()
                 }
 
@@ -126,46 +122,37 @@ class AccountsFragment : Fragment(R.layout.fragment_accounts) {
     }
 
     private fun createAccountAdapter(): AccountsAdapter {
-        return AccountsAdapter(AccountsAdapter.Companion.For.ACCOUNT_LIST, userRepo.seasonEntity.value?.isRootUser ?: false,
-            object : RecyclerViewItemClickListener<AccountEntity> {
-                override fun onItemClick(viewId: Int, position: Int, data: AccountEntity) {
-                    when (viewId) {
-                        R.id.imgDelete -> {
-                            context?.let { context ->
-                                AlertHelper.showAlertDialog(
-                                    context, title = getString(R.string.delete_account) + " ??",
-                                    message = getString(R.string.are_you_sure_you_want_to_delete_this_account),
-                                    positiveButtonText = getString(R.string.delete),
-                                    negativeButtonText = getString(R.string.cancle),
-                                    onPositiveButtonClick = {
-                                        vm.deleteAccount(data.id!!, object : ResponseCallback {
-                                            override fun onResponse(any: Any, errorResponse: ErrorResponse?) {
-                                                AlertHelper.showAlertDialog(
-                                                    context, title = errorResponse?.message?.error ?: getString(R.string.error),
-                                                    message = errorResponse?.message?.message ?: getString(R.string.error),
-                                                )
-                                            }
-                                        })
+        return AccountsAdapter(AccountsAdapter.Companion.For.ACCOUNT_LIST, userRepo.seasonEntity.value?.isRootUser ?: false, object : RecyclerViewItemClickListener<AccountEntity> {
+            override fun onItemClick(viewId: Int, position: Int, data: AccountEntity) {
+                when (viewId) {
+                    R.id.imgDelete -> {
+                        context?.let { context ->
+                            AlertHelper.showAlertDialog(context, title = getString(R.string.delete_account) + " ??", message = getString(R.string.are_you_sure_you_want_to_delete_this_account), positiveButtonText = getString(R.string.delete), negativeButtonText = getString(R.string.cancle), onPositiveButtonClick = {
+                                vm.deleteAccount(data.id, object : ResponseCallback {
+                                    override fun onResponse(any: Any, errorMessage: String?) {
+                                        AlertHelper.showAlertDialog(
+                                            context, getString(R.string.error),
+                                            errorMessage ?: getString(R.string.error),
+                                        )
                                     }
-                                )
-                            }
-                        }
-
-                        R.id.imgEdit -> {
-                            accountDetailResultLauncher.launch(
-                                Intent(context, AddAccountActivity::class.java)
-                                    .putExtra("account", gson.toJson(data))
-                            )
-                        }
-
-                        else -> {
-                            accountDetailResultLauncher.launch(
-                                Intent(context, AccountDetailActivity::class.java)
-                                    .putExtra("account", gson.toJson(data))
-                            )
+                                })
+                            })
                         }
                     }
+
+                    R.id.imgEdit -> {
+                        accountDetailResultLauncher.launch(
+                            Intent(context, AddAccountActivity::class.java).putExtra("account", gson.toJson(data))
+                        )
+                    }
+
+                    else -> {
+                        accountDetailResultLauncher.launch(
+                            Intent(context, AccountDetailActivity::class.java).putExtra("account", gson.toJson(data))
+                        )
+                    }
                 }
-            })
+            }
+        })
     }
 }

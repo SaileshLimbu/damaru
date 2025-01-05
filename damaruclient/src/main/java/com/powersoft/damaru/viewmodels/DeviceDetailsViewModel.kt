@@ -45,7 +45,7 @@ class DeviceDetailsViewModel @Inject constructor(
                     }
 
                     is ResponseWrapper.Error -> {
-                        responseCallback.onResponse(Any(), responseWrapper.errorResponse)
+                        responseCallback.onResponse(Any(), responseWrapper.message)
                     }
 
                     is ResponseWrapper.Loading -> {

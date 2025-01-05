@@ -2,13 +2,11 @@ package com.powersoft.damaru.ui
 
 import android.content.Intent
 import android.os.Bundle
-import android.view.View
 import androidx.activity.viewModels
 import com.google.gson.Gson
 import com.powersoft.common.base.BaseActivity
 import com.powersoft.common.base.BaseViewModel
 import com.powersoft.common.model.AccountEntity
-import com.powersoft.common.model.ErrorResponse
 import com.powersoft.common.ui.helper.AlertHelper
 import com.powersoft.common.ui.helper.ResponseCallback
 import com.powersoft.common.utils.hide
@@ -22,7 +20,8 @@ import javax.inject.Inject
 class AddAccountActivity : BaseActivity() {
     private val viewModel: AddAccountViewModel by viewModels()
     private lateinit var binding: ActivityAddAccountBinding
-    private var account : AccountEntity? = null
+    private var account: AccountEntity? = null
+
     @Inject
     lateinit var gson: Gson
 
@@ -36,7 +35,7 @@ class AddAccountActivity : BaseActivity() {
         binding = ActivityAddAccountBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        if(intent.hasExtra("account")) {
+        if (intent.hasExtra("account")) {
             account = gson.fromJson(intent.getStringExtra("account"), AccountEntity::class.java)
             binding.etName.setText(account?.accountName)
             binding.btnSubmit.text = getString(R.string.update)
@@ -50,14 +49,13 @@ class AddAccountActivity : BaseActivity() {
         }
 
         binding.btnSubmit.setOnClickListener {
-            if(account != null) {
-                viewModel.updateAccount(account!!.id!!, binding.etName.text.toString(),
+            if (account != null) {
+                viewModel.updateAccount(account!!.id, binding.etName.text.toString(),
                     object : ResponseCallback {
-                        override fun onResponse(any: Any, errorResponse: ErrorResponse?) {
-                            if (errorResponse != null) {
+                        override fun onResponse(any: Any, errorMessage: String?) {
+                            if (errorMessage != null) {
                                 AlertHelper.showAlertDialog(
-                                    this@AddAccountActivity, (errorResponse.message?.error ?: getString(R.string.error)),
-                                    errorResponse.message?.message ?: ""
+                                    this@AddAccountActivity, getString(R.string.error), errorMessage
                                 )
                             } else {
                                 setResult(RESULT_OK, Intent().putExtra("edited_name", binding.etName.text.toString()))
@@ -65,14 +63,13 @@ class AddAccountActivity : BaseActivity() {
                             }
                         }
                     })
-            }else {
+            } else {
                 viewModel.addAccount(binding.etName.text.toString(),
                     object : ResponseCallback {
-                        override fun onResponse(any: Any, errorResponse: ErrorResponse?) {
-                            if (errorResponse != null) {
+                        override fun onResponse(any: Any, errorMessage: String?) {
+                            if (errorMessage != null) {
                                 AlertHelper.showAlertDialog(
-                                    this@AddAccountActivity, (errorResponse.message?.error ?: getString(R.string.error)),
-                                    errorResponse.message?.message ?: ""
+                                    this@AddAccountActivity, getString(R.string.error), errorMessage
                                 )
                             } else {
                                 setResult(RESULT_OK)

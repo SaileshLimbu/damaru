@@ -1,13 +1,11 @@
 package com.powersoft.common.ui
 
 import android.os.Bundle
-import android.view.View
 import androidx.activity.viewModels
 import com.powersoft.common.R
 import com.powersoft.common.base.BaseActivity
 import com.powersoft.common.base.BaseViewModel
 import com.powersoft.common.databinding.ActivityPinBinding
-import com.powersoft.common.model.ErrorResponse
 import com.powersoft.common.ui.helper.AlertHelper
 import com.powersoft.common.ui.helper.ResponseCallback
 import com.powersoft.common.utils.hide
@@ -22,9 +20,9 @@ abstract class PinActivity : BaseActivity() {
     private var pinOnce = ""
 
     abstract fun onPinVerified()
-    abstract fun onPinResetResponse(any: Any, errorResponse: ErrorResponse?)
-    abstract fun onLogout(any: Any, errorResponse: ErrorResponse?)
-    abstract fun getAccountId(): Int?
+    abstract fun onPinResetResponse(any: Any, errorMessage: String?)
+    abstract fun onLogout(any: Any, errorMessage: String?)
+    abstract fun getAccountId(): String
     abstract fun isChangePin(): Boolean
 
     override fun getViewModel(): BaseViewModel {
@@ -41,8 +39,8 @@ abstract class PinActivity : BaseActivity() {
 
         binding.btnLogout.setOnClickListener {
             viewModel.logout(object : ResponseCallback {
-                override fun onResponse(any: Any, errorResponse: ErrorResponse?) {
-                    onLogout(any, errorResponse)
+                override fun onResponse(any: Any, errorMessage: String?) {
+                    onLogout(any, errorMessage)
                 }
             })
         }
@@ -110,8 +108,8 @@ abstract class PinActivity : BaseActivity() {
         } else {
             if (pinOnce == enteredPin.toString()) {
                 viewModel.resetPin(getAccountId(), enteredPin.toString(), object : ResponseCallback {
-                    override fun onResponse(any: Any, errorResponse: ErrorResponse?) {
-                        onPinResetResponse(any, errorResponse)
+                    override fun onResponse(any: Any, errorMessage: String?) {
+                        onPinResetResponse(any, errorMessage)
                     }
                 })
                 pinOnce = ""

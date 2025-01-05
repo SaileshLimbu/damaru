@@ -52,7 +52,7 @@ class AccountUsersActivity : BaseActivity() {
         viewModel.liveData.observe(this) {
             when(it){
                 is ResponseWrapper.Error -> {
-                    AlertHelper.showSnackbar(b.root, it.errorResponse.message?.message ?: "")
+                    AlertHelper.showSnackbar(b.root, it.message)
 
                 }
                 is ResponseWrapper.Loading -> TODO()

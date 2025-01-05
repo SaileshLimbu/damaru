@@ -85,7 +85,7 @@ class AdminMainActivity : BaseActivity() {
 
                 is ResponseWrapper.Error -> {
                     binding.loader.root.hide()
-                    binding.errorView.tvError.text = it.errorResponse.message?.message
+                    binding.errorView.tvError.text = it.message
                     binding.errorView.root.show()
                 }
 

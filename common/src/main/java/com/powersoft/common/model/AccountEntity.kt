@@ -8,19 +8,19 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class AccountEntity(
     @SerializedName("account_name")
-    val accountName: String?,
+    val accountName: String,
     @SerializedName("created_at")
-    val createdAt: String?,
+    val createdAt: String,
     @SerializedName("first_login")
-    val firstLogin: Boolean?,
+    val firstLogin: Boolean,
     @SerializedName("id")
-    val id: Int?,
+    val id: String,
     @SerializedName("is_admin")
     val isAdmin: Boolean = false,
     @SerializedName("last_login")
     val lastLogin: String?,
     @SerializedName("pin")
-    val pin: String?,
+    val pin: String,
     @SerializedName("updated_at")
-    val updatedAt: String?
+    val updatedAt: String
 )

@@ -25,20 +25,20 @@ class PinViewModel @Inject constructor(
     private val userRepo : UserRepo
 ) : BaseViewModel() {
 
-    fun resetPin(accountId : Int?, pin: String, responseCallback: ResponseCallback) {
+    fun resetPin(accountId : String, pin: String, responseCallback: ResponseCallback) {
         showLoader()
         viewModelScope.launch {
             val map = mapOf(
                 "pin" to pin
             )
-            when (val response = repo.updateAccountTask(accountId!!, map)) {
+            when (val response = repo.updateAccountTask(accountId, map)) {
                 is ResponseWrapper.Success -> {
                     prefsHelper.putString(PrefsHelper.USER, gson.toJson(response.data))
                     responseCallback.onResponse(response.data)
                 }
 
                 is ResponseWrapper.Error -> {
-                    responseCallback.onResponse(Any(), response.errorResponse)
+                    responseCallback.onResponse(Any(), response.message)
                 }
 
                 is ResponseWrapper.Loading -> {

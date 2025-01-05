@@ -23,6 +23,12 @@ class AccountsAdapter(
         }
     }
 
+    fun removeItem(position: Int) {
+        val currentList = currentList.toMutableList()
+        currentList.removeAt(position)
+        submitList(currentList)
+    }
+
     inner class ViewHolder(private val binding: ItemAccountBinding) :
         RecyclerView.ViewHolder(binding.root) {
 

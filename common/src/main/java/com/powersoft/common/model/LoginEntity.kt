@@ -7,17 +7,17 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class LoginEntity(
     @SerialName("accessToken")
-    val accessToken: String?,
+    val accessToken: String,
     @SerialName("accountId")
-    val accountId: Int?,
+    val accountId: String,
     @SerialName("accountName")
-    val accountName: String?,
+    val accountName: String,
     @SerialName("firstLogin")
-    val firstLogin: Boolean?,
+    val firstLogin: Boolean,
     @SerialName("isRootUser")
-    val isRootUser: Boolean?,
+    val isRootUser: Boolean,
     @SerialName("isSuperAdmin")
-    val isSuperAdmin: Boolean?,
+    val isSuperAdmin: Boolean,
     @SerialName("userId")
-    val userId: Int?
+    val userId: String
 )

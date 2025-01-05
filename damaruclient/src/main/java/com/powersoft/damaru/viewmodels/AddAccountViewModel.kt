@@ -3,7 +3,6 @@ package com.powersoft.damaru.viewmodels
 import androidx.lifecycle.viewModelScope
 import com.powersoft.common.base.BaseViewModel
 import com.powersoft.common.model.ResponseWrapper
-import com.powersoft.common.model.getUnknownError
 import com.powersoft.common.repository.AccountsRepo
 import com.powersoft.common.ui.helper.ResponseCallback
 import com.powersoft.common.utils.Logg
@@ -20,7 +19,7 @@ class AddAccountViewModel @Inject constructor(
 
     fun addAccount(accountName: String, responseCallback: ResponseCallback) {
         if (accountName.isEmpty()) {
-            responseCallback.onResponse(Any(), getUnknownError("Account name cannot be empty"))
+            responseCallback.onResponse(Any(),"Account name cannot be empty")
             return
         }
         showLoader()
@@ -34,7 +33,7 @@ class AddAccountViewModel @Inject constructor(
                     }
 
                     is ResponseWrapper.Error -> {
-                        responseCallback.onResponse(Any(), responseWrapper.errorResponse)
+                        responseCallback.onResponse(Any(), responseWrapper.message)
                     }
 
                     is ResponseWrapper.Loading -> {
@@ -45,9 +44,9 @@ class AddAccountViewModel @Inject constructor(
         }
     }
 
-    fun updateAccount(accountId : Int, accountName: String, responseCallback: ResponseCallback) {
+    fun updateAccount(accountId : String, accountName: String, responseCallback: ResponseCallback) {
         if (accountName.isEmpty()) {
-            responseCallback.onResponse(Any(), getUnknownError("Account name cannot be empty"))
+            responseCallback.onResponse(Any(), "Account name cannot be empty")
             return
         }
         showLoader()
@@ -64,7 +63,7 @@ class AddAccountViewModel @Inject constructor(
                     }
 
                     is ResponseWrapper.Error -> {
-                        responseCallback.onResponse(Any(), responseWrapper.errorResponse)
+                        responseCallback.onResponse(Any(), responseWrapper.message)
                     }
 
                     is ResponseWrapper.Loading -> {

@@ -33,7 +33,7 @@ class AccountsFragmentViewModel @Inject constructor(
         }
     }
 
-    fun deleteAccount(id: Int, responseCallback: ResponseCallback) {
+    fun deleteAccount(id: String, responseCallback: ResponseCallback) {
         showLoader()
         viewModelScope.launch {
             val response = accountRepo.deleteAccountTask(id)
@@ -45,7 +45,7 @@ class AccountsFragmentViewModel @Inject constructor(
                     }
 
                     is ResponseWrapper.Error -> {
-                        responseCallback.onResponse(Any(), response.errorResponse)
+                        responseCallback.onResponse(Any(), response.message)
                     }
 
                     is ResponseWrapper.Loading -> {

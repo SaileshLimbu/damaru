@@ -4,7 +4,6 @@ import android.os.Bundle
 import androidx.activity.viewModels
 import com.powersoft.common.base.BaseActivity
 import com.powersoft.common.base.BaseViewModel
-import com.powersoft.common.model.ErrorResponse
 import com.powersoft.common.ui.helper.AlertHelper
 import com.powersoft.common.ui.helper.ResponseCallback
 import com.powersoft.damaruadmin.R
@@ -34,12 +33,9 @@ class AddUserActivity : BaseActivity() {
         binding.btnSubmit.setOnClickListener {
             vm.addUser(binding.etName.text.toString(), binding.etEmail.text.toString(), binding.etPassword.text.toString(), binding.etConfirmPassword.text.toString(),
                 object : ResponseCallback {
-                    override fun onResponse(any: Any, errorResponse: ErrorResponse?) {
-                        if (errorResponse != null) {
-                            AlertHelper.showAlertDialog(
-                                this@AddUserActivity, (errorResponse.message?.error ?: getString(R.string.error)),
-                                errorResponse.message?.message ?: ""
-                            )
+                    override fun onResponse(any: Any, errorMessage: String?) {
+                        if (errorMessage != null) {
+                            AlertHelper.showAlertDialog(this@AddUserActivity, getString(R.string.error), errorMessage)
                         } else {
                             setResult(RESULT_OK)
                             finish()

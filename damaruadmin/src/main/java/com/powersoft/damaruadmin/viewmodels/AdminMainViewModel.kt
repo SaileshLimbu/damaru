@@ -5,10 +5,10 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.google.gson.Gson
 import com.powersoft.common.base.BaseViewModel
-import com.powersoft.common.model.ErrorResponse
+
 import com.powersoft.common.model.ResponseWrapper
 import com.powersoft.common.model.UserEntity
-import com.powersoft.common.model.getUnknownError
+
 import com.powersoft.common.utils.PrefsHelper
 import com.powersoft.damaruadmin.webservices.ApiServiceImpl
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -39,22 +39,17 @@ class AdminMainViewModel @Inject constructor(
         viewModelScope.launch {
             try {
                 val response = apiService.getAllUsers()
-                if (response.isSuccessful) {
-                    _allUsersList.postValue(response.body()?.let {
-                        ResponseWrapper.success(it)
-                    } ?: ResponseWrapper.error(getUnknownError("Something went wrong (Code 342)")))
-                } else {
-                    val errorResponse = try {
-                        val errorBody = response.errorBody()?.string()
-                        val error = gson.fromJson(errorBody, ErrorResponse::class.java)
-                        error
-                    } catch (e: Exception) {
-                        getUnknownError()
+                if (response.status) {
+                    if(response.data.isNullOrEmpty()){
+                        _allUsersList.postValue(ResponseWrapper.error("No users found"))
+                    }else {
+                        _allUsersList.postValue(ResponseWrapper.success(response.data!!))
                     }
-                    _allUsersList.postValue(ResponseWrapper.error(errorResponse))
+                } else {
+                    _allUsersList.postValue(ResponseWrapper.error(response.message))
                 }
             } catch (e: Exception) {
-                //catch
+                _allUsersList.postValue(ResponseWrapper.error("Something went wrong. Code(342)"))
             }
         }
     }
