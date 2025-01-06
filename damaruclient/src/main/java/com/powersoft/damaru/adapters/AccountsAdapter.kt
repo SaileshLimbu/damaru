@@ -41,7 +41,7 @@ class AccountsAdapter(
                 tvAccountName.text = account.accountName
                 tvEmail.text = account.pin
                 tvInitials.text = try {
-                    account.accountName?.first()?.uppercase().toString()
+                    account.accountName.first().uppercase()
                 } catch (e: Exception) {
                     ""
                 }

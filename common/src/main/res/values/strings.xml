@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-
     <string name="login">LOGIN</string>
     <string name="email">Email</string>
     <string name="password">Password</string>
@@ -24,10 +23,8 @@
     <string name="_9">9</string>
     <string name="_0">0</string>
     <string name="delete">Delete</string>
-
     <string name="name">Name</string>
     <string name="error">Error</string>
-
     <string name="text_expired">Expired</string>
     <string name="text_device_name">Samsung s20</string>
     <string name="text_remaining_days">28 days</string>
@@ -35,6 +32,16 @@
     <string name="text_add_account">Add Account</string>
     <string name="tap_to_select">Tap to select</string>
     <string name="select">Select</string>
+    <string name="no_data_found">No data found</string>
+    <string name="text_nav_home">Home</string>
+    <string name="logout">Logout</string>
+    <string name="are_you_sure_you_want_to_logout">Are you sure you want to logout?</string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
+    <string name="devices">Devices</string>
+    <string name="cancle">Cancel</string>
+    <string name="update">Update</string>
+    <string name="update_account">Update Account</string>
 
 
 </resources>

@@ -1,24 +1,22 @@
-package com.powersoft.damaru.repository
+package com.powersoft.common.repository
 
-import com.google.gson.Gson
 import com.powersoft.common.model.DeviceEntity
-
 import com.powersoft.common.model.ResponseWrapper
-import com.powersoft.damaru.webservices.ApiServiceImpl
+import com.powersoft.common.webservice.ApiService
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class DeviceRepo @Inject constructor(private val apiService: ApiServiceImpl) {
+class DeviceRepo @Inject constructor(private val apiService: ApiService) {
 
     suspend fun getAllDevices(): ResponseWrapper<List<DeviceEntity>> {
         return try {
             val response = apiService.getAllEmulators()
             if (response.status) {
-                if (response.data.isNullOrEmpty()){
+                if (response.data.isNullOrEmpty()) {
                     ResponseWrapper.error("No Devices")
-                }else{
-                    ResponseWrapper.success(response.data!!)
+                } else {
+                    ResponseWrapper.success(response.data)
                 }
             } else {
                 ResponseWrapper.error(response.message)
@@ -28,14 +26,14 @@ class DeviceRepo @Inject constructor(private val apiService: ApiServiceImpl) {
         }
     }
 
-    suspend fun getEmulatorOfAccount(accountId : String): ResponseWrapper<List<DeviceEntity>> {
+    suspend fun getEmulatorOfAccount(accountId: String): ResponseWrapper<List<DeviceEntity>> {
         return try {
             val response = apiService.getHisEmulator(accountId)
             if (response.status) {
-                if (response.data.isNullOrEmpty()){
-                    ResponseWrapper.error(response.message)
-                }else{
-                    ResponseWrapper.success(response.data!!)
+                if (response.data.isNullOrEmpty()) {
+                    ResponseWrapper.error("No Devices")
+                } else {
+                    ResponseWrapper.success(response.data)
                 }
             } else {
                 ResponseWrapper.error(response.message)

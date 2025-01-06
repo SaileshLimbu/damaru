@@ -6,9 +6,11 @@ import android.os.Bundle
 import androidx.activity.result.ActivityResultLauncher
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.powersoft.common.R
 import com.powersoft.common.adapter.PickerAdapter
 import com.powersoft.common.databinding.ActivityPickerBinding
 import com.powersoft.common.model.PickerEntity
+import com.powersoft.common.utils.show
 
 class PickerActivity : AppCompatActivity() {
 
@@ -38,7 +40,7 @@ class PickerActivity : AppCompatActivity() {
             finish()
         }
 
-        val items: ArrayList<PickerEntity>? = intent.getParcelableArrayListExtra<PickerEntity>("data")
+        val items: ArrayList<PickerEntity>? = intent.getParcelableArrayListExtra("data")
         val isMultiSelect = intent.getBooleanExtra("isMultiSelect", false)
 
         items.let {
@@ -56,6 +58,11 @@ class PickerActivity : AppCompatActivity() {
                 setResult(RESULT_OK, resultIntent)
                 finish()
             }
+        }
+        if (items.isNullOrEmpty()) {
+            binding.errorView.tvError.text = getString(R.string.no_data_found)
+            binding.errorView.root.show()
+            binding.btnSelect.isEnabled = false
         }
     }
 }

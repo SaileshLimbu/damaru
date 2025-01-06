@@ -6,8 +6,10 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import androidx.viewpager2.widget.ViewPager2
+import com.powersoft.common.repository.UserRepo
 import com.powersoft.common.ui.helper.AlertHelper
 import com.powersoft.common.utils.PrefsHelper
+import com.powersoft.common.utils.visibility
 import com.powersoft.damaru.R
 import com.powersoft.damaru.databinding.ActivityMainBinding
 import com.powersoft.damaru.fragments.AccountsFragment
@@ -23,6 +25,9 @@ class MainActivity : AppCompatActivity() {
 
     @Inject
     lateinit var prefsHelper: PrefsHelper
+
+    @Inject
+    lateinit var userRepo: UserRepo
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -59,8 +64,10 @@ class MainActivity : AppCompatActivity() {
             }
         })
 
+        binding.bottomNavigationView.visibility(userRepo.seasonEntity.value?.isRootUser == true)
+
         binding.imgLogout.setOnClickListener {
-            AlertHelper.showAlertDialog(this@MainActivity, getString(R.string.logout), getString(R.string.are_you_sure_you_want_to_logout), getString(R.string.yes), getString(R.string.no),
+            AlertHelper.showAlertDialog(this@MainActivity, getString(com.powersoft.common.R.string.logout), getString(com.powersoft.common.R.string.are_you_sure_you_want_to_logout), getString(com.powersoft.common.R.string.yes), getString(com.powersoft.common.R.string.no),
                 onPositiveButtonClick = {
                     prefsHelper.clear()
                     startActivity(
@@ -74,7 +81,7 @@ class MainActivity : AppCompatActivity() {
 
     // Adapter for ViewPager2
     inner class ViewPagerAdapter(activity: AppCompatActivity) : FragmentStateAdapter(activity) {
-        override fun getItemCount(): Int = 2
+        override fun getItemCount(): Int = if (userRepo.seasonEntity.value?.isRootUser == true) 2 else 1
 
         override fun createFragment(position: Int): Fragment {
             return when (position) {

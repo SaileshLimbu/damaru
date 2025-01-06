@@ -1,17 +1,16 @@
-Splash Screen
-Login Screen
-Display who is using and ask them for pin if they have multiple accounts
-Display list of devices
 
-If the user is primary admin then
-Ask who is using and enter pin same as before
 
-Additional feature:
-Show a list of device and on the next tab show list of users where they can manage user like add, edit or deactivate user.
-If they click on user then show bottomsheet with options Edit, Show logs, Deactivate
-And also they must be able to see which users are currently active and then have a feature where they can end their session. When admin end session.
+<-- 200 OK http://13.201.152.191:3000/emulators/linkedAccounts?deviceId=1 (49ms)
+{"status":true,"message":"Success","data":[{"id":"3","account_name":"Test One"}]}
+--> send "pin" in response
 
 
 
+API needed -> Get unassigned devices of user
 
---> Login API
+
+user list api -> return usertype also OR isSuperAdmin key
+
+<-- 200 OK http://13.201.152.191:3000/emulators (60ms)
+-- some device response have no value "expires_at" in the response
+

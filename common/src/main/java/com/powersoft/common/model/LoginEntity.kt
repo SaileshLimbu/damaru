@@ -19,5 +19,7 @@ data class LoginEntity(
     @SerialName("isSuperAdmin")
     val isSuperAdmin: Boolean,
     @SerialName("userId")
-    val userId: String
+    val userId: String,
+    @SerialName("pin")
+    val pin: String
 )

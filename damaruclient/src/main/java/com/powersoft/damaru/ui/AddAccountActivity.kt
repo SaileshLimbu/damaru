@@ -38,10 +38,10 @@ class AddAccountActivity : BaseActivity() {
         if (intent.hasExtra("account")) {
             account = gson.fromJson(intent.getStringExtra("account"), AccountEntity::class.java)
             binding.etName.setText(account?.accountName)
-            binding.btnSubmit.text = getString(R.string.update)
+            binding.btnSubmit.text = getString(com.powersoft.common.R.string.update)
             binding.viewNote.hide()
             binding.noteDetail.hide()
-            binding.title.text = getString(R.string.update_account)
+            binding.title.text = getString(com.powersoft.common.R.string.update_account)
         }
 
         binding.btnBack.setOnClickListener {

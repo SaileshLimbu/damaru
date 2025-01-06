@@ -17,12 +17,11 @@ import com.powersoft.common.repository.UserRepo
 import com.powersoft.common.ui.PickerActivity
 import com.powersoft.common.ui.helper.AlertHelper
 import com.powersoft.common.ui.helper.ResponseCallback
-import com.powersoft.common.utils.Logg
 import com.powersoft.common.utils.hide
 import com.powersoft.common.utils.show
 import com.powersoft.common.utils.visibility
 import com.powersoft.damaru.R
-import com.powersoft.damaru.adapters.DeviceListAdapter
+import com.powersoft.common.adapter.DeviceListAdapter
 import com.powersoft.damaru.databinding.ActivityAccountDetailBinding
 import com.powersoft.damaru.viewmodels.AccountDetailViewModel
 import dagger.hilt.android.AndroidEntryPoint
@@ -46,6 +45,8 @@ class AccountDetailActivity : BaseActivity() {
                 setResult(RESULT_OK)
                 if (result.data?.hasExtra("edited_name") == true) {
                     binding.tvAccountName.text = result.data?.getStringExtra("edited_name")
+                } else if (result.data?.hasExtra("pin") == true) {
+                    binding.tvPin.text = result.data?.getStringExtra("pin")
                 }
             }
         }
@@ -53,22 +54,15 @@ class AccountDetailActivity : BaseActivity() {
     private val linkDeviceResultLauncher =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
             if (result.resultCode == RESULT_OK) {
-                val items: ArrayList<PickerEntity>? = result.data?.getParcelableArrayListExtra<PickerEntity>(PickerActivity.Companion.EXTRA_SELECTED_ITEMS)
-                Logg.d(
-                    "Fuck there  >>>>> ${
-                        items?.map { pickerEntity ->
-                            gson.fromJson(pickerEntity.dataJson, DeviceEntity::class.java).deviceId.toString()
-                        }
-                    }"
-                )
+                val items: ArrayList<PickerEntity>? = result.data?.getParcelableArrayListExtra(PickerActivity.Companion.EXTRA_SELECTED_ITEMS)
                 if (items?.isNotEmpty() == true) {
                     vm.linkDevices(items.map { pickerEntity ->
-                        gson.fromJson(pickerEntity.dataJson, DeviceEntity::class.java).deviceId.toString()
-                    }.toList(), userRepo.seasonEntity.value?.userId.toString(), account.id.toString(), object : ResponseCallback {
+                        gson.fromJson(pickerEntity.dataJson, DeviceEntity::class.java).deviceId
+                    }.toList(), userRepo.seasonEntity.value?.userId.toString(), account.id, object : ResponseCallback {
                         override fun onResponse(any: Any, errorMessage: String?) {
-                            setResult(RESULT_OK)
+                            vm.getLinkedDevices(account.id)
                             if (errorMessage != null) {
-                                AlertHelper.showAlertDialog(this@AccountDetailActivity, title = getString(R.string.error), message = errorMessage ?: "")
+                                AlertHelper.showAlertDialog(this@AccountDetailActivity, title = getString(R.string.error), message = errorMessage)
                             } else {
                                 AlertHelper.showSnackbar(binding.root, getString(R.string.linked_success))
                             }
@@ -160,7 +154,7 @@ class AccountDetailActivity : BaseActivity() {
                 positiveButtonText = getString(R.string.delete),
                 negativeButtonText = getString(R.string.cancle),
                 onPositiveButtonClick = {
-                    vm.deleteAccount(account.id!!, object : ResponseCallback {
+                    vm.deleteAccount(account.id, object : ResponseCallback {
                         override fun onResponse(any: Any, errorMessage: String?) {
                             if (errorMessage != null) {
                                 AlertHelper.showAlertDialog(
@@ -189,12 +183,14 @@ class AccountDetailActivity : BaseActivity() {
 
                     binding.loader.root.hide()
                     binding.errorView.root.hide()
+                    binding.extendedFAB.show()
                 }
 
                 is ResponseWrapper.Error -> {
                     binding.loader.root.hide()
                     binding.errorView.tvError.text = it.message
                     binding.errorView.root.show()
+                    binding.extendedFAB.show()
                 }
 
                 is ResponseWrapper.Loading -> {
@@ -223,15 +219,12 @@ class AccountDetailActivity : BaseActivity() {
             }
         }
 
-        vm.getLinkedDevices(account.id.toString())
+        vm.getLinkedDevices(account.id)
     }
 
     private fun openPicker() {
         PickerActivity.Companion.startForResult(
-            this@AccountDetailActivity,
-            (vm.allDevices.value as ResponseWrapper.Success).data.map {
-                PickerEntity(it.deviceName.toString(), gson.toJson(it))
-            }.toList(),
+            this@AccountDetailActivity, vm.getFilteredList(),
             true, linkDeviceResultLauncher
         )
     }

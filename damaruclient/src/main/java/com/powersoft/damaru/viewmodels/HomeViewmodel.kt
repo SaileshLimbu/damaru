@@ -6,7 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.powersoft.common.base.BaseViewModel
 import com.powersoft.common.model.DeviceEntity
 import com.powersoft.common.model.ResponseWrapper
-import com.powersoft.damaru.repository.DeviceRepo
+import com.powersoft.common.repository.DeviceRepo
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch

@@ -3,20 +3,23 @@ package com.powersoft.damaruadmin.viewmodels
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
+import com.google.gson.Gson
 import com.powersoft.common.base.BaseViewModel
 import com.powersoft.common.model.DeviceEntity
+
 import com.powersoft.common.model.ResponseWrapper
+import com.powersoft.common.model.UserEntity
 import com.powersoft.common.repository.DeviceRepo
-import com.powersoft.common.ui.helper.ResponseCallback
-import com.powersoft.damaruadmin.repository.UserRepo
+
+import com.powersoft.common.utils.PrefsHelper
+import com.powersoft.damaruadmin.webservices.ApiServiceImpl
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class UserDetailViewModel @Inject constructor(
-    private val userRepo: UserRepo,
+class AdminDeviceFragmentViewModel @Inject constructor(
     private val repo: DeviceRepo
 ) : BaseViewModel() {
     private val _allDevices = MutableLiveData<ResponseWrapper<List<DeviceEntity>>>()
@@ -36,20 +39,4 @@ class UserDetailViewModel @Inject constructor(
         }
     }
 
-    fun deleteUser(id: String, responseCallback: ResponseCallback) {
-        viewModelScope.launch {
-            when (val response = userRepo.deleteUserTask(id)) {
-                is ResponseWrapper.Success -> {
-                    responseCallback.onResponse(response.data, null)
-                }
-
-                is ResponseWrapper.Error -> {
-                    responseCallback.onResponse(Any(), response.message)
-                }
-
-                is ResponseWrapper.Loading -> {
-                }
-            }
-        }
-    }
 }

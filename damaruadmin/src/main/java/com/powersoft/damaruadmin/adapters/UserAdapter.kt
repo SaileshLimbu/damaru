@@ -26,10 +26,26 @@ class UserAdapter(
             binding.apply {
                 tvUsername.text = user.name
                 tvUserEmailFuck.text = user.email
-                tvTotalDevices.text = "${user.accounts?.size ?: 0}"
-                tvTotalAccounts.text = "${user.accounts?.size ?: 0}"
+                tvTotalDevices.text = "${user.emulatorCount}"
+                tvTotalAccounts.text = "${user.accountsCount}"
+
+                btnEdit.setOnClickListener {
+                    listener.onItemClick(it.id, layoutPosition, user)
+                }
+                btnDelete.setOnClickListener {
+                    listener.onItemClick(it.id, layoutPosition, user)
+                }
+                btnAssign.setOnClickListener {
+                    listener.onItemClick(it.id, layoutPosition, user)
+                }
             }
         }
+    }
+
+    fun removeItem(position: Int) {
+        val currentList = currentList.toMutableList()
+        currentList.removeAt(position)
+        submitList(currentList)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {

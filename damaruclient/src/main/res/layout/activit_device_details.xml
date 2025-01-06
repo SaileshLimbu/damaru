@@ -63,11 +63,14 @@
         tools:text="Expires In : 28 days" />
 
     <com.google.android.material.card.MaterialCardView
+        android:id="@+id/holderAccounts"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         app:layout_constraintStart_toEndOf="@+id/holderDevice"
         app:contentPaddingLeft="24dp"
         app:contentPaddingRight="24dp"
+        android:visibility="gone"
+        tools:visibility="visible"
         android:layout_marginTop="12dp"
         app:cardCornerRadius="32dp"
         app:cardBackgroundColor="@color/colorSecondaryVariant"
@@ -77,6 +80,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:gravity="center_vertical"
+            android:minHeight="28dp"
             android:orientation="horizontal">
 
             <TextView
@@ -86,7 +90,7 @@
                 android:layout_marginEnd="12dp"
                 android:includeFontPadding="false"
                 android:textColor="@color/white"
-                android:textSize="24sp"
+                android:textSize="18sp"
                 android:textStyle="bold"
                 tools:text="6" />
 
@@ -95,6 +99,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textColor="@color/white"
+                android:includeFontPadding="false"
                 android:textSize="13sp"
                 android:text="@string/accounts" />
         </LinearLayout>
