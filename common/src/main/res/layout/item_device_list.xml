@@ -1,6 +1,97 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="wrap_content">
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+    <com.google.android.material.card.MaterialCardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:contentPadding="12dp"
+        android:layout_margin="12dp"
+        app:cardElevation="4dp">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <ImageView
+                android:id="@+id/imgDevice"
+                android:layout_width="120dp"
+                android:layout_height="120dp"
+                android:adjustViewBounds="true"
+                android:contentDescription="@null"
+                tools:src="@drawable/ic_accounts"
+                android:scaleType="centerInside"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"/>
+
+            <TextView
+                android:id="@+id/tvDeviceName"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="12dp"
+                android:layout_marginEnd="12dp"
+                android:layout_marginTop="12dp"
+                android:fontFamily="@font/adlam_display"
+                android:textColor="@color/colorPrimaryDark"
+                android:textSize="16sp"
+                app:layout_constraintStart_toEndOf="@+id/imgDevice"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/imgDevice"
+                tools:text="theone sharma" />
+
+            <TextView
+                android:id="@+id/tvDeviceId"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                app:layout_constraintStart_toStartOf="@+id/tvDeviceName"
+                app:layout_constraintEnd_toEndOf="@+id/tvDeviceName"
+                app:layout_constraintTop_toBottomOf="@+id/tvDeviceName"
+                tools:text="email@damaru.com" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnOnline"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:minHeight="32dp"
+                app:layout_constraintStart_toStartOf="@+id/tvDeviceName"
+                app:layout_constraintTop_toBottomOf="@+id/tvDeviceId"
+                app:strokeColor="@color/green"
+                app:strokeWidth="2dp"
+                app:cornerRadius="12dp"
+                android:padding="0dp"
+                app:iconTint="@color/green"
+                android:textColor="@color/green"
+                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                app:backgroundTint="@android:color/transparent"
+                android:text="Online"
+                android:paddingStart="4dp"
+                android:paddingEnd="4dp"
+                app:iconPadding="2dp"
+                app:icon="@drawable/ic_filled_circle"
+                android:textAllCaps="false"/>
+
+            <TextView
+                android:id="@+id/tvCreatedAt"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                app:layout_constraintStart_toStartOf="@+id/tvDeviceName"
+                app:layout_constraintEnd_toEndOf="@+id/tvDeviceName"
+                app:layout_constraintTop_toBottomOf="@+id/btnOnline"
+                android:textSize="10sp"
+                tools:text="Created at -> 2024-01-01" />
+
+            <TextView
+                android:id="@+id/tvUpdatedAt"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                app:layout_constraintStart_toStartOf="@+id/tvDeviceName"
+                app:layout_constraintEnd_toEndOf="@+id/tvDeviceName"
+                app:layout_constraintTop_toBottomOf="@+id/tvCreatedAt"
+                android:textSize="10sp"
+                tools:text="Updated at -> 2024-01-01" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </com.google.android.material.card.MaterialCardView>
+</LinearLayout>

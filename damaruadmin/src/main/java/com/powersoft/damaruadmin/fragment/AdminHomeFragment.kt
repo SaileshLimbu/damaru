@@ -13,8 +13,10 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.gson.Gson
 import com.powersoft.common.listeners.RecyclerViewItemClickListener
+import com.powersoft.common.model.PickerEntity
 import com.powersoft.common.model.ResponseWrapper
 import com.powersoft.common.model.UserEntity
+import com.powersoft.common.ui.PickerActivity
 import com.powersoft.common.ui.helper.AlertHelper
 import com.powersoft.common.ui.helper.ResponseCallback
 import com.powersoft.common.utils.hide
@@ -49,6 +51,27 @@ class AdminHomeFragment : Fragment(R.layout.fragment_home), RecyclerViewItemClic
             vm.getALlMyUsers()
         }
     }
+
+    private val linkDeviceResultLauncher =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            if (result.resultCode == RESULT_OK) {
+                val items: ArrayList<PickerEntity>? = result.data?.getParcelableArrayListExtra(PickerActivity.Companion.EXTRA_SELECTED_ITEMS)
+                if (items?.isNotEmpty() == true) {
+//                    vm.linkDevices(items.map { pickerEntity ->
+//                        gson.fromJson(pickerEntity.dataJson, DeviceEntity::class.java).deviceId
+//                    }.toList(), userRepo.seasonEntity.value?.userId.toString(), account.id, object : ResponseCallback {
+//                        override fun onResponse(any: Any, errorMessage: String?) {
+//                            vm.getAllAssignedDevices(account.id)
+//                            if (errorMessage != null) {
+//                                AlertHelper.showAlertDialog(this@UserDetailActivity, title = getString(R.string.error), message = errorMessage)
+//                            } else {
+//                                AlertHelper.showSnackbar(binding.root, getString(R.string.linked_success))
+//                            }
+//                        }
+//                    })
+                }
+            }
+        }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
@@ -137,7 +160,11 @@ class AdminHomeFragment : Fragment(R.layout.fragment_home), RecyclerViewItemClic
                     }
 
                     R.id.btnAssign -> {
-                        userDetailResultLauncher.launch(Intent(context, UserDetailActivity::class.java).putExtra("user", gson.toJson(data)))
+                        if (vm.allUnAssignedDevices.value is ResponseWrapper.Success) {
+                            openPicker()
+                        } else {
+                            vm.getAllUnassignedDevices(data.id)
+                        }
                     }
                     else ->{
                         userDetailResultLauncher.launch(Intent(context, UserDetailActivity::class.java).putExtra("user", gson.toJson(data)))
@@ -149,5 +176,14 @@ class AdminHomeFragment : Fragment(R.layout.fragment_home), RecyclerViewItemClic
 
     override fun onItemClick(viewId: Int, position: Int, data: UserEntity) {
         userDetailResultLauncher.launch(Intent(context, UserDetailActivity::class.java).putExtra("user", gson.toJson(data)))
+    }
+
+    private fun openPicker() {
+        PickerActivity.Companion.startForResult(
+            requireActivity(),
+            (vm.allUnAssignedDevices.value as ResponseWrapper.Success).data.map {
+                PickerEntity(it.deviceName, gson.toJson(it))
+            }, true, linkDeviceResultLauncher
+        )
     }
 }

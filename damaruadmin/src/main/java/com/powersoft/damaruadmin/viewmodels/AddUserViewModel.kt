@@ -57,22 +57,18 @@ class AddUserViewModel @Inject constructor(
         }
     }
 
-    fun editUser(id: String, name: String, email: String, password: String, confirmPassword: String, responseCallback: ResponseCallback) {
+    fun editUser(id: String, name: String, email: String, responseCallback: ResponseCallback) {
         if (name.isEmpty()) {
             AlertHelper.showToast(context, context.getString(R.string.please_enter_name))
         } else if (email.isEmpty()) {
             AlertHelper.showToast(context, context.getString(R.string.please_enter_email))
-        } else if (password != confirmPassword) {
-            AlertHelper.showToast(context, context.getString(R.string.password_dont_match))
         } else {
             showLoader()
             viewModelScope.launch {
                 try {
                     val map = mapOf(
                         "name" to name,
-                        "email" to email,
-                        "password" to password,
-                        "role" to "AndroidUser"
+                        "email" to email
                     )
                     val response = apiService.editUser(id, gson.toJson(map).toRequestBody())
                     if (response.status) {

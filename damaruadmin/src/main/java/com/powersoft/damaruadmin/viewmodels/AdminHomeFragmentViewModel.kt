@@ -4,18 +4,26 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.powersoft.common.base.BaseViewModel
+import com.powersoft.common.model.DeviceEntity
 import com.powersoft.common.model.ResponseWrapper
 import com.powersoft.common.model.UserEntity
+import com.powersoft.common.repository.DeviceRepo
 import com.powersoft.common.ui.helper.ResponseCallback
 import com.powersoft.damaruadmin.repository.UserRepo
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class AdminHomeFragmentViewModel @Inject constructor(
-    private val userRepo: UserRepo
+    private val userRepo: UserRepo,
+    private val deviceRepo: DeviceRepo
 ) : BaseViewModel() {
+    private val _allUnAssignedDevices = MutableLiveData<ResponseWrapper<List<DeviceEntity>>>()
+
+    val allUnAssignedDevices: LiveData<ResponseWrapper<List<DeviceEntity>>>
+        get() = _allUnAssignedDevices
 
     private val _allUsersList = MutableLiveData<ResponseWrapper<List<UserEntity>>>()
 
@@ -24,6 +32,14 @@ class AdminHomeFragmentViewModel @Inject constructor(
 
     init {
         getALlMyUsers()
+    }
+
+    fun getAllUnassignedDevices(id : String) {
+        viewModelScope.launch(Dispatchers.IO) {
+            _allUnAssignedDevices.postValue(ResponseWrapper.loading())
+            val response = deviceRepo.getAllDevices()
+            _allUnAssignedDevices.postValue(response)
+        }
     }
 
     fun getALlMyUsers() {

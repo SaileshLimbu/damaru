@@ -36,7 +36,9 @@
     <string name="created_at">Created At : %1$s</string>
     <string name="pin">PIN :</string>
     <string name="link_device">Link Device</string>
-    <string name="unlink_this_device">Unlink account from this Device?</string>
+    <string name="unlink_this_account">Unlink account from this Device?</string>
+    <string name="unlink_this_device">Unlink device from this Account?</string>
     <string name="are_you_sure_unlink_account">Are you sure you want to unlink the account from this device?</string>
+    <string name="are_you_sure_unlink_device">Are you sure you want to unlink this device from this account?</string>
     <string name="linked_success">Devices successfully linked this account.</string>
 </resources>

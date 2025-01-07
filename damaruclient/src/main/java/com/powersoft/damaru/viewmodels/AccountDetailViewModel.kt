@@ -11,6 +11,7 @@ import com.powersoft.common.model.ResponseWrapper
 import com.powersoft.common.repository.AccountsRepo
 import com.powersoft.common.ui.helper.ResponseCallback
 import com.powersoft.common.repository.DeviceRepo
+import com.powersoft.common.utils.Logg
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -110,6 +111,29 @@ class AccountDetailViewModel @Inject constructor(
             return (_allDevices.value as ResponseWrapper.Success).data.map { PickerEntity(it.deviceName, gson.toJson(it)) }
         } else {
             return listOf()
+        }
+    }
+
+    fun unlinkAccount(deviceId : String, userId : String, accountIds : List<String>, responseCallback: ResponseCallback) {
+        showLoader()
+        viewModelScope.launch {
+            val responseWrapper = accountRepo.unlinkAccountsFromDevice(deviceId, userId, accountIds)
+            withContext(Dispatchers.Main) {
+                hideLoader()
+                when (responseWrapper) {
+                    is ResponseWrapper.Success -> {
+                        responseCallback.onResponse(responseWrapper.data ?: Any())
+                    }
+
+                    is ResponseWrapper.Error -> {
+                        responseCallback.onResponse(Any(), responseWrapper.message)
+                    }
+
+                    is ResponseWrapper.Loading -> {
+                        Logg.d("Loading data...")
+                    }
+                }
+            }
         }
     }
 }

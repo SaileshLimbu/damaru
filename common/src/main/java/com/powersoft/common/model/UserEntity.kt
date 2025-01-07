@@ -22,5 +22,7 @@ data class UserEntity(
     @SerializedName("password")
     val password: String,
     @SerializedName("updated_at")
-    val updatedAt: String
+    val updatedAt: String,
+    @SerializedName("isSuperAdmin")
+    val isSuperAdmin: Boolean
 )

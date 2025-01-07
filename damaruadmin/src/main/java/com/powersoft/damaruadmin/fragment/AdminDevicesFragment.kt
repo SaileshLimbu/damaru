@@ -46,6 +46,10 @@ class AdminDevicesFragment : Fragment(R.layout.fragment_devices), RecyclerViewIt
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        b.swipeRefresh.setOnRefreshListener {
+            vm.getAllDevices()
+        }
+
         b.recyclerView.layoutManager = LinearLayoutManager(activity)
         b.recyclerView.adapter = deviceAdapter
 
@@ -55,12 +59,16 @@ class AdminDevicesFragment : Fragment(R.layout.fragment_devices), RecyclerViewIt
                     deviceAdapter.submitList(it.data)
                     b.loader.root.hide()
                     b.errorView.root.hide()
+
+                    b.swipeRefresh.isRefreshing = false
                 }
 
                 is ResponseWrapper.Error -> {
                     b.loader.root.hide()
                     b.errorView.tvError.text = it.message
                     b.errorView.root.show()
+
+                    b.swipeRefresh.isRefreshing = false
                 }
 
                 is ResponseWrapper.Loading -> {

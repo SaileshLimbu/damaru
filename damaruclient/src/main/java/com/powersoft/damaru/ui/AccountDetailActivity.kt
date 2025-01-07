@@ -1,5 +1,6 @@
 package com.powersoft.damaru.ui
 
+import android.app.AlertDialog
 import android.content.Intent
 import android.os.Bundle
 import androidx.activity.result.contract.ActivityResultContracts
@@ -7,12 +8,15 @@ import androidx.activity.viewModels
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.gson.Gson
+import com.powersoft.common.adapter.DeviceListAdapter
 import com.powersoft.common.base.BaseActivity
 import com.powersoft.common.base.BaseViewModel
+import com.powersoft.common.listeners.RecyclerViewItemClickListener
 import com.powersoft.common.model.AccountEntity
 import com.powersoft.common.model.DeviceEntity
 import com.powersoft.common.model.PickerEntity
 import com.powersoft.common.model.ResponseWrapper
+import com.powersoft.common.model.Status
 import com.powersoft.common.repository.UserRepo
 import com.powersoft.common.ui.PickerActivity
 import com.powersoft.common.ui.helper.AlertHelper
@@ -21,7 +25,6 @@ import com.powersoft.common.utils.hide
 import com.powersoft.common.utils.show
 import com.powersoft.common.utils.visibility
 import com.powersoft.damaru.R
-import com.powersoft.common.adapter.DeviceListAdapter
 import com.powersoft.damaru.databinding.ActivityAccountDetailBinding
 import com.powersoft.damaru.viewmodels.AccountDetailViewModel
 import dagger.hilt.android.AndroidEntryPoint
@@ -152,7 +155,7 @@ class AccountDetailActivity : BaseActivity() {
                 this@AccountDetailActivity, title = getString(R.string.delete_account) + " ??",
                 message = getString(R.string.are_you_sure_you_want_to_delete_this_account),
                 positiveButtonText = getString(R.string.delete),
-                negativeButtonText = getString(R.string.cancle),
+                negativeButtonText = getString(com.powersoft.common.R.string.cancle),
                 onPositiveButtonClick = {
                     vm.deleteAccount(account.id, object : ResponseCallback {
                         override fun onResponse(any: Any, errorMessage: String?) {
@@ -177,7 +180,56 @@ class AccountDetailActivity : BaseActivity() {
         vm.allLinkedDevices.observe(this) {
             when (it) {
                 is ResponseWrapper.Success -> {
-                    val deviceAdapter = DeviceListAdapter(null)
+                    val deviceAdapter = DeviceListAdapter(object : RecyclerViewItemClickListener<DeviceEntity> {
+                        override fun onItemClick(viewId: Int, position: Int, data: DeviceEntity) {
+                            val token = userRepo.seasonEntity.value?.accessToken
+                            val dialog: AlertDialog.Builder = AlertDialog.Builder(this@AccountDetailActivity)
+                            dialog.setTitle("Options")
+                            dialog.setItems(arrayOf("Connect to device", "Unlink Device")) { dialogInterface, itemPos ->
+                                dialogInterface.dismiss()
+                                when (itemPos) {
+                                    0 -> {
+                                        if (data.status == Status.online) {
+                                            val intent = Intent(this@AccountDetailActivity, DeviceControlActivity::class.java)
+                                                .putExtra(DeviceControlActivity.CLIENT_ID, account.id)
+                                                .putExtra(DeviceControlActivity.DEVICE_ID, data.deviceId)
+                                                .putExtra(DeviceControlActivity.TOKEN, token)
+                                            startActivity(intent)
+                                        } else {
+                                            dialogInterface.dismiss()
+                                            AlertHelper.showAlertDialog(this@AccountDetailActivity, "Oops!!!", "Emulator is offline")
+                                        }
+                                    }
+
+                                    else -> {
+                                        AlertHelper.showAlertDialog(
+                                            this@AccountDetailActivity, title = getString(R.string.unlink_this_device),
+                                            message = getString(R.string.are_you_sure_unlink_device),
+                                            positiveButtonText = getString(R.string.delete),
+                                            negativeButtonText = getString(com.powersoft.common.R.string.cancle),
+                                            onPositiveButtonClick = {
+                                                vm.unlinkAccount(data.deviceId, userRepo.seasonEntity.value?.userId.toString(), listOf(account.id),
+                                                    object : ResponseCallback {
+                                                        override fun onResponse(any: Any, errorMessage: String?) {
+                                                            if (errorMessage != null) {
+                                                                AlertHelper.showAlertDialog(
+                                                                    this@AccountDetailActivity, getString(R.string.error), errorMessage,
+                                                                )
+                                                            } else {
+                                                                setResult(RESULT_OK)
+                                                                finish()
+                                                            }
+                                                        }
+                                                    })
+                                            }
+                                        )
+                                    }
+                                }
+                            }
+                            dialog.show()
+                        }
+
+                    })
                     deviceAdapter.submitList(it.data)
                     binding.recyclerView.adapter = deviceAdapter
 

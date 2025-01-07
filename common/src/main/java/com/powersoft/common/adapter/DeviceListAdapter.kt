@@ -10,6 +10,8 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.bumptech.glide.load.resource.bitmap.RoundedCorners
+import com.bumptech.glide.request.RequestOptions
 import com.powersoft.common.R
 import com.powersoft.common.databinding.ItemDeviceBinding
 import com.powersoft.common.databinding.ItemDeviceListBinding
@@ -77,7 +79,28 @@ class DeviceListAdapter(
                 }
 
                 is ItemDeviceListBinding -> {
-                    binding.apply { }
+                    binding.apply {
+                        tvDeviceName.text = device.deviceName
+                        Glide.with(itemView.context).load(device.screenshot)
+                            .apply(RequestOptions.bitmapTransform(RoundedCorners(16)))
+                            .into(imgDevice)
+                        tvDeviceId.text = device.deviceId
+
+                        if(device.status == Status.online) {
+                            btnOnline.setTextColor(ColorStateList.valueOf(ContextCompat.getColor(root.context, R.color.greenLight)))
+                            btnOnline.strokeColor = (ColorStateList.valueOf(ContextCompat.getColor(root.context, R.color.greenLight)))
+                            btnOnline.iconTint = (ColorStateList.valueOf(ContextCompat.getColor(root.context, R.color.greenLight)))
+                            btnOnline.text = "Online"
+                        } else {
+                            btnOnline.setTextColor(ColorStateList.valueOf(ContextCompat.getColor(root.context, R.color.red)))
+                            btnOnline.strokeColor = (ColorStateList.valueOf(ContextCompat.getColor(root.context, R.color.red)))
+                            btnOnline.iconTint = (ColorStateList.valueOf(ContextCompat.getColor(root.context, R.color.red)))
+                            btnOnline.text = "Offline"
+                        }
+
+                        tvCreatedAt.text = "Created At -> ${device.createdAt}"
+                        tvUpdatedAt.text = "Updated At -> ${device.updatedAt}"
+                    }
                 }
             }
         }

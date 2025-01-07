@@ -56,7 +56,6 @@
         android:paddingBottom="2dp"
         android:text="@string/edit"
         android:textAllCaps="false"
-        android:visibility="gone"
         app:backgroundTint="@color/greenLight"
         app:cornerRadius="24dp"
         app:icon="@drawable/ic_account"

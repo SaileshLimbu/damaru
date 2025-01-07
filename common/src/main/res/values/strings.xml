@@ -42,6 +42,8 @@
     <string name="cancle">Cancel</string>
     <string name="update">Update</string>
     <string name="update_account">Update Account</string>
+    <string name="assigned_devices">Assigned Devices</string>
+    <string name="logs">Logs</string>
 
 
 </resources>

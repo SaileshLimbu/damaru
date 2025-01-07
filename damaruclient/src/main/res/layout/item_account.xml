@@ -107,5 +107,20 @@
             app:layout_constraintTop_toTopOf="parent"
             app:tint="@color/colorSecondaryVariant"
             tools:visibility="visible" />
+
+        <ImageButton
+            android:id="@+id/imgLogs"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
+            android:background="@drawable/drawable_bg_border"
+            android:contentDescription="@null"
+            android:padding="12dp"
+            android:src="@drawable/ic_logs"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/imgEdit"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:visibility="visible" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </com.google.android.material.card.MaterialCardView>

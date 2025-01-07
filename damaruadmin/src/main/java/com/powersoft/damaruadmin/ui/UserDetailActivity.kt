@@ -21,6 +21,7 @@ import com.powersoft.common.ui.helper.AlertHelper
 import com.powersoft.common.ui.helper.ResponseCallback
 import com.powersoft.common.utils.hide
 import com.powersoft.common.utils.show
+import com.powersoft.common.utils.visibility
 import com.powersoft.damaruadmin.R
 import com.powersoft.damaruadmin.databinding.ActivityUserDetailBinding
 import com.powersoft.damaruadmin.viewmodels.UserDetailViewModel
@@ -44,11 +45,12 @@ class UserDetailActivity : BaseActivity() {
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
             if (result.resultCode == RESULT_OK) {
                 setResult(RESULT_OK)
-//                if (result.data?.hasExtra("edited_name") == true) {
-//                    binding.tvAccountName.text = result.data?.getStringExtra("edited_name")
-//                } else if (result.data?.hasExtra("pin") == true) {
-//                    binding.tvPin.text = result.data?.getStringExtra("pin")
-//                }
+                if (result.data?.hasExtra("edited_name") == true) {
+                    binding.tvUserName.text = result.data?.getStringExtra("edited_name")
+                }
+                if (result.data?.hasExtra("edited_email") == true) {
+                    binding.tvEmail.text = result.data?.getStringExtra("edited_email")
+                }
             }
         }
 
@@ -61,7 +63,7 @@ class UserDetailActivity : BaseActivity() {
 //                        gson.fromJson(pickerEntity.dataJson, DeviceEntity::class.java).deviceId
 //                    }.toList(), userRepo.seasonEntity.value?.userId.toString(), account.id, object : ResponseCallback {
 //                        override fun onResponse(any: Any, errorMessage: String?) {
-//                            vm.getLinkedDevices(account.id)
+//                            vm.getAllAssignedDevices(account.id)
 //                            if (errorMessage != null) {
 //                                AlertHelper.showAlertDialog(this@UserDetailActivity, title = getString(R.string.error), message = errorMessage)
 //                            } else {
@@ -90,21 +92,29 @@ class UserDetailActivity : BaseActivity() {
         user = gson.fromJson(intent.getStringExtra("user"), UserEntity::class.java)
         binding.tvUserName.text = user.name
         binding.tvEmail.text = user.email
+        binding.btnDelete.visibility(!user.isSuperAdmin)
+        binding.btnEdit.visibility(!user.isSuperAdmin)
+        binding.extendedFAB.visibility(!user.isSuperAdmin)
 
         binding.btnDelete.setOnClickListener {
-            vm.deleteUser(user.id, object : ResponseCallback {
-                override fun onResponse(any: Any, errorMessage: String?) {
-                    if (errorMessage == null) {
-                        setResult(RESULT_OK)
-                        finish()
-                    } else {
-                        AlertHelper.showAlertDialog(
-                            this@UserDetailActivity, getString(R.string.error),
-                            message = errorMessage,
-                        )
-                    }
-                }
-            })
+            AlertHelper.showAlertDialog(this@UserDetailActivity, title = getString(R.string.delete_user) + " ??",
+                message = getString(R.string.are_you_sure_you_want_to_delete_this_user),
+                positiveButtonText = getString(com.powersoft.common.R.string.delete),
+                negativeButtonText = getString(com.powersoft.common.R.string.cancle), onPositiveButtonClick = {
+                    vm.deleteUser(user.id, object : ResponseCallback {
+                        override fun onResponse(any: Any, errorMessage: String?) {
+                            if (errorMessage == null) {
+                                setResult(RESULT_OK)
+                                finish()
+                            } else {
+                                AlertHelper.showAlertDialog(
+                                    this@UserDetailActivity, getString(R.string.error),
+                                    message = errorMessage,
+                                )
+                            }
+                        }
+                    })
+                })
         }
 
         binding.btnEdit.setOnClickListener {
@@ -125,7 +135,29 @@ class UserDetailActivity : BaseActivity() {
             }
         })
 
-        vm.allDevices.observe(this) {
+        vm.allUnAssignedDevices.observe(this) {
+            when (it) {
+                is ResponseWrapper.Success -> {
+                    openPicker()
+                }
+
+                is ResponseWrapper.Error -> {
+                }
+
+                is ResponseWrapper.Loading -> {
+                }
+            }
+        }
+
+        binding.extendedFAB.setOnClickListener {
+            if (vm.allUnAssignedDevices.value is ResponseWrapper.Success) {
+                openPicker()
+            } else {
+                vm.getAllUnassignedDevices(user.id)
+            }
+        }
+
+        vm.allAssignedDevices.observe(this) {
             when (it) {
                 is ResponseWrapper.Success -> {
                     deviceAdapter.submitList(it.data)
@@ -145,19 +177,24 @@ class UserDetailActivity : BaseActivity() {
                 }
             }
         }
+
+        vm.getAllAssignedDevices(user.id)
     }
 
     private fun createDeviceAdapter(): DeviceListAdapter {
         return DeviceListAdapter(object : RecyclerViewItemClickListener<DeviceEntity> {
             override fun onItemClick(viewId: Int, position: Int, data: DeviceEntity) {
+
             }
         }, DeviceListAdapter.Companion.TYPE.LIST)
     }
 
     private fun openPicker() {
-//        PickerActivity.Companion.startForResult(
-//            this@UserDetailActivity, vm.getFilteredList(),
-//            true, linkDeviceResultLauncher
-//        )
+        PickerActivity.Companion.startForResult(
+            this@UserDetailActivity,
+            (vm.allUnAssignedDevices.value as ResponseWrapper.Success).data.map {
+                PickerEntity(it.deviceName, gson.toJson(it))
+            }, true, linkDeviceResultLauncher
+        )
     }
 }
