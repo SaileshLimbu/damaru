@@ -34,6 +34,7 @@ Thumbs.db
 
 # Android Studio
 .idea
+.idea/deploymentTargetSelector.xml
 #.idea/workspace.xml - remove # and delete .idea if it better suit your needs.
 build/
 .navigation
