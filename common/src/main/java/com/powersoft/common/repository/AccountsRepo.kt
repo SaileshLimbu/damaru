@@ -59,7 +59,7 @@ class AccountsRepo @Inject constructor(private val apiService: ApiService, priva
         return try {
             val response = apiService.updateAccountApi(accountId, gson.toJson(data).toRequestBody())
             if (response.status) {
-                ResponseWrapper.success(data = Any())
+                ResponseWrapper.success(data = response.data ?: Any())
             } else {
                 ResponseWrapper.error(response.message)
             }

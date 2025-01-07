@@ -1,8 +1,8 @@
 package com.powersoft.damaru.ui
 
 import android.annotation.SuppressLint
+import android.content.Intent
 import android.os.Bundle
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.gson.Gson
@@ -13,6 +13,7 @@ import com.powersoft.common.model.AccountEntity
 import com.powersoft.common.model.DeviceEntity
 import com.powersoft.common.model.ResponseWrapper
 import com.powersoft.common.repository.UserRepo
+import com.powersoft.common.ui.LogsActivity
 import com.powersoft.common.ui.helper.AlertHelper
 import com.powersoft.common.ui.helper.ResponseCallback
 import com.powersoft.common.utils.hide
@@ -33,11 +34,11 @@ class DeviceDetailsActivity : BaseActivity() {
     @Inject
     lateinit var userRepo: UserRepo
 
-    private val startActivityForResultLauncher =
-        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-            if (result.resultCode == RESULT_OK) {
-            }
-        }
+//    private val startActivityForResultLauncher =
+//        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+//            if (result.resultCode == RESULT_OK) {
+//            }
+//        }
 
     override fun getViewModel(): BaseViewModel = vm
 
@@ -60,17 +61,20 @@ class DeviceDetailsActivity : BaseActivity() {
         //set device info
         val deviceEntity: DeviceEntity = Gson().fromJson(intent.getStringExtra("device"), DeviceEntity::class.java)
         deviceEntity.let {
-            vm.deviceId = it.deviceId.toString()
+            vm.deviceId = it.deviceId
             binding.holderDevice.tvRemainingDays.text = "${deviceEntity.expiresAt} days"
             binding.mynametv.text = it.deviceName
             binding.tvCreatedAt.text = "Subscribed on : ${it.createdAt}"
-            binding.tvExpiresIn.text = "Expires In : ${it.expiresAt}"
+            binding.tvExpiresIn.text = "Expires In : ${it.expiresAt} days"
 
             vm.allAccounts.observe(this) { response ->
                 when (response) {
                     is ResponseWrapper.Success -> {
                         accountsAdapter.submitList(response.data)
-                        binding.tvTotalAccounts.text = response.data.size.toString()
+                        if (response.data.isNotEmpty()) {
+                            binding.tvTotalAccounts.text = response.data.size.toString()
+                            binding.holderAccounts.show()
+                        }
 
                         binding.loader.root.hide()
                         binding.errorView.root.hide()
@@ -89,7 +93,7 @@ class DeviceDetailsActivity : BaseActivity() {
                 }
             }
 
-            vm.getLinkedAccounts(it.deviceId!!)
+            vm.getLinkedAccounts(it.deviceId)
         }
     }
 
@@ -99,25 +103,27 @@ class DeviceDetailsActivity : BaseActivity() {
                 override fun onItemClick(viewId: Int, position: Int, data: AccountEntity) {
                     if (viewId == R.id.imgDelete) {
                         AlertHelper.showAlertDialog(
-                            this@DeviceDetailsActivity, title = getString(R.string.unlink_this_device),
+                            this@DeviceDetailsActivity, title = getString(R.string.unlink_this_account),
                             message = getString(R.string.are_you_sure_unlink_account),
                             positiveButtonText = getString(R.string.delete),
-                            negativeButtonText = getString(R.string.cancle),
+                            negativeButtonText = getString(com.powersoft.common.R.string.cancle),
                             onPositiveButtonClick = {
-                                vm.unlinkAccount(vm.deviceId, userRepo.seasonEntity.value?.userId.toString(), listOf(data.id.toString()),
+                                vm.unlinkAccount(vm.deviceId, userRepo.seasonEntity.value?.userId.toString(), listOf(data.id),
                                     object : ResponseCallback {
                                         override fun onResponse(any: Any, errorMessage: String?) {
-                                            if(errorMessage != null) {
+                                            if (errorMessage != null) {
                                                 AlertHelper.showAlertDialog(
                                                     this@DeviceDetailsActivity, getString(R.string.error), errorMessage,
                                                 )
-                                            }else{
+                                            } else {
                                                 accountsAdapter.removeItem(position)
                                             }
                                         }
                                     })
                             }
                         )
+                    } else if (viewId == R.id.imgLogs) {
+                        startActivity(Intent(this@DeviceDetailsActivity, LogsActivity::class.java))
                     }
                 }
             })

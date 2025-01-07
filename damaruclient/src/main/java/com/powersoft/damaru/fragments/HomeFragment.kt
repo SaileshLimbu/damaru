@@ -19,7 +19,7 @@ import com.powersoft.common.ui.helper.AlertHelper
 import com.powersoft.common.utils.hide
 import com.powersoft.common.utils.show
 import com.powersoft.damaru.R
-import com.powersoft.damaru.adapters.DeviceListAdapter
+import com.powersoft.common.adapter.DeviceListAdapter
 import com.powersoft.damaru.databinding.FragmentHomeBinding
 import com.powersoft.damaru.ui.DeviceControlActivity
 import com.powersoft.damaru.ui.DeviceDetailsActivity
@@ -111,18 +111,24 @@ class HomeFragment : Fragment(R.layout.fragment_home), RecyclerViewItemClickList
                     }
 
                     else -> {
-                        startActivity(Intent(context, DeviceDetailsActivity::class.java)
-                            .putExtra("device", Gson().toJson(data)))
+                        startActivity(
+                            Intent(context, DeviceDetailsActivity::class.java)
+                                .putExtra("device", Gson().toJson(data))
+                        )
                     }
                 }
             }
             dialog.show()
         } else {
-            val intent = Intent(context, DeviceControlActivity::class.java)
-                .putExtra(DeviceControlActivity.CLIENT_ID, accountId.toString())
-                .putExtra(DeviceControlActivity.DEVICE_ID, data.deviceId)
-                .putExtra(DeviceControlActivity.TOKEN, token)
-            startActivity(intent)
+            if (data.status == Status.online) {
+                val intent = Intent(context, DeviceControlActivity::class.java)
+                    .putExtra(DeviceControlActivity.CLIENT_ID, accountId.toString())
+                    .putExtra(DeviceControlActivity.DEVICE_ID, data.deviceId)
+                    .putExtra(DeviceControlActivity.TOKEN, token)
+                startActivity(intent)
+            } else {
+                AlertHelper.showAlertDialog(requireActivity(), "Oops!!!", "Emulator is offline")
+            }
         }
     }
 }

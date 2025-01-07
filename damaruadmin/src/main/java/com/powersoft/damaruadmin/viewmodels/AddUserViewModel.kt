@@ -24,6 +24,7 @@ class AddUserViewModel @Inject constructor(
     private val apiService: ApiServiceImpl,
     private val gson: Gson
 ) : BaseViewModel() {
+
     fun addUser(name: String, email: String, password: String, confirmPassword: String, responseCallback: ResponseCallback) {
         if (name.isEmpty()) {
             AlertHelper.showToast(context, context.getString(R.string.please_enter_name))
@@ -42,6 +43,34 @@ class AddUserViewModel @Inject constructor(
                         "role" to "AndroidUser"
                     )
                     val response = apiService.addUser(gson.toJson(map).toRequestBody())
+                    if (response.status) {
+                        responseCallback.onResponse(response.data!!)
+                    } else {
+                        responseCallback.onResponse(Any(), response.message)
+                    }
+                } catch (e: Exception) {
+                    responseCallback.onResponse(Any(), "Something went wrong (Code 8437)")
+                }
+
+                hideLoader()
+            }
+        }
+    }
+
+    fun editUser(id: String, name: String, email: String, responseCallback: ResponseCallback) {
+        if (name.isEmpty()) {
+            AlertHelper.showToast(context, context.getString(R.string.please_enter_name))
+        } else if (email.isEmpty()) {
+            AlertHelper.showToast(context, context.getString(R.string.please_enter_email))
+        } else {
+            showLoader()
+            viewModelScope.launch {
+                try {
+                    val map = mapOf(
+                        "name" to name,
+                        "email" to email
+                    )
+                    val response = apiService.editUser(id, gson.toJson(map).toRequestBody())
                     if (response.status) {
                         responseCallback.onResponse(response.data!!)
                     } else {

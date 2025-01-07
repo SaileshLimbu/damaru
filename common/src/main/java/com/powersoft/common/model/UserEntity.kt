@@ -7,8 +7,10 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class UserEntity(
-    @SerializedName("accounts")
-    val accounts: List<AccountEntity>,
+    @SerializedName("accountsCount")
+    val accountsCount: Int,
+    @SerializedName("emulatorsCount")
+    val emulatorCount: Int,
     @SerializedName("created_at")
     val createdAt: String,
     @SerializedName("email")
@@ -20,5 +22,7 @@ data class UserEntity(
     @SerializedName("password")
     val password: String,
     @SerializedName("updated_at")
-    val updatedAt: String
+    val updatedAt: String,
+    @SerializedName("isSuperAdmin")
+    val isSuperAdmin: Boolean
 )

@@ -5,7 +5,7 @@
         android:icon="@drawable/ic_home"
         android:title="@string/text_nav_home" />
     <item
-        android:id="@+id/tabAccounts"
-        android:icon="@drawable/ic_more"
-        android:title="@string/accounts" />
+        android:id="@+id/tabDevices"
+        android:icon="@drawable/ic_device"
+        android:title="@string/devices" />
 </menu>

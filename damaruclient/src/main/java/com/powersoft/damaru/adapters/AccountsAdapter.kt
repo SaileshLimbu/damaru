@@ -41,7 +41,7 @@ class AccountsAdapter(
                 tvAccountName.text = account.accountName
                 tvEmail.text = account.pin
                 tvInitials.text = try {
-                    account.accountName?.first()?.uppercase().toString()
+                    account.accountName.first().uppercase()
                 } catch (e: Exception) {
                     ""
                 }
@@ -52,8 +52,12 @@ class AccountsAdapter(
                 imgEdit.setOnClickListener {
                     clickListener.onItemClick(it.id, layoutPosition, account)
                 }
+                imgLogs.setOnClickListener {
+                    clickListener.onItemClick(it.id, layoutPosition, account)
+                }
                 imgDelete.visibility(isRootUser && !account.isAdmin)
                 imgEdit.visibility((isRootUser || account.isAdmin) && adapterFor != For.LINKED_ACCOUNTS)
+                imgLogs.visibility(adapterFor == For.LINKED_ACCOUNTS)
             }
         }
     }

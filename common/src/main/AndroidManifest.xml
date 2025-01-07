@@ -3,6 +3,7 @@
 
     <application>
         <activity android:name="com.powersoft.common.ui.PickerActivity" />
+        <activity android:name="com.powersoft.common.ui.LogsActivity" />
     </application>
 
 </manifest>

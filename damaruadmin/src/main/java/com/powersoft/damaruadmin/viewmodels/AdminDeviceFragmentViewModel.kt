@@ -1,19 +1,25 @@
-package com.powersoft.damaru.viewmodels
+package com.powersoft.damaruadmin.viewmodels
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
+import com.google.gson.Gson
 import com.powersoft.common.base.BaseViewModel
 import com.powersoft.common.model.DeviceEntity
+
 import com.powersoft.common.model.ResponseWrapper
+import com.powersoft.common.model.UserEntity
 import com.powersoft.common.repository.DeviceRepo
+
+import com.powersoft.common.utils.PrefsHelper
+import com.powersoft.damaruadmin.webservices.ApiServiceImpl
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class HomeViewmodel @Inject constructor(
+class AdminDeviceFragmentViewModel @Inject constructor(
     private val repo: DeviceRepo
 ) : BaseViewModel() {
     private val _allDevices = MutableLiveData<ResponseWrapper<List<DeviceEntity>>>()
@@ -22,14 +28,15 @@ class HomeViewmodel @Inject constructor(
         get() = _allDevices
 
     init {
-        getMyEmulators()
+        getAllDevices()
     }
 
-    fun getMyEmulators() {
+    fun getAllDevices() {
         viewModelScope.launch(Dispatchers.IO) {
             _allDevices.postValue(ResponseWrapper.loading())
             val response = repo.getAllDevices()
             _allDevices.postValue(response)
         }
     }
+
 }

@@ -39,8 +39,8 @@ open class NetworkModule {
             .build()
 
         return Retrofit.Builder()
-//            .baseUrl("http://13.201.152.191:3000/")
-            .baseUrl("https://2cdd-2400-1a00-b060-6840-5982-b610-8588-7cdb.ngrok-free.app")
+            .baseUrl("http://13.201.152.191:3000/")
+//            .baseUrl("https://2cdd-2400-1a00-b060-6840-5982-b610-8588-7cdb.ngrok-free.app")
             .client(okHttpClient)
             .addConverterFactory(GsonConverterFactory.create())
             .build()

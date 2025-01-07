@@ -1,7 +1,9 @@
 package com.powersoft.common.webservice
 
 import com.powersoft.common.model.AccountEntity
+import com.powersoft.common.model.DeviceEntity
 import com.powersoft.common.model.LoginEntity
+import com.powersoft.common.model.LogsEntity
 import com.powersoft.common.model.ResponseData
 import okhttp3.RequestBody
 import retrofit2.http.Body
@@ -36,4 +38,13 @@ interface ApiService {
 
     @POST("emulators/assign-multi-emulators")
     suspend fun linkDevicesToAccount(@Body requestBody: RequestBody): ResponseData<Any>
+
+    @GET("emulators")
+    suspend fun getAllEmulators(): ResponseData<List<DeviceEntity>>
+
+    @GET("accounts/{id}")
+    suspend fun getHisEmulator(@Path("id") accountId : String): ResponseData<List<DeviceEntity>>
+
+    @GET("activity-logs")
+    suspend fun getActivityLogs(): ResponseData<List<LogsEntity>>
 }

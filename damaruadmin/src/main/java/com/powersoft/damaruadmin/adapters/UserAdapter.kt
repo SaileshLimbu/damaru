@@ -1,5 +1,7 @@
 package com.powersoft.damaruadmin.adapters
 
+import android.content.res.ColorStateList
+import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
@@ -26,10 +28,45 @@ class UserAdapter(
             binding.apply {
                 tvUsername.text = user.name
                 tvUserEmailFuck.text = user.email
-                tvTotalDevices.text = "${user.accounts?.size ?: 0}"
-                tvTotalAccounts.text = "${user.accounts?.size ?: 0}"
+                tvTotalDevices.text = "${user.emulatorCount}"
+                tvTotalAccounts.text = "${user.accountsCount}"
+
+                btnEdit.setOnClickListener {
+                    listener.onItemClick(it.id, layoutPosition, user)
+                }
+                btnDelete.setOnClickListener {
+                    listener.onItemClick(it.id, layoutPosition, user)
+                }
+                btnAssign.setOnClickListener {
+                    listener.onItemClick(it.id, layoutPosition, user)
+                }
+
+                btnDelete.isEnabled = !user.isSuperAdmin
+                btnEdit.isEnabled = !user.isSuperAdmin
+                btnAssign.isEnabled = !user.isSuperAdmin
+                if(user.isSuperAdmin){
+                    btnDelete.setTextColor(ColorStateList.valueOf(Color.GRAY))
+                    btnDelete.iconTint = ColorStateList.valueOf(Color.GRAY)
+                    btnEdit.setTextColor(ColorStateList.valueOf(Color.GRAY))
+                    btnEdit.iconTint = ColorStateList.valueOf(Color.GRAY)
+                    btnAssign.setTextColor(ColorStateList.valueOf(Color.GRAY))
+                    btnAssign.iconTint = ColorStateList.valueOf(Color.GRAY)
+                }else{
+                    btnDelete.setTextColor(ColorStateList.valueOf(Color.BLACK))
+                    btnDelete.iconTint = ColorStateList.valueOf(Color.BLACK)
+                    btnEdit.setTextColor(ColorStateList.valueOf(Color.BLACK))
+                    btnEdit.iconTint = ColorStateList.valueOf(Color.BLACK)
+                    btnAssign.setTextColor(ColorStateList.valueOf(Color.BLACK))
+                    btnAssign.iconTint = ColorStateList.valueOf(Color.BLACK)
+                }
             }
         }
+    }
+
+    fun removeItem(position: Int) {
+        val currentList = currentList.toMutableList()
+        currentList.removeAt(position)
+        submitList(currentList)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {

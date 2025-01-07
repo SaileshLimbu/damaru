@@ -1,5 +1,6 @@
 package com.powersoft.damaru.ui
 
+import android.app.AlertDialog
 import android.content.Intent
 import android.os.Bundle
 import androidx.activity.result.contract.ActivityResultContracts
@@ -7,22 +8,23 @@ import androidx.activity.viewModels
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.gson.Gson
+import com.powersoft.common.adapter.DeviceListAdapter
 import com.powersoft.common.base.BaseActivity
 import com.powersoft.common.base.BaseViewModel
+import com.powersoft.common.listeners.RecyclerViewItemClickListener
 import com.powersoft.common.model.AccountEntity
 import com.powersoft.common.model.DeviceEntity
 import com.powersoft.common.model.PickerEntity
 import com.powersoft.common.model.ResponseWrapper
+import com.powersoft.common.model.Status
 import com.powersoft.common.repository.UserRepo
 import com.powersoft.common.ui.PickerActivity
 import com.powersoft.common.ui.helper.AlertHelper
 import com.powersoft.common.ui.helper.ResponseCallback
-import com.powersoft.common.utils.Logg
 import com.powersoft.common.utils.hide
 import com.powersoft.common.utils.show
 import com.powersoft.common.utils.visibility
 import com.powersoft.damaru.R
-import com.powersoft.damaru.adapters.DeviceListAdapter
 import com.powersoft.damaru.databinding.ActivityAccountDetailBinding
 import com.powersoft.damaru.viewmodels.AccountDetailViewModel
 import dagger.hilt.android.AndroidEntryPoint
@@ -46,6 +48,8 @@ class AccountDetailActivity : BaseActivity() {
                 setResult(RESULT_OK)
                 if (result.data?.hasExtra("edited_name") == true) {
                     binding.tvAccountName.text = result.data?.getStringExtra("edited_name")
+                } else if (result.data?.hasExtra("pin") == true) {
+                    binding.tvPin.text = result.data?.getStringExtra("pin")
                 }
             }
         }
@@ -53,22 +57,15 @@ class AccountDetailActivity : BaseActivity() {
     private val linkDeviceResultLauncher =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
             if (result.resultCode == RESULT_OK) {
-                val items: ArrayList<PickerEntity>? = result.data?.getParcelableArrayListExtra<PickerEntity>(PickerActivity.Companion.EXTRA_SELECTED_ITEMS)
-                Logg.d(
-                    "Fuck there  >>>>> ${
-                        items?.map { pickerEntity ->
-                            gson.fromJson(pickerEntity.dataJson, DeviceEntity::class.java).deviceId.toString()
-                        }
-                    }"
-                )
+                val items: ArrayList<PickerEntity>? = result.data?.getParcelableArrayListExtra(PickerActivity.Companion.EXTRA_SELECTED_ITEMS)
                 if (items?.isNotEmpty() == true) {
                     vm.linkDevices(items.map { pickerEntity ->
-                        gson.fromJson(pickerEntity.dataJson, DeviceEntity::class.java).deviceId.toString()
-                    }.toList(), userRepo.seasonEntity.value?.userId.toString(), account.id.toString(), object : ResponseCallback {
+                        gson.fromJson(pickerEntity.dataJson, DeviceEntity::class.java).deviceId
+                    }.toList(), userRepo.seasonEntity.value?.userId.toString(), account.id, object : ResponseCallback {
                         override fun onResponse(any: Any, errorMessage: String?) {
-                            setResult(RESULT_OK)
+                            vm.getLinkedDevices(account.id)
                             if (errorMessage != null) {
-                                AlertHelper.showAlertDialog(this@AccountDetailActivity, title = getString(R.string.error), message = errorMessage ?: "")
+                                AlertHelper.showAlertDialog(this@AccountDetailActivity, title = getString(R.string.error), message = errorMessage)
                             } else {
                                 AlertHelper.showSnackbar(binding.root, getString(R.string.linked_success))
                             }
@@ -158,9 +155,9 @@ class AccountDetailActivity : BaseActivity() {
                 this@AccountDetailActivity, title = getString(R.string.delete_account) + " ??",
                 message = getString(R.string.are_you_sure_you_want_to_delete_this_account),
                 positiveButtonText = getString(R.string.delete),
-                negativeButtonText = getString(R.string.cancle),
+                negativeButtonText = getString(com.powersoft.common.R.string.cancle),
                 onPositiveButtonClick = {
-                    vm.deleteAccount(account.id!!, object : ResponseCallback {
+                    vm.deleteAccount(account.id, object : ResponseCallback {
                         override fun onResponse(any: Any, errorMessage: String?) {
                             if (errorMessage != null) {
                                 AlertHelper.showAlertDialog(
@@ -183,18 +180,69 @@ class AccountDetailActivity : BaseActivity() {
         vm.allLinkedDevices.observe(this) {
             when (it) {
                 is ResponseWrapper.Success -> {
-                    val deviceAdapter = DeviceListAdapter(null)
+                    val deviceAdapter = DeviceListAdapter(object : RecyclerViewItemClickListener<DeviceEntity> {
+                        override fun onItemClick(viewId: Int, position: Int, data: DeviceEntity) {
+                            val token = userRepo.seasonEntity.value?.accessToken
+                            val dialog: AlertDialog.Builder = AlertDialog.Builder(this@AccountDetailActivity)
+                            dialog.setTitle("Options")
+                            dialog.setItems(arrayOf("Connect to device", "Unlink Device")) { dialogInterface, itemPos ->
+                                dialogInterface.dismiss()
+                                when (itemPos) {
+                                    0 -> {
+                                        if (data.status == Status.online) {
+                                            val intent = Intent(this@AccountDetailActivity, DeviceControlActivity::class.java)
+                                                .putExtra(DeviceControlActivity.CLIENT_ID, account.id)
+                                                .putExtra(DeviceControlActivity.DEVICE_ID, data.deviceId)
+                                                .putExtra(DeviceControlActivity.TOKEN, token)
+                                            startActivity(intent)
+                                        } else {
+                                            dialogInterface.dismiss()
+                                            AlertHelper.showAlertDialog(this@AccountDetailActivity, "Oops!!!", "Emulator is offline")
+                                        }
+                                    }
+
+                                    else -> {
+                                        AlertHelper.showAlertDialog(
+                                            this@AccountDetailActivity, title = getString(R.string.unlink_this_device),
+                                            message = getString(R.string.are_you_sure_unlink_device),
+                                            positiveButtonText = getString(R.string.delete),
+                                            negativeButtonText = getString(com.powersoft.common.R.string.cancle),
+                                            onPositiveButtonClick = {
+                                                vm.unlinkAccount(data.deviceId, userRepo.seasonEntity.value?.userId.toString(), listOf(account.id),
+                                                    object : ResponseCallback {
+                                                        override fun onResponse(any: Any, errorMessage: String?) {
+                                                            if (errorMessage != null) {
+                                                                AlertHelper.showAlertDialog(
+                                                                    this@AccountDetailActivity, getString(R.string.error), errorMessage,
+                                                                )
+                                                            } else {
+                                                                setResult(RESULT_OK)
+                                                                finish()
+                                                            }
+                                                        }
+                                                    })
+                                            }
+                                        )
+                                    }
+                                }
+                            }
+                            dialog.show()
+                        }
+
+                    })
                     deviceAdapter.submitList(it.data)
                     binding.recyclerView.adapter = deviceAdapter
 
                     binding.loader.root.hide()
                     binding.errorView.root.hide()
+                    binding.extendedFAB.show()
                 }
 
                 is ResponseWrapper.Error -> {
                     binding.loader.root.hide()
                     binding.errorView.tvError.text = it.message
                     binding.errorView.root.show()
+                    binding.extendedFAB.show()
                 }
 
                 is ResponseWrapper.Loading -> {
@@ -223,15 +271,12 @@ class AccountDetailActivity : BaseActivity() {
             }
         }
 
-        vm.getLinkedDevices(account.id.toString())
+        vm.getLinkedDevices(account.id)
     }
 
     private fun openPicker() {
         PickerActivity.Companion.startForResult(
-            this@AccountDetailActivity,
-            (vm.allDevices.value as ResponseWrapper.Success).data.map {
-                PickerEntity(it.deviceName.toString(), gson.toJson(it))
-            }.toList(),
+            this@AccountDetailActivity, vm.getFilteredList(),
             true, linkDeviceResultLauncher
         )
     }

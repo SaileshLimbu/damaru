@@ -127,7 +127,10 @@ class AccountsFragment : Fragment(R.layout.fragment_accounts) {
                 when (viewId) {
                     R.id.imgDelete -> {
                         context?.let { context ->
-                            AlertHelper.showAlertDialog(context, title = getString(R.string.delete_account) + " ??", message = getString(R.string.are_you_sure_you_want_to_delete_this_account), positiveButtonText = getString(R.string.delete), negativeButtonText = getString(R.string.cancle), onPositiveButtonClick = {
+                            AlertHelper.showAlertDialog(context, title = getString(R.string.delete_account) + " ??",
+                                message = getString(R.string.are_you_sure_you_want_to_delete_this_account),
+                                positiveButtonText = getString(R.string.delete),
+                                negativeButtonText = getString(com.powersoft.common.R.string.cancle), onPositiveButtonClick = {
                                 vm.deleteAccount(data.id, object : ResponseCallback {
                                     override fun onResponse(any: Any, errorMessage: String?) {
                                         AlertHelper.showAlertDialog(

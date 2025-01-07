@@ -2,46 +2,29 @@ package com.powersoft.damaruadmin.ui
 
 import android.content.Intent
 import android.os.Bundle
-import android.view.View
-import androidx.activity.result.contract.ActivityResultContracts
-import androidx.activity.viewModels
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
-import com.powersoft.common.base.BaseActivity
-import com.powersoft.common.base.BaseViewModel
-import com.powersoft.common.listeners.RecyclerViewItemClickListener
-import com.powersoft.common.model.ResponseWrapper
-import com.powersoft.common.model.UserEntity
-import com.powersoft.common.utils.hide
-import com.powersoft.common.utils.show
-import com.powersoft.damaruadmin.adapters.UserAdapter
+import androidx.appcompat.app.AppCompatActivity
+import androidx.fragment.app.Fragment
+import androidx.viewpager2.adapter.FragmentStateAdapter
+import androidx.viewpager2.widget.ViewPager2
+import com.powersoft.common.repository.UserRepo
+import com.powersoft.common.ui.helper.AlertHelper
+import com.powersoft.common.utils.PrefsHelper
+import com.powersoft.common.utils.visibility
+import com.powersoft.damaruadmin.R
 import com.powersoft.damaruadmin.databinding.ActivityAdminMainBinding
-import com.powersoft.damaruadmin.viewmodels.AdminMainViewModel
+import com.powersoft.damaruadmin.fragment.AdminDevicesFragment
+import com.powersoft.damaruadmin.fragment.AdminHomeFragment
 import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
 @AndroidEntryPoint
-class AdminMainActivity : BaseActivity() {
+class AdminMainActivity : AppCompatActivity() {
+
     private lateinit var binding: ActivityAdminMainBinding
-    private val viewModel: AdminMainViewModel by viewModels()
-    private val userAdapter by lazy { createUserAdapter() }
+    private lateinit var viewPagerAdapter: ViewPagerAdapter
 
-    private val addUserForResultLauncher =
-        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-            if (result.resultCode == RESULT_OK) {
-                viewModel.getALlMyUsers()
-            }
-        }
-
-    private val userDetailResultLauncher =
-        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-            if (result.resultCode == RESULT_OK) {
-                viewModel.getALlMyUsers()
-            }
-        }
-
-    override fun getViewModel(): BaseViewModel {
-        return viewModel
-    }
+    @Inject
+    lateinit var prefsHelper: PrefsHelper
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -49,61 +32,58 @@ class AdminMainActivity : BaseActivity() {
         binding = ActivityAdminMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        viewPagerAdapter = ViewPagerAdapter(this)
+        binding.viewPager.adapter = viewPagerAdapter
+
+        binding.bottomNavigationView.setOnItemSelectedListener { item ->
+            when (item.itemId) {
+                R.id.tabHome -> {
+                    binding.viewPager.currentItem = 0
+                    true
+                }
+
+                R.id.tabDevices -> {
+                    binding.viewPager.currentItem = 1
+                    true
+                }
+
+                else -> false
+            }
+        }
+
+        binding.viewPager.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
+            override fun onPageSelected(position: Int) {
+                binding.bottomNavigationView.selectedItemId = when (position) {
+                    0 -> R.id.tabHome
+                    1 -> R.id.tabDevices
+                    else -> R.id.tabHome
+                }
+            }
+        })
+
         binding.imgLogout.setOnClickListener {
-            viewModel.logout()
-            startActivity(
-                Intent(this, LoginActivityImpl::class.java)
-                    .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_CLEAR_TASK)
-            )
-        }
-
-        binding.extendedFAB.setOnClickListener {
-            addUserForResultLauncher.launch(Intent(this, AddUserActivity::class.java))
-        }
-
-        binding.recyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
-            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
-                super.onScrolled(recyclerView, dx, dy)
-                if (dy > 0) {
-                    binding.extendedFAB.shrink()
-                } else if (dy < 0) {
-                    binding.extendedFAB.extend()
-                }
-            }
-        })
-
-        binding.recyclerView.layoutManager = LinearLayoutManager(this)
-        binding.recyclerView.adapter = userAdapter
-
-        viewModel.allUsersList.observe(this) {
-            when (it) {
-                is ResponseWrapper.Success -> {
-                    userAdapter.submitList(it.data)
-                    binding.loader.root.hide()
-                    binding.errorView.root.hide()
-                }
-
-                is ResponseWrapper.Error -> {
-                    binding.loader.root.hide()
-                    binding.errorView.tvError.text = it.message
-                    binding.errorView.root.show()
-                }
-
-                is ResponseWrapper.Loading -> {
-                    binding.loader.root.show()
-                    binding.errorView.root.hide()
-                }
-            }
+            AlertHelper.showAlertDialog(this@AdminMainActivity, getString(com.powersoft.common.R.string.logout), getString(com.powersoft.common.R.string.are_you_sure_you_want_to_logout), getString(com.powersoft.common.R.string.yes), getString(com.powersoft.common.R.string.no),
+                onPositiveButtonClick = {
+                    prefsHelper.clear()
+                    startActivity(
+                        Intent(applicationContext, LoginActivityImpl::class.java).setFlags(
+                            Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                        )
+                    )
+                })
         }
     }
 
+    // Adapter for ViewPager2
+    inner class ViewPagerAdapter(activity: AppCompatActivity) : FragmentStateAdapter(activity) {
+        override fun getItemCount(): Int = 2
 
-    private fun createUserAdapter(): UserAdapter {
-        return UserAdapter(object : RecyclerViewItemClickListener<UserEntity> {
-            override fun onItemClick(viewId: Int, position: Int, data: UserEntity) {
-                userDetailResultLauncher.launch(Intent(this@AdminMainActivity, UserDetailActivity::class.java))
+        override fun createFragment(position: Int): Fragment {
+            return when (position) {
+                0 -> AdminHomeFragment()
+                1 -> AdminDevicesFragment()
+                else -> throw IllegalStateException("Invalid position $position")
             }
-        })
+        }
     }
-
 }
