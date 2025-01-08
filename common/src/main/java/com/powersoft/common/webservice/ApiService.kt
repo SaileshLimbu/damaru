@@ -39,6 +39,15 @@ interface ApiService {
     @POST("emulators/assign-multi-emulators")
     suspend fun linkDevicesToAccount(@Body requestBody: RequestBody): ResponseData<Any>
 
+    @POST("emulators/link-emulators")
+    suspend fun linkDevicesToUser(@Body requestBody: RequestBody): ResponseData<Any>
+
+    @POST("emulators/unlink-emulators")
+    suspend fun unlinkDeviceFromUser(@Body requestBody: RequestBody): ResponseData<Any>
+
+    @POST("/emulators/extend-expiry")
+    suspend fun extendExpiryOfDevice(@Body requestBody: RequestBody): ResponseData<Any>
+
     @GET("emulators")
     suspend fun getAllEmulators(): ResponseData<List<DeviceEntity>>
 

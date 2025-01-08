@@ -44,6 +44,8 @@
     <string name="update_account">Update Account</string>
     <string name="assigned_devices">Assigned Devices</string>
     <string name="logs">Logs</string>
+    <string name="expired">EXPIRED</string>
+    <string name="extend">Extend</string>
 
 
 </resources>

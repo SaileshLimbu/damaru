@@ -89,7 +89,7 @@ class AccountsRepo @Inject constructor(private val apiService: ApiService, priva
         return try {
             val params = mapOf(
                 "device_id" to deviceId,
-                "user_id" to userId,
+                "userId" to userId,
                 "accountIds" to accountIds
             )
             val response = apiService.unlinkAccountFromDevice(gson.toJson(params).toRequestBody())
@@ -106,8 +106,8 @@ class AccountsRepo @Inject constructor(private val apiService: ApiService, priva
     suspend fun linkDevicesToAccount(deviceIds: List<String>, userId: String, accountId: String): ResponseWrapper<Any?> {
         return try {
             val params = mapOf(
-                "device_ids" to deviceIds,
-                "user_id" to userId,
+                "deviceIds" to deviceIds,
+                "userId" to userId,
                 "accountId" to accountId
             )
             val response = apiService.linkDevicesToAccount(gson.toJson(params).toRequestBody())

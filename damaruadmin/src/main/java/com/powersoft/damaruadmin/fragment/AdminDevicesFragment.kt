@@ -83,7 +83,7 @@ class AdminDevicesFragment : Fragment(R.layout.fragment_devices), RecyclerViewIt
         return DeviceListAdapter(object : RecyclerViewItemClickListener<DeviceEntity> {
             override fun onItemClick(viewId: Int, position: Int, data: DeviceEntity) {
             }
-        }, DeviceListAdapter.Companion.TYPE.LIST)
+        }, DeviceListAdapter.Companion.TYPE.LIST, shouldShowStatus = true)
     }
 
     override fun onItemClick(viewId: Int, position: Int, data: DeviceEntity) {

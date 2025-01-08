@@ -18,10 +18,12 @@ import com.powersoft.common.databinding.ItemDeviceListBinding
 import com.powersoft.common.listeners.RecyclerViewItemClickListener
 import com.powersoft.common.model.DeviceEntity
 import com.powersoft.common.model.Status
+import com.powersoft.common.utils.visibility
 
 class DeviceListAdapter(
     private val clickListener: RecyclerViewItemClickListener<DeviceEntity>? = null,
-    private val type: TYPE = TYPE.CONNECT
+    private val type: TYPE = TYPE.CONNECT,
+    private val shouldShowStatus: Boolean = false
 ) : ListAdapter<DeviceEntity, DeviceListAdapter.ViewHolder>(DeviceDiffCallback()) {
 
     companion object {
@@ -45,8 +47,16 @@ class DeviceListAdapter(
                     clickListener?.onItemClick(it.id, layoutPosition, getItem(layoutPosition))
                 }
 
-                is ItemDeviceListBinding -> binding.root.setOnClickListener {
-                    clickListener?.onItemClick(it.id, layoutPosition, getItem(layoutPosition))
+                is ItemDeviceListBinding -> {
+                    binding.root.setOnClickListener {
+                        clickListener?.onItemClick(it.id, layoutPosition, getItem(layoutPosition))
+                    }
+                    binding.btnDelete.setOnClickListener {
+                        clickListener?.onItemClick(it.id, layoutPosition, getItem(layoutPosition))
+                    }
+                    binding.btnExtend.setOnClickListener {
+                        clickListener?.onItemClick(it.id, layoutPosition, getItem(layoutPosition))
+                    }
                 }
             }
         }
@@ -62,7 +72,7 @@ class DeviceListAdapter(
 
                         val colorRed = ContextCompat.getColor(itemView.context, R.color.red)
                         tvRemainingDays.backgroundTintList = when {
-                            ((device.expiresAt.toIntOrNull()) ?: 0) < 1 -> ColorStateList.valueOf(colorRed)
+                            ((device.expiresAt?.toIntOrNull()) ?: 0) < 1 -> ColorStateList.valueOf(colorRed)
                             else -> null
                         }
 
@@ -74,19 +84,23 @@ class DeviceListAdapter(
                         imgStatus.imageTintList = colorStateList
                         tvStatus.text = device.status.name.capitalizeFirstLetter()
 
-                        tvExpired.visibility = if (((device.expiresAt.toIntOrNull()) ?: 0) < 1) View.VISIBLE else View.GONE
+                        tvExpired.visibility = if (((device.expiresAt?.toIntOrNull()) ?: 0) < 1) View.VISIBLE else View.GONE
                     }
                 }
 
                 is ItemDeviceListBinding -> {
                     binding.apply {
                         tvDeviceName.text = device.deviceName
+                        tvStatus.text = " [ ${device.state} ] "
+                        tvStatus.visibility(shouldShowStatus)
+                        btnDelete.visibility(!shouldShowStatus)
+                        btnExtend.visibility(!shouldShowStatus)
                         Glide.with(itemView.context).load(device.screenshot)
                             .apply(RequestOptions.bitmapTransform(RoundedCorners(16)))
                             .into(imgDevice)
                         tvDeviceId.text = device.deviceId
 
-                        if(device.status == Status.online) {
+                        if (device.status == Status.online) {
                             btnOnline.setTextColor(ColorStateList.valueOf(ContextCompat.getColor(root.context, R.color.greenLight)))
                             btnOnline.strokeColor = (ColorStateList.valueOf(ContextCompat.getColor(root.context, R.color.greenLight)))
                             btnOnline.iconTint = (ColorStateList.valueOf(ContextCompat.getColor(root.context, R.color.greenLight)))
@@ -98,8 +112,21 @@ class DeviceListAdapter(
                             btnOnline.text = "Offline"
                         }
 
-                        tvCreatedAt.text = "Created At -> ${device.createdAt}"
-                        tvUpdatedAt.text = "Updated At -> ${device.updatedAt}"
+                        tvCreatedAt.text = "Created At\n${device.createdAt}"
+                        tvUpdatedAt.text = "Updated At\n${device.updatedAt}"
+
+                        if (((device.expiresAt?.toIntOrNull()) ?: 0) < 1 && !shouldShowStatus) {
+                            holderExpired.visibility(true)
+                            tvRemainingDays.visibility(false)
+                        } else {
+                            holderExpired.visibility(false)
+                            if (device.expiresAt != null) {
+                                tvRemainingDays.text = "Expires In : ${device.expiresAt} days"
+                                tvRemainingDays.visibility(true)
+                            } else {
+                                tvRemainingDays.visibility(false)
+                            }
+                        }
                     }
                 }
             }

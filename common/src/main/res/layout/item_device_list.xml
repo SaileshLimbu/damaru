@@ -3,7 +3,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    tools:ignore="SmallSp">
 
     <com.google.android.material.card.MaterialCardView
         android:layout_width="match_parent"
@@ -18,36 +19,49 @@
 
             <ImageView
                 android:id="@+id/imgDevice"
-                android:layout_width="120dp"
-                android:layout_height="120dp"
+                android:layout_width="110dp"
+                android:layout_height="0dp"
                 android:adjustViewBounds="true"
                 android:contentDescription="@null"
                 tools:src="@drawable/ic_accounts"
                 android:scaleType="centerInside"
+                app:layout_constraintBottom_toBottomOf="@+id/btnExtend"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"/>
 
             <TextView
                 android:id="@+id/tvDeviceName"
-                android:layout_width="0dp"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="12dp"
                 android:layout_marginEnd="12dp"
-                android:layout_marginTop="12dp"
+                android:layout_marginTop="8dp"
                 android:fontFamily="@font/adlam_display"
                 android:textColor="@color/colorPrimaryDark"
                 android:textSize="16sp"
                 app:layout_constraintStart_toEndOf="@+id/imgDevice"
-                app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="@+id/imgDevice"
                 tools:text="theone sharma" />
 
             <TextView
+                android:id="@+id/tvStatus"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:fontFamily="sans-serif-black"
+                android:textColor="@color/colorPrimaryDark"
+                android:textSize="14sp"
+                android:visibility="gone"
+                tools:visibility="visible"
+                app:layout_constraintStart_toEndOf="@+id/tvDeviceName"
+                app:layout_constraintTop_toTopOf="@+id/tvDeviceName"
+                tools:text=" [ AVAILABLE ]" />
+
+            <TextView
                 android:id="@+id/tvDeviceId"
-                android:layout_width="0dp"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 app:layout_constraintStart_toStartOf="@+id/tvDeviceName"
-                app:layout_constraintEnd_toEndOf="@+id/tvDeviceName"
                 app:layout_constraintTop_toBottomOf="@+id/tvDeviceName"
                 tools:text="email@damaru.com" />
 
@@ -66,7 +80,7 @@
                 android:textColor="@color/green"
                 style="@style/Widget.MaterialComponents.Button.OutlinedButton"
                 app:backgroundTint="@android:color/transparent"
-                android:text="Online"
+                tools:text="Online"
                 android:paddingStart="4dp"
                 android:paddingEnd="4dp"
                 app:iconPadding="2dp"
@@ -78,20 +92,112 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 app:layout_constraintStart_toStartOf="@+id/tvDeviceName"
-                app:layout_constraintEnd_toEndOf="@+id/tvDeviceName"
                 app:layout_constraintTop_toBottomOf="@+id/btnOnline"
+                app:layout_constraintEnd_toStartOf="@+id/tvUpdatedAt"
+                app:layout_constraintHorizontal_chainStyle="spread"
                 android:textSize="10sp"
-                tools:text="Created at -> 2024-01-01" />
+                tools:text="Created at\n2024-01-01" />
 
             <TextView
                 android:id="@+id/tvUpdatedAt"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                app:layout_constraintStart_toStartOf="@+id/tvDeviceName"
-                app:layout_constraintEnd_toEndOf="@+id/tvDeviceName"
-                app:layout_constraintTop_toBottomOf="@+id/tvCreatedAt"
+                app:layout_constraintStart_toEndOf="@+id/tvCreatedAt"
+                app:layout_constraintTop_toTopOf="@+id/tvCreatedAt"
+                app:layout_constraintEnd_toEndOf="parent"
                 android:textSize="10sp"
-                tools:text="Updated at -> 2024-01-01" />
+                android:layout_marginStart="12dp"
+                tools:text="Updated at\n2024-01-01" />
+
+            <LinearLayout
+                android:id="@+id/holderExpired"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:orientation="vertical"
+                app:layout_constraintTop_toTopOf="@+id/imgDevice"
+                app:layout_constraintStart_toStartOf="@+id/imgDevice"
+                app:layout_constraintBottom_toBottomOf="@id/imgDevice"
+                app:layout_constraintEnd_toEndOf="@id/imgDevice"
+                android:gravity="center"
+                android:visibility="gone"
+                tools:visibility="visible"
+                android:background="@color/blackTransparent">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/expired"
+                    android:textColor="@color/red"
+                    android:textSize="24sp"
+                    android:rotation="-35"
+                    android:gravity="center"/>
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/tvRemainingDays"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:minHeight="32dp"
+                android:layout_alignParentEnd="true"
+                android:background="@color/greenLight"
+                android:fontFamily="@font/quicksand_medium"
+                android:shadowColor="@color/primary"
+                android:shadowDx="2.5"
+                android:padding="2dp"
+                android:gravity="center"
+                android:shadowDy="2.3"
+                android:shadowRadius="2.6"
+                android:visibility="gone"
+                tools:visibility="visible"
+                tools:text="Expires in : 28 days"
+                android:textColor="@color/white"
+                app:layout_constraintEnd_toEndOf="@id/imgDevice"
+                app:layout_constraintStart_toStartOf="@id/imgDevice"
+                app:layout_constraintBottom_toBottomOf="@+id/imgDevice"
+                android:textSize="10sp"
+                tools:ignore="RelativeOverlap" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnExtend"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:minHeight="32dp"
+                android:layout_marginTop="12dp"
+                app:backgroundTint="@color/greenLight"
+                android:visibility="gone"
+                tools:visibility="visible"
+                android:background="@android:color/transparent"
+                android:text="@string/extend"
+                android:textAllCaps="false"
+                android:textColor="@color/colorPrimaryDark"
+                app:icon="@drawable/ic_extend_2"
+                app:iconGravity="textStart"
+                app:iconTint="@color/colorPrimaryDark"
+                app:layout_constraintStart_toStartOf="@+id/tvDeviceName"
+                app:layout_constraintEnd_toStartOf="@+id/btnDelete"
+                app:layout_constraintHorizontal_chainStyle="spread"
+                app:layout_constraintTop_toBottomOf="@+id/tvUpdatedAt"/>
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnDelete"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:minHeight="32dp"
+                android:layout_marginTop="4dp"
+                app:backgroundTint="@color/red"
+                android:visibility="gone"
+                tools:visibility="visible"
+                android:layout_marginStart="12dp"
+                android:background="@android:color/transparent"
+                android:text="@string/delete"
+                android:textAllCaps="false"
+                android:textColor="@color/colorPrimaryDark"
+                app:icon="@drawable/ic_delete"
+                app:iconGravity="textStart"
+                app:iconTint="@color/colorPrimaryDark"
+                app:layout_constraintStart_toEndOf="@+id/btnExtend"
+                app:layout_constraintHorizontal_chainStyle="spread"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintBottom_toBottomOf="@+id/btnExtend"/>
         </androidx.constraintlayout.widget.ConstraintLayout>
     </com.google.android.material.card.MaterialCardView>
 </LinearLayout>

@@ -13,8 +13,10 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.gson.Gson
 import com.powersoft.common.listeners.RecyclerViewItemClickListener
+import com.powersoft.common.model.DeviceEntity
 import com.powersoft.common.model.PickerEntity
 import com.powersoft.common.model.ResponseWrapper
+import com.powersoft.common.model.State
 import com.powersoft.common.model.UserEntity
 import com.powersoft.common.ui.PickerActivity
 import com.powersoft.common.ui.helper.AlertHelper
@@ -36,19 +38,20 @@ class AdminHomeFragment : Fragment(R.layout.fragment_home), RecyclerViewItemClic
     private val b get() = _binding!!
     private val userAdapter by lazy { createUserAdapter() }
     private val vm: AdminHomeFragmentViewModel by viewModels()
+    private var userIdToAssign: String? = null
 
     @Inject
     lateinit var gson: Gson
 
     private val addUserForResultLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
         if (result.resultCode == RESULT_OK) {
-            vm.getALlMyUsers()
+            vm.getAllMyUsers()
         }
     }
 
     private val userDetailResultLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
         if (result.resultCode == RESULT_OK) {
-            vm.getALlMyUsers()
+            vm.getAllMyUsers()
         }
     }
 
@@ -57,18 +60,20 @@ class AdminHomeFragment : Fragment(R.layout.fragment_home), RecyclerViewItemClic
             if (result.resultCode == RESULT_OK) {
                 val items: ArrayList<PickerEntity>? = result.data?.getParcelableArrayListExtra(PickerActivity.Companion.EXTRA_SELECTED_ITEMS)
                 if (items?.isNotEmpty() == true) {
-//                    vm.linkDevices(items.map { pickerEntity ->
-//                        gson.fromJson(pickerEntity.dataJson, DeviceEntity::class.java).deviceId
-//                    }.toList(), userRepo.seasonEntity.value?.userId.toString(), account.id, object : ResponseCallback {
-//                        override fun onResponse(any: Any, errorMessage: String?) {
-//                            vm.getAllAssignedDevices(account.id)
-//                            if (errorMessage != null) {
-//                                AlertHelper.showAlertDialog(this@UserDetailActivity, title = getString(R.string.error), message = errorMessage)
-//                            } else {
-//                                AlertHelper.showSnackbar(binding.root, getString(R.string.linked_success))
-//                            }
-//                        }
-//                    })
+                    vm.linkDevices(items.map { pickerEntity ->
+                        gson.fromJson(pickerEntity.dataJson, DeviceEntity::class.java).deviceId
+                    }.toList(), userIdToAssign!!, object : ResponseCallback {
+                        override fun onResponse(any: Any, errorMessage: String?) {
+                            if (errorMessage != null) {
+                                AlertHelper.showAlertDialog(requireActivity(), title = getString(R.string.error), message = errorMessage)
+                            } else {
+                                userIdToAssign = null
+                                vm.getAllDevices()
+                                vm.getAllMyUsers()
+                                AlertHelper.showSnackbar(b.root, getString(R.string.linked_success))
+                            }
+                        }
+                    })
                 }
             }
         }
@@ -107,7 +112,7 @@ class AdminHomeFragment : Fragment(R.layout.fragment_home), RecyclerViewItemClic
         b.recyclerView.adapter = userAdapter
 
         b.swipeRefresh.setOnRefreshListener {
-            vm.getALlMyUsers()
+            vm.getAllMyUsers()
         }
 
         vm.allUsersList.observe(viewLifecycleOwner) {
@@ -129,6 +134,22 @@ class AdminHomeFragment : Fragment(R.layout.fragment_home), RecyclerViewItemClic
                 is ResponseWrapper.Loading -> {
                     b.loader.root.show()
                     b.errorView.root.hide()
+                }
+            }
+        }
+
+        vm.allDevices.observe(viewLifecycleOwner) {
+            when (it) {
+                is ResponseWrapper.Success -> {
+                    if (userIdToAssign != null)
+                        openPicker()
+                }
+
+                is ResponseWrapper.Error -> {
+                    AlertHelper.showToast(requireContext(), it.message)
+                }
+
+                is ResponseWrapper.Loading -> {
                 }
             }
         }
@@ -160,10 +181,11 @@ class AdminHomeFragment : Fragment(R.layout.fragment_home), RecyclerViewItemClic
                     }
 
                     R.id.btnAssign -> {
-                        if (vm.allUnAssignedDevices.value is ResponseWrapper.Success) {
+                        userIdToAssign = data.id
+                        if (vm.allDevices.value is ResponseWrapper.Success) {
                             openPicker()
                         } else {
-                            vm.getAllUnassignedDevices(data.id)
+                            vm.getAllDevices()
                         }
                     }
                     else ->{
@@ -181,9 +203,13 @@ class AdminHomeFragment : Fragment(R.layout.fragment_home), RecyclerViewItemClic
     private fun openPicker() {
         PickerActivity.Companion.startForResult(
             requireActivity(),
-            (vm.allUnAssignedDevices.value as ResponseWrapper.Success).data.map {
-                PickerEntity(it.deviceName, gson.toJson(it))
-            }, true, linkDeviceResultLauncher
+            (vm.allDevices.value as ResponseWrapper.Success).data
+                .mapNotNull {
+                    if (it.state == State.AVAILABLE)
+                        PickerEntity(it.deviceName, gson.toJson(it))
+                    else
+                        null
+                }, true, linkDeviceResultLauncher
         )
     }
 }

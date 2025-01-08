@@ -10,7 +10,7 @@ import com.powersoft.common.ui.helper.AlertHelper
 class LoginActivityImpl : LoginActivity() {
     override fun onLoginResponse(any: Any, errorMessage: String?) {
         if (errorMessage == null) {
-            if (any is LoginEntity && any.firstLogin == true) {
+            if (any is LoginEntity && any.firstLogin) {
                 startActivity(
                     Intent(applicationContext, PinActivityImpl::class.java)
                         .putExtra("resetPin", true)

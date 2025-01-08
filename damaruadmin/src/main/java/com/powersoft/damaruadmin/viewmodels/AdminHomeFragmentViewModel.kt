@@ -13,6 +13,7 @@ import com.powersoft.damaruadmin.repository.UserRepo
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 @HiltViewModel
@@ -20,10 +21,10 @@ class AdminHomeFragmentViewModel @Inject constructor(
     private val userRepo: UserRepo,
     private val deviceRepo: DeviceRepo
 ) : BaseViewModel() {
-    private val _allUnAssignedDevices = MutableLiveData<ResponseWrapper<List<DeviceEntity>>>()
+    private val _allDevices = MutableLiveData<ResponseWrapper<List<DeviceEntity>>>()
 
-    val allUnAssignedDevices: LiveData<ResponseWrapper<List<DeviceEntity>>>
-        get() = _allUnAssignedDevices
+    val allDevices: LiveData<ResponseWrapper<List<DeviceEntity>>>
+        get() = _allDevices
 
     private val _allUsersList = MutableLiveData<ResponseWrapper<List<UserEntity>>>()
 
@@ -31,18 +32,18 @@ class AdminHomeFragmentViewModel @Inject constructor(
         get() = _allUsersList
 
     init {
-        getALlMyUsers()
+        getAllMyUsers()
     }
 
-    fun getAllUnassignedDevices(id : String) {
+    fun getAllDevices() {
         viewModelScope.launch(Dispatchers.IO) {
-            _allUnAssignedDevices.postValue(ResponseWrapper.loading())
+            _allDevices.postValue(ResponseWrapper.loading())
             val response = deviceRepo.getAllDevices()
-            _allUnAssignedDevices.postValue(response)
+            _allDevices.postValue(response)
         }
     }
 
-    fun getALlMyUsers() {
+    fun getAllMyUsers() {
         viewModelScope.launch {
             val response = userRepo.getAllUsers()
             _allUsersList.postValue(response)
@@ -61,6 +62,29 @@ class AdminHomeFragmentViewModel @Inject constructor(
                 }
 
                 is ResponseWrapper.Loading -> {
+                }
+            }
+        }
+    }
+
+    fun linkDevices(deviceIds: List<String>, userId: String, responseCallback: ResponseCallback) {
+        showLoader()
+        viewModelScope.launch {
+            val response = deviceRepo.linkDevicesToUser(deviceIds, userId)
+            withContext(Dispatchers.Main) {
+                hideLoader()
+                when (response) {
+                    is ResponseWrapper.Success -> {
+                        responseCallback.onResponse(response.data ?: Any(), null)
+                    }
+
+                    is ResponseWrapper.Error -> {
+                        responseCallback.onResponse(Any(), response.message)
+                    }
+
+                    is ResponseWrapper.Loading -> {
+
+                    }
                 }
             }
         }

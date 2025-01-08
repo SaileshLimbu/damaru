@@ -1,9 +1,12 @@
 package com.powersoft.damaruadmin.ui
 
 import android.content.Intent
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
+import androidx.appcompat.app.AlertDialog
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.gson.Gson
@@ -14,6 +17,7 @@ import com.powersoft.common.listeners.RecyclerViewItemClickListener
 import com.powersoft.common.model.DeviceEntity
 import com.powersoft.common.model.PickerEntity
 import com.powersoft.common.model.ResponseWrapper
+import com.powersoft.common.model.State
 import com.powersoft.common.model.UserEntity
 import com.powersoft.common.repository.UserRepo
 import com.powersoft.common.ui.PickerActivity
@@ -24,6 +28,7 @@ import com.powersoft.common.utils.show
 import com.powersoft.common.utils.visibility
 import com.powersoft.damaruadmin.R
 import com.powersoft.damaruadmin.databinding.ActivityUserDetailBinding
+import com.powersoft.damaruadmin.databinding.AlertExtendBinding
 import com.powersoft.damaruadmin.viewmodels.UserDetailViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
@@ -59,18 +64,19 @@ class UserDetailActivity : BaseActivity() {
             if (result.resultCode == RESULT_OK) {
                 val items: ArrayList<PickerEntity>? = result.data?.getParcelableArrayListExtra(PickerActivity.Companion.EXTRA_SELECTED_ITEMS)
                 if (items?.isNotEmpty() == true) {
-//                    vm.linkDevices(items.map { pickerEntity ->
-//                        gson.fromJson(pickerEntity.dataJson, DeviceEntity::class.java).deviceId
-//                    }.toList(), userRepo.seasonEntity.value?.userId.toString(), account.id, object : ResponseCallback {
-//                        override fun onResponse(any: Any, errorMessage: String?) {
-//                            vm.getAllAssignedDevices(account.id)
-//                            if (errorMessage != null) {
-//                                AlertHelper.showAlertDialog(this@UserDetailActivity, title = getString(R.string.error), message = errorMessage)
-//                            } else {
-//                                AlertHelper.showSnackbar(binding.root, getString(R.string.linked_success))
-//                            }
-//                        }
-//                    })
+                    vm.linkDevices(items.map { pickerEntity ->
+                        gson.fromJson(pickerEntity.dataJson, DeviceEntity::class.java).deviceId
+                    }.toList(), user.id, object : ResponseCallback {
+                        override fun onResponse(any: Any, errorMessage: String?) {
+                            if (errorMessage != null) {
+                                AlertHelper.showAlertDialog(this@UserDetailActivity, title = getString(R.string.error), message = errorMessage)
+                            } else {
+                                setResult(RESULT_OK)
+                                vm.getAllDevices()
+                                AlertHelper.showSnackbar(binding.root, getString(R.string.linked_success))
+                            }
+                        }
+                    })
                 }
             }
         }
@@ -135,34 +141,25 @@ class UserDetailActivity : BaseActivity() {
             }
         })
 
-        vm.allUnAssignedDevices.observe(this) {
-            when (it) {
-                is ResponseWrapper.Success -> {
-                    openPicker()
-                }
-
-                is ResponseWrapper.Error -> {
-                }
-
-                is ResponseWrapper.Loading -> {
-                }
-            }
-        }
-
         binding.extendedFAB.setOnClickListener {
-            if (vm.allUnAssignedDevices.value is ResponseWrapper.Success) {
-                openPicker()
-            } else {
-                vm.getAllUnassignedDevices(user.id)
-            }
+            openPicker()
         }
 
-        vm.allAssignedDevices.observe(this) {
+        vm.allDevices.observe(this) {
             when (it) {
                 is ResponseWrapper.Success -> {
-                    deviceAdapter.submitList(it.data)
+                    val mList = it.data.filter { device ->
+                        device.userId == user.id
+                    }
+                    deviceAdapter.submitList(mList)
                     binding.loader.root.hide()
-                    binding.errorView.root.hide()
+                    if (mList.isNotEmpty()) {
+                        binding.errorView.root.hide()
+                    } else {
+                        binding.errorView.tvError.text = getString(R.string.no_devices_assigned)
+                        binding.errorView.root.show()
+                    }
+                    binding.extendedFAB.show()
                 }
 
                 is ResponseWrapper.Error -> {
@@ -177,14 +174,35 @@ class UserDetailActivity : BaseActivity() {
                 }
             }
         }
-
-        vm.getAllAssignedDevices(user.id)
     }
 
     private fun createDeviceAdapter(): DeviceListAdapter {
         return DeviceListAdapter(object : RecyclerViewItemClickListener<DeviceEntity> {
             override fun onItemClick(viewId: Int, position: Int, data: DeviceEntity) {
-
+                if (viewId == R.id.btnDelete) {
+                    AlertHelper.showAlertDialog(
+                        this@UserDetailActivity, title = getString(R.string.unlink_this_device),
+                        message = getString(R.string.are_you_sure_unlink_device),
+                        positiveButtonText = getString(R.string.delete),
+                        negativeButtonText = getString(com.powersoft.common.R.string.cancle),
+                        onPositiveButtonClick = {
+                            vm.unlinkDevice(user.id, listOf(data.deviceId),
+                                object : ResponseCallback {
+                                    override fun onResponse(any: Any, errorMessage: String?) {
+                                        if (errorMessage != null) {
+                                            AlertHelper.showAlertDialog(
+                                                this@UserDetailActivity, getString(R.string.error), errorMessage,
+                                            )
+                                        } else {
+                                            vm.getAllDevices()
+                                        }
+                                    }
+                                })
+                        }
+                    )
+                } else if (viewId == com.powersoft.common.R.id.btnExtend) {
+                    showExtendAlert(data)
+                }
             }
         }, DeviceListAdapter.Companion.TYPE.LIST)
     }
@@ -192,9 +210,50 @@ class UserDetailActivity : BaseActivity() {
     private fun openPicker() {
         PickerActivity.Companion.startForResult(
             this@UserDetailActivity,
-            (vm.allUnAssignedDevices.value as ResponseWrapper.Success).data.map {
-                PickerEntity(it.deviceName, gson.toJson(it))
-            }, true, linkDeviceResultLauncher
+            (vm.allDevices.value as ResponseWrapper.Success).data
+                .mapNotNull {
+                    if (it.state == State.AVAILABLE)
+                        PickerEntity(it.deviceName, gson.toJson(it))
+                    else
+                        null
+                }, true, linkDeviceResultLauncher
         )
+    }
+
+    private fun showExtendAlert(device: DeviceEntity) {
+        val alertDialog = AlertDialog.Builder(this@UserDetailActivity)
+        val alertBinding = AlertExtendBinding.inflate(layoutInflater)
+        alertDialog.setView(alertBinding.root)
+        val dialog = alertDialog.create()
+        dialog.show()
+        dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+
+        alertBinding.btnClose2.setOnClickListener {
+            dialog.dismiss()
+        }
+
+        alertBinding.btnClose.setOnClickListener {
+            dialog.dismiss()
+        }
+
+        alertBinding.btnExtend.setOnClickListener {
+            if (alertBinding.etDays.text.toString().isEmpty()) {
+                AlertHelper.showToast(this@UserDetailActivity, getString(R.string.please_enter_no_of_days_to_extend))
+                return@setOnClickListener
+            }
+            dialog.dismiss()
+            vm.extendDeviceExpiry(user.id, device.deviceId, "30",
+                object : ResponseCallback {
+                    override fun onResponse(any: Any, errorMessage: String?) {
+                        if (errorMessage != null) {
+                            AlertHelper.showAlertDialog(
+                                this@UserDetailActivity, getString(R.string.error), errorMessage,
+                            )
+                        } else {
+                            vm.getAllDevices()
+                        }
+                    }
+                })
+        }
     }
 }

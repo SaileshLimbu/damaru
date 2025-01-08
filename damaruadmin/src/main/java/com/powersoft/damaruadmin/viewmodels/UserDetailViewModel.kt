@@ -20,29 +20,20 @@ class UserDetailViewModel @Inject constructor(
     private val userRepo: UserRepo,
     private val repo: DeviceRepo
 ) : BaseViewModel() {
-    private val _allUnAssignedDevices = MutableLiveData<ResponseWrapper<List<DeviceEntity>>>()
+    private val _allDevices = MutableLiveData<ResponseWrapper<List<DeviceEntity>>>()
 
-    val allUnAssignedDevices: LiveData<ResponseWrapper<List<DeviceEntity>>>
-        get() = _allUnAssignedDevices
+    val allDevices: LiveData<ResponseWrapper<List<DeviceEntity>>>
+        get() = _allDevices
 
-    private val _allAssignedDevices = MutableLiveData<ResponseWrapper<List<DeviceEntity>>>()
-
-    val allAssignedDevices: LiveData<ResponseWrapper<List<DeviceEntity>>>
-        get() = _allAssignedDevices
-
-    fun getAllUnassignedDevices(id : String) {
-        viewModelScope.launch(Dispatchers.IO) {
-            _allUnAssignedDevices.postValue(ResponseWrapper.loading())
-            val response = repo.getAllDevices()
-            _allUnAssignedDevices.postValue(response)
-        }
+    init {
+        getAllDevices()
     }
 
-    fun getAllAssignedDevices(id : String) {
+    fun getAllDevices() {
         viewModelScope.launch(Dispatchers.IO) {
-            _allAssignedDevices.postValue(ResponseWrapper.loading())
-            val response = repo.getEmulatorOfAccount(id)
-            _allAssignedDevices.postValue(response)
+            _allDevices.postValue(ResponseWrapper.loading())
+            val response = repo.getAllDevices()
+            _allDevices.postValue(response)
         }
     }
 
@@ -63,26 +54,72 @@ class UserDetailViewModel @Inject constructor(
         }
     }
 
-    fun linkDevices(deviceIds: List<String>, userId: String, accountId: String, responseCallback: ResponseCallback) {
+    fun linkDevices(deviceIds: List<String>, userId: String, responseCallback: ResponseCallback) {
         showLoader()
-//        viewModelScope.launch {
-//            val response = accountRepo.linkDevicesToAccount(deviceIds, userId, accountId)
-//            withContext(Dispatchers.Main) {
-//                hideLoader()
-//                when (response) {
-//                    is ResponseWrapper.Success -> {
-//                        responseCallback.onResponse(response.data ?: Any(), null)
-//                    }
-//
-//                    is ResponseWrapper.Error -> {
-//                        responseCallback.onResponse(Any(), response.message)
-//                    }
-//
-//                    is ResponseWrapper.Loading -> {
-//
-//                    }
-//                }
-//            }
-//        }
+        viewModelScope.launch {
+            val response = repo.linkDevicesToUser(deviceIds, userId)
+            withContext(Dispatchers.Main) {
+                hideLoader()
+                when (response) {
+                    is ResponseWrapper.Success -> {
+                        responseCallback.onResponse(response.data ?: Any(), null)
+                    }
+
+                    is ResponseWrapper.Error -> {
+                        responseCallback.onResponse(Any(), response.message)
+                    }
+
+                    is ResponseWrapper.Loading -> {
+
+                    }
+                }
+            }
+        }
+    }
+
+    fun unlinkDevice(userId: String, deviceIds: List<String>, responseCallback: ResponseCallback) {
+        showLoader()
+        viewModelScope.launch {
+            val response = repo.unlinkDeviceFromUser(deviceIds, userId)
+            withContext(Dispatchers.Main) {
+                hideLoader()
+                when (response) {
+                    is ResponseWrapper.Success -> {
+                        responseCallback.onResponse(response.data ?: Any(), null)
+                    }
+
+                    is ResponseWrapper.Error -> {
+                        responseCallback.onResponse(Any(), response.message)
+                    }
+
+                    is ResponseWrapper.Loading -> {
+
+                    }
+                }
+            }
+        }
+    }
+
+    fun extendDeviceExpiry(userId: String, deviceIds: String, days : String, responseCallback: ResponseCallback) {
+        showLoader()
+        viewModelScope.launch {
+            val response = repo.extendDeviceExpiry(deviceIds, userId, days)
+            withContext(Dispatchers.Main) {
+                hideLoader()
+                when (response) {
+                    is ResponseWrapper.Success -> {
+                        responseCallback.onResponse(response.data ?: Any(), null)
+                    }
+
+                    is ResponseWrapper.Error -> {
+                        responseCallback.onResponse(Any(), response.message)
+                    }
+
+                    is ResponseWrapper.Loading -> {
+
+                    }
+                }
+            }
+        }
     }
 }
