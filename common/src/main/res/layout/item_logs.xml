@@ -9,7 +9,7 @@
         android:id="@+id/tvLog"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="12dp"
+        android:layout_marginTop="16dp"
         app:layout_constraintEnd_toEndOf="parent"
         android:textColor="@color/colorPrimaryDark"
         android:fontFamily="@font/adlam_display"
@@ -34,8 +34,8 @@
     <View
         android:layout_width="match_parent"
         android:layout_height="1dp"
-        android:layout_marginTop="12dp"
-        android:background="@color/blackTransparent"
+        android:layout_marginTop="16dp"
+        android:background="@color/primaryLight2"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/tvDate" />

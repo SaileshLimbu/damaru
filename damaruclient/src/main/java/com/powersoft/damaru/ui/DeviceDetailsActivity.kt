@@ -3,17 +3,21 @@ package com.powersoft.damaru.ui
 import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.google.gson.Gson
 import com.powersoft.common.base.BaseActivity
 import com.powersoft.common.base.BaseViewModel
 import com.powersoft.common.listeners.RecyclerViewItemClickListener
 import com.powersoft.common.model.AccountEntity
 import com.powersoft.common.model.DeviceEntity
+import com.powersoft.common.model.PickerEntity
 import com.powersoft.common.model.ResponseWrapper
 import com.powersoft.common.repository.UserRepo
 import com.powersoft.common.ui.LogsActivity
+import com.powersoft.common.ui.PickerActivity
 import com.powersoft.common.ui.helper.AlertHelper
 import com.powersoft.common.ui.helper.ResponseCallback
 import com.powersoft.common.utils.hide
@@ -30,15 +34,34 @@ class DeviceDetailsActivity : BaseActivity() {
     private lateinit var binding: ActivitDeviceDetailsBinding
     private val vm: DeviceDetailsViewModel by viewModels()
     private val accountsAdapter by lazy { createAccountAdapter() }
+    lateinit var deviceEntity: DeviceEntity
 
     @Inject
     lateinit var userRepo: UserRepo
 
-//    private val startActivityForResultLauncher =
-//        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-//            if (result.resultCode == RESULT_OK) {
-//            }
-//        }
+    @Inject
+    lateinit var gson: Gson
+
+    private val linkAccountResultLauncher =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            if (result.resultCode == RESULT_OK) {
+                val items: ArrayList<PickerEntity>? = result.data?.getParcelableArrayListExtra(PickerActivity.Companion.EXTRA_SELECTED_ITEMS)
+                if (items?.isNotEmpty() == true) {
+                    vm.linkAccounts(items.map { pickerEntity ->
+                        gson.fromJson(pickerEntity.dataJson, AccountEntity::class.java).id
+                    }.toList(), userRepo.seasonEntity.value?.userId.toString(), deviceEntity.deviceId, object : ResponseCallback {
+                        override fun onResponse(any: Any, errorMessage: String?) {
+                            vm.getLinkedAccounts(deviceEntity.deviceId)
+                            if (errorMessage != null) {
+                                AlertHelper.showAlertDialog(this@DeviceDetailsActivity, title = getString(R.string.error), message = errorMessage)
+                            } else {
+                                AlertHelper.showSnackbar(binding.root, getString(R.string.accounts_linked_success))
+                            }
+                        }
+                    })
+                }
+            }
+        }
 
     override fun getViewModel(): BaseViewModel = vm
 
@@ -59,42 +82,76 @@ class DeviceDetailsActivity : BaseActivity() {
         }
 
         //set device info
-        val deviceEntity: DeviceEntity = Gson().fromJson(intent.getStringExtra("device"), DeviceEntity::class.java)
-        deviceEntity.let {
-            vm.deviceId = it.deviceId
-            binding.holderDevice.tvRemainingDays.text = "${deviceEntity.expiresAt} days"
-            binding.mynametv.text = it.deviceName
-            binding.tvCreatedAt.text = "Subscribed on : ${it.createdAt}"
-            binding.tvExpiresIn.text = "Expires In : ${it.expiresAt} days"
+        deviceEntity = Gson().fromJson(intent.getStringExtra("device"), DeviceEntity::class.java)
 
-            vm.allAccounts.observe(this) { response ->
-                when (response) {
-                    is ResponseWrapper.Success -> {
-                        accountsAdapter.submitList(response.data)
-                        if (response.data.isNotEmpty()) {
-                            binding.tvTotalAccounts.text = response.data.size.toString()
-                            binding.holderAccounts.show()
-                        }
+        vm.deviceId = deviceEntity.deviceId
+        binding.holderDevice.tvRemainingDays.text = "${deviceEntity.expiresAt} days"
+        binding.mynametv.text = deviceEntity.deviceName
+        binding.tvCreatedAt.text = "Subscribed on : ${deviceEntity.createdAt}"
+        binding.tvExpiresIn.text = "Expires In : ${deviceEntity.expiresAt} days"
 
-                        binding.loader.root.hide()
-                        binding.errorView.root.hide()
-                    }
 
-                    is ResponseWrapper.Error -> {
-                        binding.loader.root.hide()
-                        binding.errorView.tvError.text = response.message
-                        binding.errorView.root.show()
-                    }
-
-                    is ResponseWrapper.Loading -> {
-                        binding.loader.root.show()
-                        binding.errorView.root.hide()
-                    }
+        binding.recyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                super.onScrolled(recyclerView, dx, dy)
+                if (dy > 0) {
+                    binding.extendedFAB.shrink()
+                } else if (dy < 0) {
+                    binding.extendedFAB.extend()
                 }
             }
+        })
 
-            vm.getLinkedAccounts(it.deviceId)
+        binding.extendedFAB.setOnClickListener {
+            if (vm.allAccounts.value is ResponseWrapper.Success && (vm.allAccounts.value as ResponseWrapper.Success).data.isNotEmpty()) {
+                openPicker()
+            } else {
+                vm.getAllAccounts()
+            }
         }
+
+        vm.allAccounts.observe(this) {
+            when (it) {
+                is ResponseWrapper.Success -> {
+                    openPicker()
+                }
+
+                is ResponseWrapper.Error -> {
+                }
+
+                is ResponseWrapper.Loading -> {}
+            }
+        }
+
+        vm.allLinkedAccounts.observe(this) { response ->
+            when (response) {
+                is ResponseWrapper.Success -> {
+                    accountsAdapter.submitList(response.data)
+                    if (response.data.isNotEmpty()) {
+                        binding.tvTotalAccounts.text = response.data.size.toString()
+                        binding.holderAccounts.show()
+                    }
+
+                    binding.loader.root.hide()
+                    binding.errorView.root.hide()
+                    binding.extendedFAB.show()
+                }
+
+                is ResponseWrapper.Error -> {
+                    binding.loader.root.hide()
+                    binding.errorView.tvError.text = response.message
+                    binding.errorView.root.show()
+                    binding.extendedFAB.show()
+                }
+
+                is ResponseWrapper.Loading -> {
+                    binding.loader.root.show()
+                    binding.errorView.root.hide()
+                }
+            }
+        }
+
+        vm.getLinkedAccounts(deviceEntity.deviceId)
     }
 
     private fun createAccountAdapter(): AccountsAdapter {
@@ -123,9 +180,16 @@ class DeviceDetailsActivity : BaseActivity() {
                             }
                         )
                     } else if (viewId == R.id.imgLogs) {
-                        startActivity(Intent(this@DeviceDetailsActivity, LogsActivity::class.java))
+                        LogsActivity.start(this@DeviceDetailsActivity, data.id, deviceEntity.deviceId)
                     }
                 }
             })
+    }
+
+    private fun openPicker() {
+        PickerActivity.Companion.startForResult(
+            this@DeviceDetailsActivity, vm.getFilteredList(),
+            true, linkAccountResultLauncher
+        )
     }
 }

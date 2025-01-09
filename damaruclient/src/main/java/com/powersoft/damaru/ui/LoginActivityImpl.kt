@@ -11,7 +11,7 @@ import com.powersoft.damaru.R
 class LoginActivityImpl : LoginActivity() {
     override fun onLoginResponse(any: Any, errorMessage: String?) {
         if (errorMessage == null) {
-            if (any is LoginEntity && any.firstLogin == true) {
+            if (any is LoginEntity && any.firstLogin) {
                 startActivity(
                     Intent(applicationContext, PinActivityImpl::class.java)
                         .putExtra("resetPin", true)
@@ -34,8 +34,8 @@ class LoginActivityImpl : LoginActivity() {
             //superadmin@damaru.com
             //superAdmin@123
             //SuperAdmin, AndroidUser
-            b.etUsername.setText("fuck@man.com")
-            b.etPassword.setText("000111")
+            b.etUsername.setText("donotfucking@delete.com")
+            b.etPassword.setText("Test@123")
             b.etPin.setText("00000")
         }
     }

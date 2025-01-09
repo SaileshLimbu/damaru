@@ -24,7 +24,8 @@ class LogsAdapter(
 
         fun bind(log: LogsEntity) {
             binding.apply {
-                tvLog.text = Html.fromHtml(log.action, Html.FROM_HTML_MODE_COMPACT)
+                tvLog.text = Html.fromHtml(log.desc, Html.FROM_HTML_MODE_COMPACT)
+                tvDate.text = log.date
             }
         }
     }

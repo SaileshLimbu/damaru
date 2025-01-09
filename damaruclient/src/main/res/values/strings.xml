@@ -41,4 +41,6 @@
     <string name="are_you_sure_unlink_account">Are you sure you want to unlink the account from this device?</string>
     <string name="are_you_sure_unlink_device">Are you sure you want to unlink this device from this account?</string>
     <string name="linked_success">Devices successfully linked this account.</string>
+    <string name="link_account">Link Account</string>
+    <string name="accounts_linked_success">Accounts successfully linked to this device</string>
 </resources>

@@ -120,4 +120,22 @@ class AccountsRepo @Inject constructor(private val apiService: ApiService, priva
             ResponseWrapper.error("Something went wrong (Code 7632)")
         }
     }
+
+    suspend fun linkAccountsToDevice(accountIds: List<String>, userId: String, deviceId: String): ResponseWrapper<Any?> {
+        return try {
+            val params = mapOf(
+                "accountIds" to accountIds,
+                "userId" to userId,
+                "deviceId" to deviceId
+            )
+            val response = apiService.linkAccountsToDevice(gson.toJson(params).toRequestBody())
+            if (response.status) {
+                ResponseWrapper.success(response.data)
+            } else {
+                ResponseWrapper.error(response.message)
+            }
+        } catch (e: Exception) {
+            ResponseWrapper.error("Something went wrong (Code 684)")
+        }
+    }
 }

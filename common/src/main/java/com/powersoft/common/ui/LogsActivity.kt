@@ -1,5 +1,6 @@
 package com.powersoft.common.ui
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -17,10 +18,20 @@ import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class LogsActivity @Inject constructor(): BaseActivity() {
+class LogsActivity @Inject constructor() : BaseActivity() {
     private val viewModel: LogsActivityViewModel by viewModels()
     lateinit var binding: ActivityLogsBinding
     private val logsAdapter by lazy { createLogAdapter() }
+
+    companion object {
+        fun start(activity: BaseActivity, accountId: String, deviceId: String) {
+            activity.startActivity(
+                Intent(activity, LogsActivity::class.java)
+                    .putExtra("account_id", accountId)
+                    .putExtra("device_id", deviceId)
+            )
+        }
+    }
 
     override fun getViewModel(): BaseViewModel {
         return viewModel
@@ -34,6 +45,10 @@ class LogsActivity @Inject constructor(): BaseActivity() {
 
         binding.btnBack.setOnClickListener {
             finish()
+        }
+
+        binding.swipeRefresh.setOnRefreshListener {
+            loadLogs()
         }
 
         binding.recyclerView.layoutManager = LinearLayoutManager(this)
@@ -64,6 +79,11 @@ class LogsActivity @Inject constructor(): BaseActivity() {
             }
         }
 
+        loadLogs()
+    }
+
+    private fun loadLogs() {
+        viewModel.getDeviceLogs(intent.getStringExtra("device_id") ?: "", intent.getStringExtra("account_id") ?: "")
     }
 
     private fun createLogAdapter(): LogsAdapter {

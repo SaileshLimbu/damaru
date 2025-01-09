@@ -39,6 +39,9 @@ interface ApiService {
     @POST("emulators/assign-multi-emulators")
     suspend fun linkDevicesToAccount(@Body requestBody: RequestBody): ResponseData<Any>
 
+    @POST("emulators/assign-multi-accounts")
+    suspend fun linkAccountsToDevice(@Body requestBody: RequestBody): ResponseData<Any>
+
     @POST("emulators/link-emulators")
     suspend fun linkDevicesToUser(@Body requestBody: RequestBody): ResponseData<Any>
 
@@ -54,6 +57,6 @@ interface ApiService {
     @GET("accounts/{id}")
     suspend fun getHisEmulator(@Path("id") accountId : String): ResponseData<List<DeviceEntity>>
 
-    @GET("activity-logs")
-    suspend fun getActivityLogs(): ResponseData<List<LogsEntity>>
+    @GET("emulators/connection-log")
+    suspend fun getActivityLogs(@Query("deviceId") deviceId: String, @Query("accountId") accountId: String): ResponseData<List<String>>//ResponseData<List<LogsEntity>>
 }

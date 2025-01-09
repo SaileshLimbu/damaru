@@ -18,6 +18,7 @@ import com.powersoft.common.model.PickerEntity
 import com.powersoft.common.model.ResponseWrapper
 import com.powersoft.common.model.Status
 import com.powersoft.common.repository.UserRepo
+import com.powersoft.common.ui.LogsActivity
 import com.powersoft.common.ui.PickerActivity
 import com.powersoft.common.ui.helper.AlertHelper
 import com.powersoft.common.ui.helper.ResponseCallback
@@ -185,7 +186,7 @@ class AccountDetailActivity : BaseActivity() {
                             val token = userRepo.seasonEntity.value?.accessToken
                             val dialog: AlertDialog.Builder = AlertDialog.Builder(this@AccountDetailActivity)
                             dialog.setTitle("Options")
-                            dialog.setItems(arrayOf("Connect to device", "Unlink Device")) { dialogInterface, itemPos ->
+                            dialog.setItems(arrayOf("Connect to device", "Unlink Device", "Device Logs")) { dialogInterface, itemPos ->
                                 dialogInterface.dismiss()
                                 when (itemPos) {
                                     0 -> {
@@ -201,7 +202,7 @@ class AccountDetailActivity : BaseActivity() {
                                         }
                                     }
 
-                                    else -> {
+                                    1 -> {
                                         AlertHelper.showAlertDialog(
                                             this@AccountDetailActivity, title = getString(R.string.unlink_this_device),
                                             message = getString(R.string.are_you_sure_unlink_device),
@@ -223,6 +224,10 @@ class AccountDetailActivity : BaseActivity() {
                                                     })
                                             }
                                         )
+                                    }
+
+                                    else -> {
+                                        LogsActivity.start(this@AccountDetailActivity, account.id, data.deviceId)
                                     }
                                 }
                             }

@@ -28,6 +28,7 @@
     <color name="white">#FFFFFFFF</color>
     <color name="primary">#314C67</color>
     <color name="primaryLight">#507590</color>
+    <color name="primaryLight2">#C9E2F4</color>
     <color name="primary_light">#C5D0DC</color>
     <color name="secondary">#FCAF3C</color>
     <color name="red">#F44336</color>
