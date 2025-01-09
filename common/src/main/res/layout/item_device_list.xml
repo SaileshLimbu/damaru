@@ -25,7 +25,7 @@
                 android:contentDescription="@null"
                 tools:src="@drawable/ic_accounts"
                 android:scaleType="centerInside"
-                app:layout_constraintBottom_toBottomOf="@+id/btnExtend"
+                app:layout_constraintBottom_toBottomOf="@+id/tvAssignedTo"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"/>
 
@@ -35,7 +35,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="12dp"
                 android:layout_marginEnd="12dp"
-                android:layout_marginTop="8dp"
+                android:layout_marginTop="4dp"
                 android:fontFamily="@font/adlam_display"
                 android:textColor="@color/colorPrimaryDark"
                 android:textSize="16sp"
@@ -156,6 +156,35 @@
                 android:textSize="10sp"
                 tools:ignore="RelativeOverlap" />
 
+            <TextView
+                android:id="@+id/lvlAssignedTo"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:layout_marginBottom="12dp"
+                android:visibility="gone"
+                tools:visibility="visible"
+                android:textSize="11sp"
+                android:text="@string/assigned_to"
+                android:textColor="@color/colorPrimaryDark"
+                app:layout_constraintStart_toStartOf="@+id/tvDeviceName"
+                app:layout_constraintTop_toBottomOf="@+id/tvUpdatedAt"/>
+
+            <TextView
+                android:id="@+id/tvAssignedTo"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:visibility="gone"
+                android:textSize="12sp"
+                android:layout_marginStart="6dp"
+                android:fontFamily="@font/adlam_display"
+                tools:visibility="visible"
+                tools:text="@string/assigned_to"
+                android:textColor="@color/secondary"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/lvlAssignedTo"
+                app:layout_constraintTop_toTopOf="@+id/lvlAssignedTo"/>
+
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnExtend"
                 android:layout_width="0dp"
@@ -164,7 +193,7 @@
                 android:layout_marginTop="12dp"
                 app:backgroundTint="@color/greenLight"
                 android:visibility="gone"
-                tools:visibility="visible"
+                tools:visibility="gone"
                 android:background="@android:color/transparent"
                 android:text="@string/extend"
                 android:textAllCaps="false"
@@ -185,7 +214,7 @@
                 android:layout_marginTop="4dp"
                 app:backgroundTint="@color/red"
                 android:visibility="gone"
-                tools:visibility="visible"
+                tools:visibility="gone"
                 android:layout_marginStart="12dp"
                 android:background="@android:color/transparent"
                 android:text="@string/delete"

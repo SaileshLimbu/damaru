@@ -4,12 +4,8 @@ import android.content.Context
 import androidx.lifecycle.viewModelScope
 import com.google.gson.Gson
 import com.powersoft.common.base.BaseViewModel
-
-import com.powersoft.common.model.ResponseWrapper
-
 import com.powersoft.common.ui.helper.AlertHelper
 import com.powersoft.common.ui.helper.ResponseCallback
-import com.powersoft.common.utils.Logg
 import com.powersoft.damaruadmin.R
 import com.powersoft.damaruadmin.webservices.ApiServiceImpl
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -44,7 +40,7 @@ class AddUserViewModel @Inject constructor(
                     )
                     val response = apiService.addUser(gson.toJson(map).toRequestBody())
                     if (response.status) {
-                        responseCallback.onResponse(response.data!!)
+                        responseCallback.onResponse(response.data ?: Any())
                     } else {
                         responseCallback.onResponse(Any(), response.message)
                     }

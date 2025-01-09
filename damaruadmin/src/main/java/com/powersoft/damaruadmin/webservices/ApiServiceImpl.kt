@@ -19,6 +19,9 @@ interface ApiServiceImpl : ApiService {
     @POST("users")
     suspend fun addUser(@Body requestBody: RequestBody): ResponseData<Any>
 
+    @POST("emulators")
+    suspend fun addEmulator(@Body requestBody: RequestBody): ResponseData<Any>
+
     @PUT("users/{id}")
     suspend fun editUser(@Path("id") id : String, @Body requestBody: RequestBody): ResponseData<Any>
 

@@ -31,6 +31,7 @@
         <activity android:name="com.powersoft.damaruadmin.ui.AdminMainActivity" />
         <activity android:name="com.powersoft.damaruadmin.ui.AddUserActivity" />
         <activity android:name="com.powersoft.damaruadmin.ui.UserDetailActivity" />
+        <activity android:name="com.powersoft.damaruadmin.ui.AddEmulatorActivity" />
     </application>
 
 </manifest>

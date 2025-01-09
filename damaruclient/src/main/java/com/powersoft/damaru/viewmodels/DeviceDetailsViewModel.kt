@@ -6,7 +6,6 @@ import androidx.lifecycle.viewModelScope
 import com.google.gson.Gson
 import com.powersoft.common.base.BaseViewModel
 import com.powersoft.common.model.AccountEntity
-import com.powersoft.common.model.DeviceEntity
 import com.powersoft.common.model.PickerEntity
 import com.powersoft.common.model.ResponseWrapper
 import com.powersoft.common.repository.AccountsRepo
@@ -34,9 +33,9 @@ class DeviceDetailsViewModel @Inject constructor(
     val allLinkedAccounts: LiveData<ResponseWrapper<List<AccountEntity>>>
         get() = _allLinkedAccounts
 
-    var deviceId : String = ""
+    var deviceId: String = ""
 
-    fun getLinkedAccounts(deviceId : String) {
+    fun getLinkedAccounts(deviceId: String) {
         viewModelScope.launch {
             _allLinkedAccounts.postValue(accountRepo.getLinkedAccountsToDevice(deviceId))
         }
@@ -52,15 +51,16 @@ class DeviceDetailsViewModel @Inject constructor(
         if (_allLinkedAccounts.value is ResponseWrapper.Success && _allAccounts.value is ResponseWrapper.Success) {
             val newList = (_allAccounts.value as ResponseWrapper.Success).data.toMutableList()
             newList.removeAll { item -> ((_allLinkedAccounts.value) as ResponseWrapper.Success<List<AccountEntity>>).data.any { it.id == item.id } }
+            newList.removeAll { it.isAdmin }
             return newList.map { PickerEntity(it.accountName, gson.toJson(it)) }
         } else if (_allAccounts.value is ResponseWrapper.Success) {
-            return (_allAccounts.value as ResponseWrapper.Success).data.map { PickerEntity(it.accountName, gson.toJson(it)) }
+            return (_allAccounts.value as ResponseWrapper.Success).data.mapNotNull { if (it.isAdmin) null else PickerEntity(it.accountName, gson.toJson(it)) }
         } else {
             return listOf()
         }
     }
 
-    fun unlinkAccount(deviceId : String, userId : String, accountIds : List<String>, responseCallback: ResponseCallback) {
+    fun unlinkAccount(deviceId: String, userId: String, accountIds: List<String>, responseCallback: ResponseCallback) {
         showLoader()
         viewModelScope.launch {
             val responseWrapper = accountRepo.unlinkAccountsFromDevice(deviceId, userId, accountIds)

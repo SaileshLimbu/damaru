@@ -32,6 +32,34 @@ class DeviceListAdapter(
         }
     }
 
+    private var originalList: List<DeviceEntity> = emptyList()
+
+    fun submitOriginalList(list: List<DeviceEntity>) {
+        originalList = list
+        submitList(originalList)
+    }
+
+    fun filter(query: String) {
+        val filteredList = if (query.isEmpty()) {
+            originalList
+        } else {
+            // remaining days, Expired, registered email, created date
+            originalList.filter {
+                (it.expiresAt?.contains(query, ignoreCase = true) ?: false)
+                        || (it.email?.contains(query, ignoreCase = true) ?: false)
+                        || it.createdAt.contains(query, ignoreCase = true)
+                        || (query.contains("expire", ignoreCase = true) && (it.expiresAt?.toIntOrNull() ?: 100) <= 0)
+            }
+        }
+        submitList(filteredList)
+    }
+
+    fun removeItem(position: Int) {
+        val currentList = currentList.toMutableList()
+        currentList.removeAt(position)
+        submitList(currentList)
+    }
+
     inner class ViewHolder(private val binding: Any) :
         RecyclerView.ViewHolder(
             when (binding) {
@@ -95,6 +123,9 @@ class DeviceListAdapter(
                         tvStatus.visibility(shouldShowStatus)
                         btnDelete.visibility(!shouldShowStatus)
                         btnExtend.visibility(!shouldShowStatus)
+                        lvlAssignedTo.visibility(shouldShowStatus && !(device.email.isNullOrEmpty()))
+                        tvAssignedTo.visibility(shouldShowStatus && !(device.email.isNullOrEmpty()))
+                        tvAssignedTo.text = device.email
                         Glide.with(itemView.context).load(device.screenshot)
                             .apply(RequestOptions.bitmapTransform(RoundedCorners(16)))
                             .into(imgDevice)

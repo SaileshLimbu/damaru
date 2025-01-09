@@ -1,8 +1,9 @@
 package com.powersoft.damaru.ui
 
 import android.annotation.SuppressLint
-import android.content.Intent
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -174,6 +175,12 @@ class DeviceDetailsActivity : BaseActivity() {
                                                 )
                                             } else {
                                                 accountsAdapter.removeItem(position)
+                                                Handler(Looper.getMainLooper()).postDelayed({
+                                                    if (accountsAdapter.currentList.isEmpty()) {
+                                                        binding.errorView.tvError.text = getString(R.string.no_linked_accounts)
+                                                        binding.errorView.root.show()
+                                                    }
+                                                }, 300)
                                             }
                                         }
                                     })

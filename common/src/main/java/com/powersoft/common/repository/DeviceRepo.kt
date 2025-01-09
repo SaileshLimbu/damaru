@@ -96,4 +96,17 @@ class DeviceRepo @Inject constructor(private val apiService: ApiService, private
             ResponseWrapper.error("Something went wrong (Code 54345)")
         }
     }
+
+    suspend fun deleteEmulatorTask(id: String): ResponseWrapper<Any> {
+        return try {
+            val response = apiService.deleteEmulator(id)
+            if (response.status) {
+                ResponseWrapper.Success(Any())
+            } else {
+                ResponseWrapper.error(response.message)
+            }
+        } catch (e: Exception) {
+            ResponseWrapper.error("Something went wrong (Code 635)")
+        }
+    }
 }

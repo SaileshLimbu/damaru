@@ -114,7 +114,7 @@ class AccountDetailViewModel @Inject constructor(
         }
     }
 
-    fun unlinkAccount(deviceId : String, userId : String, accountIds : List<String>, responseCallback: ResponseCallback) {
+    fun unlinkDevice(deviceId : String, userId : String, accountIds : List<String>, responseCallback: ResponseCallback) {
         showLoader()
         viewModelScope.launch {
             val responseWrapper = accountRepo.unlinkAccountsFromDevice(deviceId, userId, accountIds)

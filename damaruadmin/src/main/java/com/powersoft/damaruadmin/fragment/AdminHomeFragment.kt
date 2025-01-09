@@ -2,11 +2,14 @@ package com.powersoft.damaruadmin.fragment
 
 import android.content.Intent
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity.RESULT_OK
+import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -115,10 +118,14 @@ class AdminHomeFragment : Fragment(R.layout.fragment_home), RecyclerViewItemClic
             vm.getAllMyUsers()
         }
 
+        b.etSearch.addTextChangedListener {
+            userAdapter.filter(it.toString())
+        }
+
         vm.allUsersList.observe(viewLifecycleOwner) {
             when (it) {
                 is ResponseWrapper.Success -> {
-                    userAdapter.submitList(it.data)
+                    userAdapter.submitOriginalList(it.data)
                     b.loader.root.hide()
                     b.errorView.root.hide()
                     b.swipeRefresh.isRefreshing = false
@@ -174,6 +181,12 @@ class AdminHomeFragment : Fragment(R.layout.fragment_home), RecyclerViewItemClic
                                             AlertHelper.showAlertDialog(requireActivity(), getString(R.string.error), errorMessage)
                                         } else {
                                             userAdapter.removeItem(position)
+                                            Handler(Looper.getMainLooper()).postDelayed({
+                                                if (userAdapter.currentList.isEmpty()) {
+                                                    b.errorView.tvError.text = getString(R.string.no_users)
+                                                    b.errorView.root.show()
+                                                }
+                                            }, 300)
                                         }
                                     }
                                 })
@@ -188,7 +201,8 @@ class AdminHomeFragment : Fragment(R.layout.fragment_home), RecyclerViewItemClic
                             vm.getAllDevices()
                         }
                     }
-                    else ->{
+
+                    else -> {
                         userDetailResultLauncher.launch(Intent(context, UserDetailActivity::class.java).putExtra("user", gson.toJson(data)))
                     }
                 }

@@ -23,4 +23,15 @@
     <string name="no_of_days">No. of days</string>
     <string name="close">Close</string>
     <string name="please_enter_no_of_days_to_extend">Please enter no of days to extend</string>
+    <string name="search">Search</string>
+    <string name="no_users">No users found</string>
+    <string name="add_emulator">Add Emulator</string>
+    <string name="emulator_name">Emulator Name</string>
+    <string name="emulator_id">Emulator Id</string>
+    <string name="please_enter_emulator_name">Please enter emulator name</string>
+    <string name="please_enter_emulator_id">Please enter emulator ID.</string>
+    <string name="add_device">Add Device</string>
+    <string name="delete_emulator">Delete Emulator</string>
+    <string name="are_you_sure_you_want_to_delete_this_emulator">Are you sure you want to delete this emulator?</string>
+    <string name="no_emulators">No Emulators</string>
 </resources>

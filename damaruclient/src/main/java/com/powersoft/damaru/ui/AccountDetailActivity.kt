@@ -209,7 +209,7 @@ class AccountDetailActivity : BaseActivity() {
                                             positiveButtonText = getString(R.string.delete),
                                             negativeButtonText = getString(com.powersoft.common.R.string.cancle),
                                             onPositiveButtonClick = {
-                                                vm.unlinkAccount(data.deviceId, userRepo.seasonEntity.value?.userId.toString(), listOf(account.id),
+                                                vm.unlinkDevice(data.deviceId, userRepo.seasonEntity.value?.userId.toString(), listOf(account.id),
                                                     object : ResponseCallback {
                                                         override fun onResponse(any: Any, errorMessage: String?) {
                                                             if (errorMessage != null) {
@@ -218,7 +218,7 @@ class AccountDetailActivity : BaseActivity() {
                                                                 )
                                                             } else {
                                                                 setResult(RESULT_OK)
-                                                                finish()
+                                                                vm.getLinkedDevices(account.id)
                                                             }
                                                         }
                                                     })

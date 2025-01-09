@@ -54,6 +54,9 @@ interface ApiService {
     @GET("emulators")
     suspend fun getAllEmulators(): ResponseData<List<DeviceEntity>>
 
+    @DELETE("emulators/{id}")
+    suspend fun deleteEmulator(@Path("id") id: String): ResponseData<Any>
+
     @GET("accounts/{id}")
     suspend fun getHisEmulator(@Path("id") accountId : String): ResponseData<List<DeviceEntity>>
 

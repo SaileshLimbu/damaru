@@ -8,13 +8,28 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.powersoft.common.listeners.RecyclerViewItemClickListener
-import com.powersoft.common.model.AccountEntity
 import com.powersoft.common.model.UserEntity
 import com.powersoft.damaruadmin.databinding.ItemUserBinding
 
 class UserAdapter(
     private val listener: RecyclerViewItemClickListener<UserEntity>
 ) : ListAdapter<UserEntity, UserAdapter.ViewHolder>(UserDiffCallback()) {
+
+    private var originalList: List<UserEntity> = emptyList()
+
+    fun submitOriginalList(list: List<UserEntity>) {
+        originalList = list
+        submitList(originalList)
+    }
+
+    fun filter(query: String) {
+        val filteredList = if (query.isEmpty()) {
+            originalList
+        } else {
+            originalList.filter { it.name.contains(query, ignoreCase = true) || it.email.contains(query, ignoreCase = true) }
+        }
+        submitList(filteredList)
+    }
 
     inner class ViewHolder(private val binding: ItemUserBinding) :
         RecyclerView.ViewHolder(binding.root) {
@@ -44,14 +59,14 @@ class UserAdapter(
                 btnDelete.isEnabled = !user.isSuperAdmin
                 btnEdit.isEnabled = !user.isSuperAdmin
                 btnAssign.isEnabled = !user.isSuperAdmin
-                if(user.isSuperAdmin){
+                if (user.isSuperAdmin) {
                     btnDelete.setTextColor(ColorStateList.valueOf(Color.GRAY))
                     btnDelete.iconTint = ColorStateList.valueOf(Color.GRAY)
                     btnEdit.setTextColor(ColorStateList.valueOf(Color.GRAY))
                     btnEdit.iconTint = ColorStateList.valueOf(Color.GRAY)
                     btnAssign.setTextColor(ColorStateList.valueOf(Color.GRAY))
                     btnAssign.iconTint = ColorStateList.valueOf(Color.GRAY)
-                }else{
+                } else {
                     btnDelete.setTextColor(ColorStateList.valueOf(Color.BLACK))
                     btnDelete.iconTint = ColorStateList.valueOf(Color.BLACK)
                     btnEdit.setTextColor(ColorStateList.valueOf(Color.BLACK))
@@ -78,7 +93,7 @@ class UserAdapter(
         holder.bind(getItem(position))
     }
 
-    internal class UserDiffCallback: DiffUtil.ItemCallback<UserEntity>(){
+    internal class UserDiffCallback : DiffUtil.ItemCallback<UserEntity>() {
         override fun areItemsTheSame(oldItem: UserEntity, newItem: UserEntity): Boolean {
             return oldItem.id == newItem.id
         }
