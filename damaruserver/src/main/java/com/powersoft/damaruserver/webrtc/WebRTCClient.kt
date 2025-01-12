@@ -100,25 +100,11 @@ class WebRTCClient @Inject constructor(
         return String(bytes, StandardCharsets.UTF_8)
     }
 
-    fun startScreenCapturing(intent: Intent) {
-        val metrics = context.resources.displayMetrics
-        val screenWidthPixels = metrics.widthPixels
-        val screenHeightPixels = metrics.heightPixels
-
-        val surfaceTextureHelper = SurfaceTextureHelper.create(
-            Thread.currentThread().name, webRTCManager.getEglBase().eglBaseContext
-        )
-
-        val screenCapturer = ScreenCapturerAndroid(intent, object : MediaProjection.Callback() {
-            override fun onStop() {
-                super.onStop()
-                Log.e(TAG, "onStop: Screen capture Stopped")
-                startScreenCapturing(intent)
-            }
-        })
+    fun startScreenCapturing(context:Context, intent: Intent) {
         val videoSource = webRTCManager.createVideoSource()
-        screenCapturer.initialize(surfaceTextureHelper, context, videoSource.capturerObserver)
-        screenCapturer.startCapture(screenWidthPixels, screenHeightPixels, 30)
+        val screenCaptureManager = ScreenCaptureManager(context, intent, videoSource)
+
+        screenCaptureManager.startScreenCapturing()
 
         localVideoTrack = webRTCManager.createVideoTrack(videoSource)
         localStream = webRTCManager.getMyPeerConnectionFactory().createLocalMediaStream(localStreamId)

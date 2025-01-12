@@ -44,7 +44,7 @@ class AdminHomeFragmentViewModel @Inject constructor(
     }
 
     fun getAllMyUsers() {
-        _allDevices.postValue(Re)
+        _allDevices.postValue(ResponseWrapper.loading())
         viewModelScope.launch {
             val response = userRepo.getAllUsers()
             _allUsersList.postValue(response)

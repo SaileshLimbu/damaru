@@ -18,27 +18,28 @@
             android:layout_width="match_parent"
             android:layout_height="@dimen/device_height">
 
-            <ImageView
-                android:id="@+id/imgStatus"
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnOnline"
+                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="4dp"
+                android:elevation="1dp"
                 android:layout_marginStart="4dp"
-                android:contentDescription="@null"
-                android:elevation="@dimen/elevation_1dp"
-                android:src="@drawable/ic_presence"
-                app:tint="@color/greenLight" />
-
-            <TextView
-                android:id="@+id/tvStatus"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                tools:text="Online"
-                android:layout_toEndOf="@id/imgStatus"
-                android:elevation="@dimen/elevation_1dp"
-                android:layout_marginTop="4dp"
-                android:layout_marginStart="2dp"
-                android:textColor="@color/white"/>
+                android:minHeight="32dp"
+                android:padding="0dp"
+                android:paddingStart="4dp"
+                android:paddingEnd="4dp"
+                android:textAllCaps="false"
+                android:textSize="@dimen/text_size_small"
+                android:textColor="@color/green"
+                app:backgroundTint="@android:color/transparent"
+                app:cornerRadius="@dimen/card_corner_radius"
+                app:icon="@drawable/ic_filled_circle"
+                app:iconPadding="2dp"
+                app:iconTint="@color/green"
+                app:strokeColor="@color/green"
+                app:strokeWidth="2dp"
+                tools:text="Online" />
 
             <TextView
                 android:id="@+id/tvRemainingDays"

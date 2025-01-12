@@ -28,6 +28,7 @@
                 android:paddingStart="64dp"
                 android:paddingEnd="56dp"
                 android:minHeight="64dp"
+                android:imeOptions="actionDone"
                 android:hint="@string/search"
                 android:background="@drawable/drawable_bg_border"
                 app:layout_constraintStart_toStartOf="parent"

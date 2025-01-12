@@ -27,7 +27,9 @@ import org.webrtc.IceCandidate
 import org.webrtc.MediaStream
 import org.webrtc.RendererCommon
 import org.webrtc.RtpReceiver
+import org.webrtc.RtpTransceiver
 import org.webrtc.SessionDescription
+import org.webrtc.VideoTrack
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -134,21 +136,15 @@ class DeviceControlActivity : AppCompatActivity(), SocketListener, WebRTCListene
                     cadidate?.let { webrtcClient.sendIceCandidate(it, viewModel.clientId, viewModel.deviceId) }
                 }
 
-                override fun onAddStream(stream: MediaStream?) {
-                    super.onAddStream(stream)
-                    Log.d("damaru", "onAddStream: $stream")
-                    stream?.videoTracks?.get(0)?.addSink(binding.surfaceView)
-                    Log.e("damaru", "onAddStream ${stream?.videoTracks?.get(0)}")
-                }
-
-                override fun onAddTrack(rtpReceiver: RtpReceiver?, streamArr: Array<out MediaStream>?) {
-                    super.onAddTrack(rtpReceiver, streamArr)
-                    Log.d("damaru", "onAddTrack: $streamArr")
-                    rtpReceiver?.SetObserver {
-                        Log.e("damaru", "rtpReceiver $it")
+                override fun onTrack(transceiver: RtpTransceiver?) {
+                    super.onTrack(transceiver)
+                    val remoteTrack = transceiver?.receiver?.track() as? VideoTrack
+                    Log.d("damaru", "onAddTrack: $remoteTrack")
+                    remoteTrack?.let {
+                        runOnUiThread {
+                            it.addSink(binding.surfaceView)
+                        }
                     }
-                    streamArr?.get(0)?.videoTracks?.get(0)?.addSink(binding.surfaceView)
-                    Log.e("damaru", "onAddStream ${streamArr?.get(0)?.videoTracks?.get(0)}")
                 }
             })
     }
@@ -178,8 +174,9 @@ class DeviceControlActivity : AppCompatActivity(), SocketListener, WebRTCListene
         runOnUiThread {
             binding.viewConnecting.hide()
             binding.viewRemoteDevice.show()
+            initRemoteControl()
         }
-        initRemoteControl()
+        socketClient.sendMessageToSocket(DataModelType.Connect, DataModel(viewModel.clientId, viewModel.deviceId))
     }
 
     override fun onTransferEventToSocket(type: DataModelType, data: DataModel) {
@@ -192,6 +189,7 @@ class DeviceControlActivity : AppCompatActivity(), SocketListener, WebRTCListene
 
     private fun dispose() {
         webrtcClient.disposeClient()
+        binding.surfaceView.clearImage()
         binding.surfaceView.release()
         webrtcClient.closeConnection(viewModel.clientId, viewModel.deviceId)
         socketClient.closeSocket()

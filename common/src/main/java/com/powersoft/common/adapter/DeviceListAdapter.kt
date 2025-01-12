@@ -17,6 +17,7 @@ import com.powersoft.common.databinding.ItemDeviceBinding
 import com.powersoft.common.databinding.ItemDeviceListBinding
 import com.powersoft.common.listeners.RecyclerViewItemClickListener
 import com.powersoft.common.model.DeviceEntity
+import com.powersoft.common.model.State
 import com.powersoft.common.model.Status
 import com.powersoft.common.utils.visibility
 
@@ -104,13 +105,17 @@ class DeviceListAdapter(
                             else -> null
                         }
 
-                        val colorStateList: ColorStateList = if (device.status == Status.online) {
-                            ColorStateList.valueOf(ContextCompat.getColor(itemView.context, R.color.greenLight))
+                        if (device.status == Status.online) {
+                            btnOnline.setTextColor(ColorStateList.valueOf(ContextCompat.getColor(root.context, R.color.greenLight)))
+                            btnOnline.strokeColor = (ColorStateList.valueOf(ContextCompat.getColor(root.context, R.color.greenLight)))
+                            btnOnline.iconTint = (ColorStateList.valueOf(ContextCompat.getColor(root.context, R.color.greenLight)))
+                            btnOnline.text = "Online"
                         } else {
-                            ColorStateList.valueOf(ContextCompat.getColor(itemView.context, R.color.primary_light))
+                            btnOnline.setTextColor(ColorStateList.valueOf(ContextCompat.getColor(root.context, R.color.primary_light)))
+                            btnOnline.strokeColor = (ColorStateList.valueOf(ContextCompat.getColor(root.context, R.color.primary_light)))
+                            btnOnline.iconTint = (ColorStateList.valueOf(ContextCompat.getColor(root.context, R.color.primary_light)))
+                            btnOnline.text = "Offline"
                         }
-                        imgStatus.imageTintList = colorStateList
-                        tvStatus.text = device.status.name.capitalizeFirstLetter()
 
                         tvExpired.visibility = if (((device.expiresAt?.toIntOrNull()) ?: 0) < 1) View.VISIBLE else View.GONE
                     }
@@ -119,8 +124,8 @@ class DeviceListAdapter(
                 is ItemDeviceListBinding -> {
                     binding.apply {
                         tvDeviceName.text = device.deviceName
-                        tvStatus.text = " [ ${device.state} ] "
-                        tvStatus.visibility(shouldShowStatus)
+                        tvStatus.text = "Available"//device.state.toString().capitalizeFirstLetter()
+                        tvStatus.visibility(shouldShowStatus && device.state == State.AVAILABLE)
                         btnDelete.visibility(!shouldShowStatus)
                         btnExtend.visibility(!shouldShowStatus)
                         lvlAssignedTo.visibility(shouldShowStatus && !(device.email.isNullOrEmpty()))

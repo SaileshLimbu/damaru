@@ -50,7 +50,7 @@ class ScreenCaptureForegroundService : Service(), SocketListener, WebRTCListener
             deviceId = intent.getStringExtra(EXTRA_DEVICE_ID) ?: DeviceUtils.getDeviceId(this)
             if (data != null) {
                 socketClient.init(deviceId, this, getString(R.string.token), true)
-                webRTCClient.startScreenCapturing(data)
+                webRTCClient.startScreenCapturing(this, data)
             }
         }
         return START_STICKY

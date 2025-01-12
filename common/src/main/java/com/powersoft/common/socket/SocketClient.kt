@@ -4,6 +4,7 @@ import android.util.Log
 import com.google.gson.Gson
 import com.powersoft.common.model.DataModel
 import com.powersoft.common.model.DataModelType
+import com.powersoft.common.utils.HOST_URL
 import io.socket.client.IO
 import io.socket.client.Socket
 import kotlinx.coroutines.CoroutineScope
@@ -39,7 +40,7 @@ class SocketClient @Inject constructor(private val gson: Gson) {
             .setExtraHeaders(mapOf("Authorization" to listOf("Bearer $token")))
             .build()
 
-        socket = IO.socket("ws://13.201.152.191:3000/signaling", options)
+        socket = IO.socket("$HOST_URL/signaling", options)
 
         socket.on(Socket.EVENT_CONNECT) {
             Log.e(TAG, "Websocket Connected")
