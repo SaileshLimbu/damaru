@@ -25,7 +25,7 @@ interface ApiService {
     suspend fun updateAccountApi(@Path("accountId") accountId: String, @Body payload: RequestBody): ResponseData<LoginEntity>
 
     @DELETE("accounts/{id}")
-    suspend fun deleteAccount(@Path("id") id: String): ResponseData<Any>
+    suspend fun deleteAccount(@Path("id") id: String): ResponseData<Any?>
 
     @POST("accounts")
     suspend fun addAccount(@Body requestBody: RequestBody): ResponseData<Any>

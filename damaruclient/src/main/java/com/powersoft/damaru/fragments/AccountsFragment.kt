@@ -131,15 +131,16 @@ class AccountsFragment : Fragment(R.layout.fragment_accounts) {
                                 message = getString(R.string.are_you_sure_you_want_to_delete_this_account),
                                 positiveButtonText = getString(R.string.delete),
                                 negativeButtonText = getString(com.powersoft.common.R.string.cancle), onPositiveButtonClick = {
-                                vm.deleteAccount(data.id, object : ResponseCallback {
-                                    override fun onResponse(any: Any, errorMessage: String?) {
-                                        AlertHelper.showAlertDialog(
-                                            context, getString(R.string.error),
-                                            errorMessage ?: getString(R.string.error),
-                                        )
-                                    }
+                                    vm.deleteAccount(data.id, object : ResponseCallback {
+                                        override fun onResponse(any: Any, errorMessage: String?) {
+                                            if (errorMessage == null) {
+                                                accountsAdapter.removeItem(position)
+                                            } else {
+                                                AlertHelper.showAlertDialog(context, getString(R.string.error), errorMessage)
+                                            }
+                                        }
+                                    })
                                 })
-                            })
                         }
                     }
 
