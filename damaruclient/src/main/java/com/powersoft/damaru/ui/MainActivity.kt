@@ -70,6 +70,7 @@ class MainActivity : AppCompatActivity() {
             AlertHelper.showAlertDialog(this@MainActivity, getString(com.powersoft.common.R.string.logout), getString(com.powersoft.common.R.string.are_you_sure_you_want_to_logout), getString(com.powersoft.common.R.string.yes), getString(com.powersoft.common.R.string.no),
                 onPositiveButtonClick = {
                     prefsHelper.clear()
+                    userRepo.logout()
                     startActivity(
                         Intent(applicationContext, LoginActivityImpl::class.java).setFlags(
                             Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK

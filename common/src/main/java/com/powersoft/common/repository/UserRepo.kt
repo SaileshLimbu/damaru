@@ -29,4 +29,8 @@ class UserRepo @Inject constructor(private val prefsHelper: PrefsHelper, private
             null
         }
     }
+
+    fun logout(){
+        _seasonEntity.value = null
+    }
 }

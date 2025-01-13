@@ -10,6 +10,7 @@ import androidx.viewpager2.adapter.FragmentStateAdapter
 import androidx.viewpager2.widget.ViewPager2
 import com.powersoft.common.base.BaseActivity
 import com.powersoft.common.base.BaseViewModel
+import com.powersoft.common.repository.UserRepo
 import com.powersoft.common.ui.helper.AlertHelper
 import com.powersoft.common.utils.PrefsHelper
 import com.powersoft.common.utils.hide
@@ -32,6 +33,9 @@ class AdminMainActivity : BaseActivity() {
 
     @Inject
     lateinit var prefsHelper: PrefsHelper
+    @Inject
+    lateinit var userRepo: UserRepo
+
     override fun getViewModel(): BaseViewModel {
         return viewModel
     }
@@ -77,6 +81,7 @@ class AdminMainActivity : BaseActivity() {
             AlertHelper.showAlertDialog(this@AdminMainActivity, getString(com.powersoft.common.R.string.logout), getString(com.powersoft.common.R.string.are_you_sure_you_want_to_logout), getString(com.powersoft.common.R.string.yes), getString(com.powersoft.common.R.string.no),
                 onPositiveButtonClick = {
                     prefsHelper.clear()
+                    userRepo.logout()
                     startActivity(
                         Intent(applicationContext, LoginActivityImpl::class.java).setFlags(
                             Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
