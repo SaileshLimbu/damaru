@@ -1,7 +1,6 @@
 package com.powersoft.damaruserver.webrtc
 import android.content.Context
 import android.content.Intent
-import android.graphics.SurfaceTexture
 import android.media.projection.MediaProjection
 import android.util.Log
 import org.webrtc.*
@@ -51,7 +50,7 @@ class ScreenCaptureManager(
             )
             screenCapturer?.startCapture(
                 context.resources.displayMetrics.widthPixels,
-                context.resources.displayMetrics.heightPixels, 30
+                context.resources.displayMetrics.heightPixels, 60
             )
             startFrameAvailabilityCheck()
         } catch (e: Exception) {

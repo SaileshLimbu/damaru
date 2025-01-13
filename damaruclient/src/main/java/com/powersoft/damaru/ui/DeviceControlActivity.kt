@@ -12,6 +12,7 @@ import com.powersoft.common.model.GestureAction
 import com.powersoft.common.model.GestureCommand
 import com.powersoft.common.socket.SocketClient
 import com.powersoft.common.socket.SocketListener
+import com.powersoft.common.ui.helper.AlertHelper
 import com.powersoft.common.utils.AspectRatioUtils
 import com.powersoft.common.utils.GestureDetector
 import com.powersoft.common.utils.hide
@@ -20,13 +21,11 @@ import com.powersoft.common.webrtc.MyPeerObserver
 import com.powersoft.common.webrtc.WebRTCClient
 import com.powersoft.common.webrtc.WebRTCListener
 import com.powersoft.damaru.databinding.ActivityDeviceControlBinding
-import com.powersoft.damaru.utils.DraggableTouchListener
+import com.powersoft.common.utils.DraggableTouchListener
 import com.powersoft.damaru.viewmodels.DeviceControlViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import org.webrtc.IceCandidate
-import org.webrtc.MediaStream
 import org.webrtc.RendererCommon
-import org.webrtc.RtpReceiver
 import org.webrtc.RtpTransceiver
 import org.webrtc.SessionDescription
 import org.webrtc.VideoTrack
@@ -76,8 +75,16 @@ class DeviceControlActivity : AppCompatActivity(), SocketListener, WebRTCListene
 
         binding.btnDisconnect.setOnTouchListener(
             DraggableTouchListener {
-                dispose()
-                finish()
+                AlertHelper.showAlertDialog(this@DeviceControlActivity,
+                    "Disconnect",
+                    "Are you sure you want to disconnect?",
+                    "Ok",
+                    "Cancel",
+                    onPositiveButtonClick = {
+                        dispose()
+                        finish()
+                    }
+                )
             }
         )
     }
@@ -85,6 +92,7 @@ class DeviceControlActivity : AppCompatActivity(), SocketListener, WebRTCListene
     override fun onResume() {
         super.onResume()
         binding.surfaceView.init(webrtcClient.getEglBase().eglBaseContext, null)
+        sendCommand(GestureCommand(GestureAction.FLASH))
     }
 
     override fun onPause() {
@@ -102,25 +110,29 @@ class DeviceControlActivity : AppCompatActivity(), SocketListener, WebRTCListene
                 screenWidth,
                 screenHeight,
                 command,
-                binding.surfaceView.y.toInt()
+                screenHeight - binding.surfaceView.height
             )
-            webrtcClient.dataChannel?.let { webrtcClient.sendDataMessage(it, Gson().toJson(normalizedCommand)) }
+            sendCommand(normalizedCommand)
         }
-        binding.surfaceView.setOnTouchListener { view, event -> gestureDetector.onTouch(view, event) }
+        binding.surfaceView.setOnTouchListener { _, event -> gestureDetector.onTouch(event) }
         binding.apply {
             navBack.setOnClickListener {
                 val command = GestureCommand(GestureAction.BACK)
-                webrtcClient.dataChannel?.let { webrtcClient.sendDataMessage(it, Gson().toJson(command)) }
+                sendCommand(command)
             }
             navHome.setOnClickListener {
                 val command = GestureCommand(GestureAction.HOME)
-                webrtcClient.dataChannel?.let { webrtcClient.sendDataMessage(it, Gson().toJson(command)) }
+                sendCommand(command)
             }
             navRecent.setOnClickListener {
                 val command = GestureCommand(GestureAction.RECENT)
-                webrtcClient.dataChannel?.let { webrtcClient.sendDataMessage(it, Gson().toJson(command)) }
+                sendCommand(command)
             }
         }
+    }
+
+    private fun sendCommand(command: GestureCommand) {
+        webrtcClient.dataChannel?.let { webrtcClient.sendDataMessage(it, Gson().toJson(command)) }
     }
 
     @SuppressLint("ClickableViewAccessibility")

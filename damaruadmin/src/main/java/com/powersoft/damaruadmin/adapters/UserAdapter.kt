@@ -42,7 +42,7 @@ class UserAdapter(
         fun bind(user: UserEntity) {
             binding.apply {
                 tvUsername.text = user.name
-                tvUserEmailFuck.text = user.email
+                tvUserEmail.text = user.email
                 tvTotalDevices.text = "${user.emulatorCount}"
                 tvTotalAccounts.text = "${user.accountsCount}"
 

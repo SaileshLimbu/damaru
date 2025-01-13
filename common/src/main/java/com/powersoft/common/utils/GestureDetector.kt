@@ -1,7 +1,6 @@
 package com.powersoft.common.utils
 
 import android.view.MotionEvent
-import android.view.View
 import com.powersoft.common.model.GestureAction
 import com.powersoft.common.model.GestureCommand
 import kotlin.math.abs
@@ -20,7 +19,7 @@ class GestureDetector(
     private var pointerCount = 0
     private var initialDistance = 0f
 
-    fun onTouch(view: View, event: MotionEvent): Boolean {
+    fun onTouch(event: MotionEvent): Boolean {
         when (event.actionMasked) {
             MotionEvent.ACTION_DOWN -> {
                 startX = event.x

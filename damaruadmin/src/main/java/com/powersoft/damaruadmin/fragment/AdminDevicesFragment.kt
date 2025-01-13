@@ -26,12 +26,13 @@ import com.powersoft.common.utils.show
 import com.powersoft.damaruadmin.R
 import com.powersoft.damaruadmin.databinding.FragmentDevicesBinding
 import com.powersoft.damaruadmin.ui.AddEmulatorActivity
+import com.powersoft.damaruadmin.ui.AdminMainActivity
 import com.powersoft.damaruadmin.viewmodels.AdminDeviceFragmentViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class AdminDevicesFragment : Fragment(R.layout.fragment_devices), RecyclerViewItemClickListener<DeviceEntity> {
+class AdminDevicesFragment : Fragment(R.layout.fragment_devices), RecyclerViewItemClickListener<DeviceEntity>, AdminMainActivity.SearchableFragment {
     private var _binding: FragmentDevicesBinding? = null
     private val b get() = _binding!!
     private val deviceAdapter by lazy { createDeviceAdapter() }
@@ -68,10 +69,6 @@ class AdminDevicesFragment : Fragment(R.layout.fragment_devices), RecyclerViewIt
 
         b.recyclerView.layoutManager = LinearLayoutManager(activity)
         b.recyclerView.adapter = deviceAdapter
-
-        b.etSearch.addTextChangedListener {
-            deviceAdapter.filter(it.toString())
-        }
 
         b.extendedFAB.setOnClickListener {
             addDeviceForResultLauncher.launch(Intent(context, AddEmulatorActivity::class.java))
@@ -112,6 +109,10 @@ class AdminDevicesFragment : Fragment(R.layout.fragment_devices), RecyclerViewIt
                 }
             }
         }
+    }
+
+    override fun onSearch(query: String) {
+        deviceAdapter.filter(query)
     }
 
     private fun createDeviceAdapter(): DeviceListAdapter {

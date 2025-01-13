@@ -30,13 +30,14 @@ import com.powersoft.damaruadmin.R
 import com.powersoft.damaruadmin.adapters.UserAdapter
 import com.powersoft.damaruadmin.databinding.FragmentHomeBinding
 import com.powersoft.damaruadmin.ui.AddUserActivity
+import com.powersoft.damaruadmin.ui.AdminMainActivity
 import com.powersoft.damaruadmin.ui.UserDetailActivity
 import com.powersoft.damaruadmin.viewmodels.AdminHomeFragmentViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class AdminHomeFragment : Fragment(R.layout.fragment_home), RecyclerViewItemClickListener<UserEntity> {
+class AdminUsersFragment : Fragment(R.layout.fragment_home), RecyclerViewItemClickListener<UserEntity>, AdminMainActivity.SearchableFragment {
     private var _binding: FragmentHomeBinding? = null
     private val b get() = _binding!!
     private val userAdapter by lazy { createUserAdapter() }
@@ -116,10 +117,6 @@ class AdminHomeFragment : Fragment(R.layout.fragment_home), RecyclerViewItemClic
 
         b.swipeRefresh.setOnRefreshListener {
             vm.getAllMyUsers()
-        }
-
-        b.etSearch.addTextChangedListener {
-            userAdapter.filter(it.toString())
         }
 
         vm.allUsersList.observe(viewLifecycleOwner) {
@@ -208,6 +205,10 @@ class AdminHomeFragment : Fragment(R.layout.fragment_home), RecyclerViewItemClic
                 }
             }
         })
+    }
+
+    override fun onSearch(query: String) {
+        userAdapter.filter(query)
     }
 
     override fun onItemClick(viewId: Int, position: Int, data: UserEntity) {

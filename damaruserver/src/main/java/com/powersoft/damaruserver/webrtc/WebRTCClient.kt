@@ -2,11 +2,11 @@ package com.powersoft.damaruserver.webrtc
 
 import android.content.Context
 import android.content.Intent
-import android.media.projection.MediaProjection
 import android.util.Log
 import com.google.gson.Gson
 import com.powersoft.common.model.DataModel
 import com.powersoft.common.model.DataModelType
+import com.powersoft.common.model.GestureAction
 import com.powersoft.common.model.GestureCommand
 import com.powersoft.common.utils.AspectRatioUtils
 import com.powersoft.common.utils.WebRTCUtils
@@ -73,12 +73,16 @@ class WebRTCClient @Inject constructor(
                             val message = convertBufferToString(p0)
 
                             val command = gson.fromJson(message, GestureCommand::class.java)
-                            val normalizedCommand = AspectRatioUtils.normalizeServerCoordinate(
-                                screen.widthPixels,
-                                screen.heightPixels,
-                                command
-                            )
-                            DeviceControlService.getInstance()?.performGesture(normalizedCommand)
+                            if (command.action == GestureAction.FLASH) {
+                                ScreenRefresher(context).flashScreen()
+                            }else {
+                                val normalizedCommand = AspectRatioUtils.normalizeServerCoordinate(
+                                    screen.widthPixels,
+                                    screen.heightPixels,
+                                    command
+                                )
+                                DeviceControlService.getInstance()?.performGesture(normalizedCommand)
+                            }
                         }
                     }
                 })
