@@ -29,6 +29,9 @@
                 android:paddingEnd="56dp"
                 android:minHeight="64dp"
                 android:hint="@string/search"
+                android:imeOptions="actionDone"
+                android:maxLines="1"
+                android:inputType="text"
                 android:background="@drawable/drawable_bg_border"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />

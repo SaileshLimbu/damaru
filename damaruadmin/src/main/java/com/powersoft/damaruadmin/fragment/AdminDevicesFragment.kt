@@ -11,6 +11,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity.RESULT_OK
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -27,6 +28,7 @@ import com.powersoft.damaruadmin.R
 import com.powersoft.damaruadmin.databinding.FragmentDevicesBinding
 import com.powersoft.damaruadmin.ui.AddEmulatorActivity
 import com.powersoft.damaruadmin.viewmodels.AdminDeviceFragmentViewModel
+import com.powersoft.damaruadmin.viewmodels.AdminMainActivityViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
@@ -36,6 +38,7 @@ class AdminDevicesFragment : Fragment(R.layout.fragment_devices), RecyclerViewIt
     private val b get() = _binding!!
     private val deviceAdapter by lazy { createDeviceAdapter() }
     private val vm: AdminDeviceFragmentViewModel by viewModels()
+    private val actViewModel: AdminMainActivityViewModel by activityViewModels()
 
     @Inject
     lateinit var userRepo: UserRepo
@@ -88,6 +91,10 @@ class AdminDevicesFragment : Fragment(R.layout.fragment_devices), RecyclerViewIt
             }
         })
 
+        actViewModel.deviceUpdate.observe(viewLifecycleOwner){
+            vm.getAllDevices()
+        }
+
         vm.allDevices.observe(viewLifecycleOwner) {
             when (it) {
                 is ResponseWrapper.Success -> {
@@ -133,6 +140,7 @@ class AdminDevicesFragment : Fragment(R.layout.fragment_devices), RecyclerViewIt
                                             b.errorView.root.show()
                                         }
                                     }, 300)
+                                    actViewModel.refreshUser()
                                 }
                             }
                         })

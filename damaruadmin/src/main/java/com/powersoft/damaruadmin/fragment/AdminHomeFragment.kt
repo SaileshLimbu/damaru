@@ -11,6 +11,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity.RESULT_OK
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -32,6 +33,7 @@ import com.powersoft.damaruadmin.databinding.FragmentHomeBinding
 import com.powersoft.damaruadmin.ui.AddUserActivity
 import com.powersoft.damaruadmin.ui.UserDetailActivity
 import com.powersoft.damaruadmin.viewmodels.AdminHomeFragmentViewModel
+import com.powersoft.damaruadmin.viewmodels.AdminMainActivityViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
@@ -42,6 +44,7 @@ class AdminHomeFragment : Fragment(R.layout.fragment_home), RecyclerViewItemClic
     private val userAdapter by lazy { createUserAdapter() }
     private val vm: AdminHomeFragmentViewModel by viewModels()
     private var userIdToAssign: String? = null
+    private val actViewModel: AdminMainActivityViewModel by activityViewModels()
 
     @Inject
     lateinit var gson: Gson
@@ -55,6 +58,9 @@ class AdminHomeFragment : Fragment(R.layout.fragment_home), RecyclerViewItemClic
     private val userDetailResultLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
         if (result.resultCode == RESULT_OK) {
             vm.getAllMyUsers()
+            if (result.data?.getBooleanExtra("deviceUpdate", false) == true) {
+                actViewModel.refreshDevice()
+            }
         }
     }
 
@@ -120,6 +126,13 @@ class AdminHomeFragment : Fragment(R.layout.fragment_home), RecyclerViewItemClic
 
         b.etSearch.addTextChangedListener {
             userAdapter.filter(it.toString())
+        }
+
+        actViewModel.userUpdate.observe(viewLifecycleOwner) {
+            vm.getAllMyUsers()
+            if (vm.allDevices.value is ResponseWrapper.Success) {
+                vm.getAllDevices()
+            }
         }
 
         vm.allUsersList.observe(viewLifecycleOwner) {

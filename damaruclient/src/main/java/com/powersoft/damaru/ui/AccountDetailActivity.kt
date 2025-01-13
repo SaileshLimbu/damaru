@@ -16,7 +16,6 @@ import com.powersoft.common.model.AccountEntity
 import com.powersoft.common.model.DeviceEntity
 import com.powersoft.common.model.PickerEntity
 import com.powersoft.common.model.ResponseWrapper
-import com.powersoft.common.model.Status
 import com.powersoft.common.repository.UserRepo
 import com.powersoft.common.ui.LogsActivity
 import com.powersoft.common.ui.PickerActivity
@@ -183,26 +182,12 @@ class AccountDetailActivity : BaseActivity() {
                 is ResponseWrapper.Success -> {
                     val deviceAdapter = DeviceListAdapter(object : RecyclerViewItemClickListener<DeviceEntity> {
                         override fun onItemClick(viewId: Int, position: Int, data: DeviceEntity) {
-                            val token = userRepo.seasonEntity.value?.accessToken
                             val dialog: AlertDialog.Builder = AlertDialog.Builder(this@AccountDetailActivity)
                             dialog.setTitle("Options")
-                            dialog.setItems(arrayOf("Connect to device", "Unlink Device", "Device Logs")) { dialogInterface, itemPos ->
+                            dialog.setItems(arrayOf("Unlink Device", "Device Logs")) { dialogInterface, itemPos ->
                                 dialogInterface.dismiss()
                                 when (itemPos) {
                                     0 -> {
-                                        if (data.status == Status.online) {
-                                            val intent = Intent(this@AccountDetailActivity, DeviceControlActivity::class.java)
-                                                .putExtra(DeviceControlActivity.CLIENT_ID, account.id)
-                                                .putExtra(DeviceControlActivity.DEVICE_ID, data.deviceId)
-                                                .putExtra(DeviceControlActivity.TOKEN, token)
-                                            startActivity(intent)
-                                        } else {
-                                            dialogInterface.dismiss()
-                                            AlertHelper.showAlertDialog(this@AccountDetailActivity, "Oops!!!", "Emulator is offline")
-                                        }
-                                    }
-
-                                    1 -> {
                                         AlertHelper.showAlertDialog(
                                             this@AccountDetailActivity, title = getString(R.string.unlink_this_device),
                                             message = getString(R.string.are_you_sure_unlink_device),

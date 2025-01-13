@@ -175,6 +175,7 @@ class DeviceDetailsActivity : BaseActivity() {
                                                 )
                                             } else {
                                                 accountsAdapter.removeItem(position)
+                                                vm.getLinkedAccounts(deviceEntity.deviceId)
                                                 Handler(Looper.getMainLooper()).postDelayed({
                                                     if (accountsAdapter.currentList.isEmpty()) {
                                                         binding.errorView.tvError.text = getString(R.string.no_linked_accounts)

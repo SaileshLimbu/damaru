@@ -45,7 +45,16 @@ class DeviceListAdapter(
         } else {
             // remaining days, Expired, registered email, created date
             originalList.filter {
-                (it.expiresAt?.contains(query, ignoreCase = true) ?: false)
+                var withInExpire = false
+                val expireAt = it.expiresAt?.toIntOrNull()
+                val inputInt = query.toIntOrNull()
+                if (expireAt != null && inputInt != null) {
+                    if (expireAt <= inputInt) {
+                        withInExpire = true
+                    }
+                }
+
+                withInExpire
                         || (it.email?.contains(query, ignoreCase = true) ?: false)
                         || it.createdAt.contains(query, ignoreCase = true)
                         || (query.contains("expire", ignoreCase = true) && (it.expiresAt?.toIntOrNull() ?: 100) <= 0)

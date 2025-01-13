@@ -2,29 +2,34 @@ package com.powersoft.damaruadmin.ui
 
 import android.content.Intent
 import android.os.Bundle
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import androidx.viewpager2.widget.ViewPager2
-import com.powersoft.common.repository.UserRepo
+import com.powersoft.common.base.BaseActivity
+import com.powersoft.common.base.BaseViewModel
 import com.powersoft.common.ui.helper.AlertHelper
 import com.powersoft.common.utils.PrefsHelper
-import com.powersoft.common.utils.visibility
 import com.powersoft.damaruadmin.R
 import com.powersoft.damaruadmin.databinding.ActivityAdminMainBinding
 import com.powersoft.damaruadmin.fragment.AdminDevicesFragment
 import com.powersoft.damaruadmin.fragment.AdminHomeFragment
+import com.powersoft.damaruadmin.viewmodels.AdminMainActivityViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class AdminMainActivity : AppCompatActivity() {
-
+class AdminMainActivity : BaseActivity() {
+    private val viewModel : AdminMainActivityViewModel by viewModels()
     private lateinit var binding: ActivityAdminMainBinding
     private lateinit var viewPagerAdapter: ViewPagerAdapter
 
     @Inject
     lateinit var prefsHelper: PrefsHelper
+    override fun getViewModel(): BaseViewModel {
+        return viewModel
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

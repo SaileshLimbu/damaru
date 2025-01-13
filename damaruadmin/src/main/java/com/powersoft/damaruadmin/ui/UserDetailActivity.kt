@@ -71,7 +71,7 @@ class UserDetailActivity : BaseActivity() {
                             if (errorMessage != null) {
                                 AlertHelper.showAlertDialog(this@UserDetailActivity, title = getString(R.string.error), message = errorMessage)
                             } else {
-                                setResult(RESULT_OK)
+                                setResult(RESULT_OK, Intent().putExtra("deviceUpdate", true))
                                 vm.getAllDevices()
                                 AlertHelper.showSnackbar(binding.root, getString(R.string.linked_success))
                             }
@@ -194,6 +194,7 @@ class UserDetailActivity : BaseActivity() {
                                                 this@UserDetailActivity, getString(R.string.error), errorMessage,
                                             )
                                         } else {
+                                            setResult(RESULT_OK, Intent().putExtra("deviceUpdate", true))
                                             vm.getAllDevices()
                                         }
                                     }
@@ -250,6 +251,7 @@ class UserDetailActivity : BaseActivity() {
                                 this@UserDetailActivity, getString(R.string.error), errorMessage,
                             )
                         } else {
+                            setResult(RESULT_OK, Intent().putExtra("deviceUpdate", true))
                             vm.getAllDevices()
                         }
                     }
