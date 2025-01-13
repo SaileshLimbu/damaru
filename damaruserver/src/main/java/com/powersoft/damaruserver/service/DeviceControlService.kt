@@ -51,6 +51,36 @@ class DeviceControlService : AccessibilityService() {
         dispatchGesture(gesture, null, null)
     }
 
+    private fun performLongPress(x: Float, y: Float) {
+        val path = Path().apply {
+            moveTo(x, y)
+        }
+
+        val gesture = GestureDescription.Builder()
+            .addStroke(GestureDescription.StrokeDescription(path, 0, 2000))
+            .build()
+
+
+        dispatchGesture(gesture, null, null)
+    }
+
+    private fun performFling(x: Float, y: Float, velocity: Float) {
+        // Scale the velocity to a reasonable scroll distance
+        val scaledVelocity = velocity * 0.5f
+        val scrollDistance = (scaledVelocity / 1000f) * 100L
+
+        val path = Path().apply {
+            moveTo(x, y)
+            lineTo(x, y - scrollDistance)  // Negative because positive velocity means upward fling
+        }
+
+        val gesture = GestureDescription.Builder()
+            .addStroke(GestureDescription.StrokeDescription(path, 0, 100L))
+            .build()
+
+        dispatchGesture(gesture, null, null)
+    }
+
     private fun performSwipe(startX: Float, startY: Float, endX: Float, endY: Float) {
         val path = Path().apply {
             moveTo(startX, startY)
@@ -58,27 +88,24 @@ class DeviceControlService : AccessibilityService() {
         }
 
         val gesture = GestureDescription.Builder()
-            .addStroke(GestureDescription.StrokeDescription(path, 0, 500))  // 500ms duration for swipe
+            .addStroke(GestureDescription.StrokeDescription(path, 0, 50))  // 500ms duration for swipe
             .build()
 
         dispatchGesture(gesture, null, null)
     }
 
-    fun refreshScreen() {
-        performGesture(GestureCommand(GestureAction.RECENT, startX = 156.0f, startY = 448.9f, endX = 367.6f, endY = 456.3f))
-
-    }
 
     fun performGesture(command: GestureCommand) {
         Log.d(TAG, "performGesture: $command")
         when (command.action) {
             GestureAction.TAP -> performTap(command.startX!!, command.startY!!)
-            GestureAction.LONG_PRESS -> Unit
+            GestureAction.LONG_PRESS -> performLongPress(command.startX!!, command.startY!!)
             GestureAction.SWIPE -> performSwipe(command.startX!!, command.startY!!, command.endX!!, command.endY!!)
             GestureAction.PINCH_ZOOM -> Unit
             GestureAction.BACK -> performGlobalAction(GLOBAL_ACTION_BACK)
             GestureAction.HOME -> performGlobalAction(GLOBAL_ACTION_HOME)
             GestureAction.RECENT -> performGlobalAction(GLOBAL_ACTION_RECENTS)
+            GestureAction.FLASH ->Unit
         }
     }
 }

@@ -1,145 +1,130 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    android:layout_marginStart="@dimen/margin_medium"
+    android:layout_marginEnd="@dimen/margin_medium"
+    android:layout_marginTop="@dimen/margin_small"
+    android:padding="@dimen/padding_medium"
+    android:background="@drawable/drawable_bg_cardview">
 
-    <com.google.android.material.card.MaterialCardView
-        android:layout_width="match_parent"
+    <TextView
+        android:id="@+id/tvUsername"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_margin="12dp"
-        app:cardElevation="4dp">
+        android:fontFamily="@font/adlam_display"
+        android:textColor="@color/colorPrimaryDark"
+        android:textSize="16sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/imgAcc"
+        tools:text="theone sharma" />
 
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+    <TextView
+        android:id="@+id/tvUserEmail"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toStartOf="@+id/imgAcc"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tvUsername"
+        tools:text="email@damaru.com" />
 
-            <TextView
-                android:id="@+id/tvUsername"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="12dp"
-                android:layout_marginTop="12dp"
-                android:fontFamily="@font/adlam_display"
-                android:textColor="@color/colorPrimaryDark"
-                android:textSize="16sp"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                tools:text="theone sharma" />
+    <TextView
+        android:id="@+id/tvTotalDevices"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/adlam_display"
+        android:includeFontPadding="false"
+        android:textColor="@color/colorSecondaryVariant"
+        android:textSize="56sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="2" />
 
-            <TextView
-                android:id="@+id/tvUserEmailFuck"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="12dp"
-                android:layout_marginEnd="12dp"
-                app:layout_constraintEnd_toStartOf="@+id/imgAcc"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/tvUsername"
-                tools:text="email@damaru.com" />
+    <ImageView
+        android:id="@+id/imgDevice"
+        android:layout_width="wrap_content"
+        android:layout_height="24dp"
+        android:adjustViewBounds="true"
+        android:contentDescription="@null"
+        android:src="@drawable/ic_device"
+        app:layout_constraintBottom_toBottomOf="@+id/tvTotalDevices"
+        app:layout_constraintEnd_toStartOf="@+id/tvTotalDevices"
+        app:layout_constraintTop_toTopOf="@id/tvTotalDevices" />
 
-            <TextView
-                android:id="@+id/tvTotalDevices"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="12dp"
-                android:fontFamily="@font/adlam_display"
-                android:includeFontPadding="false"
-                android:textColor="@color/colorSecondaryVariant"
-                android:textSize="56sp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                tools:text="2" />
+    <TextView
+        android:id="@+id/tvTotalAccounts"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/adlam_display"
+        android:includeFontPadding="false"
+        android:textColor="@color/colorSecondaryVariant"
+        android:textSize="56sp"
+        app:layout_constraintEnd_toStartOf="@+id/imgDevice"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="6" />
 
-            <ImageView
-                android:id="@+id/imgDevice"
-                android:layout_width="wrap_content"
-                android:layout_height="24dp"
-                android:adjustViewBounds="true"
-                android:contentDescription="@null"
-                android:src="@drawable/ic_device"
-                app:layout_constraintBottom_toBottomOf="@+id/tvTotalDevices"
-                app:layout_constraintEnd_toStartOf="@+id/tvTotalDevices"
-                app:layout_constraintTop_toTopOf="@id/tvTotalDevices" />
+    <ImageView
+        android:id="@+id/imgAcc"
+        android:layout_width="wrap_content"
+        android:layout_height="24dp"
+        android:adjustViewBounds="true"
+        android:contentDescription="@null"
+        android:src="@drawable/ic_accounts"
+        app:layout_constraintBottom_toBottomOf="@+id/tvTotalAccounts"
+        app:layout_constraintEnd_toStartOf="@+id/tvTotalAccounts"
+        app:layout_constraintTop_toTopOf="@id/tvTotalAccounts"
+        app:tint="@color/primary" />
 
-            <TextView
-                android:id="@+id/tvTotalAccounts"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="12dp"
-                android:fontFamily="@font/adlam_display"
-                android:includeFontPadding="false"
-                android:textColor="@color/colorSecondaryVariant"
-                android:textSize="56sp"
-                app:layout_constraintEnd_toStartOf="@+id/imgDevice"
-                app:layout_constraintTop_toTopOf="parent"
-                tools:text="6" />
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnEdit"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:background="@android:color/transparent"
+        android:text="@string/edit"
+        android:textAllCaps="false"
+        android:textColor="@color/colorPrimaryDark"
+        app:icon="@drawable/ic_edit"
+        app:iconGravity="textStart"
+        app:iconTint="@color/colorPrimaryDark"
+        app:layout_constraintEnd_toStartOf="@+id/btnDelete"
+        app:layout_constraintHorizontal_chainStyle="spread"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tvTotalAccounts" />
 
-            <ImageView
-                android:id="@+id/imgAcc"
-                android:layout_width="wrap_content"
-                android:layout_height="24dp"
-                android:adjustViewBounds="true"
-                android:contentDescription="@null"
-                android:src="@drawable/ic_accounts"
-                app:layout_constraintBottom_toBottomOf="@+id/tvTotalAccounts"
-                app:layout_constraintEnd_toStartOf="@+id/tvTotalAccounts"
-                app:layout_constraintTop_toTopOf="@id/tvTotalAccounts"
-                app:tint="@color/primary" />
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnDelete"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:background="@android:color/transparent"
+        android:icon="@drawable/ic_account"
+        android:text="@string/delete"
+        android:textAllCaps="false"
+        android:textColor="@color/colorPrimaryDark"
+        app:icon="@drawable/ic_delete"
+        app:iconGravity="textStart"
+        app:iconTint="@color/colorPrimaryDark"
+        app:layout_constraintEnd_toStartOf="@+id/btnAssign"
+        app:layout_constraintHorizontal_chainStyle="spread"
+        app:layout_constraintStart_toEndOf="@id/btnEdit"
+        app:layout_constraintTop_toBottomOf="@id/tvTotalAccounts" />
 
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btnEdit"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:background="@android:color/transparent"
-                android:text="@string/edit"
-                android:textAllCaps="false"
-                android:textColor="@color/colorPrimaryDark"
-                app:icon="@drawable/ic_edit"
-                app:iconGravity="textStart"
-                app:iconTint="@color/colorPrimaryDark"
-                app:layout_constraintEnd_toStartOf="@+id/btnDelete"
-                app:layout_constraintHorizontal_chainStyle="spread"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/tvTotalAccounts" />
-
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btnDelete"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:background="@android:color/transparent"
-                android:icon="@drawable/ic_account"
-                android:text="@string/delete"
-                android:textAllCaps="false"
-                android:textColor="@color/colorPrimaryDark"
-                app:icon="@drawable/ic_delete"
-                app:iconGravity="textStart"
-                app:iconTint="@color/colorPrimaryDark"
-                app:layout_constraintEnd_toStartOf="@+id/btnAssign"
-                app:layout_constraintHorizontal_chainStyle="spread"
-                app:layout_constraintStart_toEndOf="@id/btnEdit"
-                app:layout_constraintTop_toBottomOf="@id/tvTotalAccounts" />
-
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btnAssign"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:background="@android:color/transparent"
-                android:icon="@drawable/ic_email"
-                android:text="@string/assign_device"
-                android:textAllCaps="false"
-                android:textColor="@color/colorPrimaryDark"
-                app:icon="@drawable/ic_device"
-                app:iconGravity="textStart"
-                app:iconTint="@color/colorPrimaryDark"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_chainStyle="spread"
-                app:layout_constraintStart_toEndOf="@id/btnDelete"
-                app:layout_constraintTop_toBottomOf="@id/tvTotalAccounts" />
-        </androidx.constraintlayout.widget.ConstraintLayout>
-    </com.google.android.material.card.MaterialCardView>
-</LinearLayout>
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnAssign"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:background="@android:color/transparent"
+        android:icon="@drawable/ic_email"
+        android:text="@string/assign_device"
+        android:textAllCaps="false"
+        android:textColor="@color/colorPrimaryDark"
+        app:icon="@drawable/ic_device"
+        app:iconGravity="textStart"
+        app:iconTint="@color/colorPrimaryDark"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_chainStyle="spread"
+        app:layout_constraintStart_toEndOf="@id/btnDelete"
+        app:layout_constraintTop_toBottomOf="@id/tvTotalAccounts" />
+</androidx.constraintlayout.widget.ConstraintLayout>

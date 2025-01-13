@@ -7,12 +7,12 @@ object AspectRatioUtils {
         screenWidth: Int,
         screenHeight: Int,
         command: GestureCommand,
-        topPadding: Int
+        padding: Int
     ): GestureCommand {
         command.startX?.let { command.startX = it / screenWidth }
-        command.startY?.let { command.startY = it / (screenHeight - topPadding) }
+        command.startY?.let { command.startY = it / (screenHeight - padding) }
         command.endX?.let { command.endX = it / screenWidth }
-        command.endY?.let { command.endY = it / (screenHeight - topPadding) }
+        command.endY?.let { command.endY = it / (screenHeight - padding) }
         return command
     }
 

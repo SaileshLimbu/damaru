@@ -33,7 +33,8 @@
     <string name="tap_to_select">Tap to select</string>
     <string name="select">Select</string>
     <string name="no_data_found">No data found</string>
-    <string name="text_nav_home">Home</string>
+    <string name="text_nav_users">Users</string>
+    <string name="text_nav_devices">Devices</string>
     <string name="logout">Logout</string>
     <string name="are_you_sure_you_want_to_logout">Are you sure you want to logout?</string>
     <string name="yes">Yes</string>

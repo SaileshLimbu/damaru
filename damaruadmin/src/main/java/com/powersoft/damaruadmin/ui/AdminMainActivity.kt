@@ -4,6 +4,7 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import androidx.viewpager2.widget.ViewPager2
@@ -11,11 +12,15 @@ import com.powersoft.common.base.BaseActivity
 import com.powersoft.common.base.BaseViewModel
 import com.powersoft.common.ui.helper.AlertHelper
 import com.powersoft.common.utils.PrefsHelper
+import com.powersoft.common.utils.hide
+import com.powersoft.common.utils.hideKeyboard
+import com.powersoft.common.utils.show
+import com.powersoft.common.utils.showKeyboard
 import com.powersoft.damaruadmin.R
 import com.powersoft.damaruadmin.databinding.ActivityAdminMainBinding
 import com.powersoft.damaruadmin.fragment.AdminDevicesFragment
-import com.powersoft.damaruadmin.fragment.AdminHomeFragment
 import com.powersoft.damaruadmin.viewmodels.AdminMainActivityViewModel
+import com.powersoft.damaruadmin.fragment.AdminUsersFragment
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
@@ -42,13 +47,15 @@ class AdminMainActivity : BaseActivity() {
 
         binding.bottomNavigationView.setOnItemSelectedListener { item ->
             when (item.itemId) {
-                R.id.tabHome -> {
+                R.id.tabUsers -> {
                     binding.viewPager.currentItem = 0
+                    binding.tvTitle.text = getString(R.string.users)
                     true
                 }
 
                 R.id.tabDevices -> {
                     binding.viewPager.currentItem = 1
+                    binding.tvTitle.text = getString(com.powersoft.common.R.string.devices)
                     true
                 }
 
@@ -59,9 +66,9 @@ class AdminMainActivity : BaseActivity() {
         binding.viewPager.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
             override fun onPageSelected(position: Int) {
                 binding.bottomNavigationView.selectedItemId = when (position) {
-                    0 -> R.id.tabHome
+                    0 -> R.id.tabUsers
                     1 -> R.id.tabDevices
-                    else -> R.id.tabHome
+                    else -> R.id.tabUsers
                 }
             }
         })
@@ -77,6 +84,31 @@ class AdminMainActivity : BaseActivity() {
                     )
                 })
         }
+
+        binding.imgSearch.setOnClickListener {
+            binding.viewSearch.show()
+            binding.etSearch.showKeyboard()
+        }
+
+        binding.etSearch.addTextChangedListener {
+            val currentFragment = getCurrentFragment()
+            if (currentFragment is AdminUsersFragment){
+                currentFragment.onSearch(it.toString())
+            }else if (currentFragment is AdminDevicesFragment){
+                currentFragment.onSearch(it.toString())
+            }
+        }
+
+        binding.tvCancle.setOnClickListener{
+            this@AdminMainActivity.hideKeyboard()
+            binding.etSearch.text.clear()
+            binding.viewSearch.hide()
+        }
+    }
+
+    private fun getCurrentFragment(): Fragment? {
+        val fragmentId = binding.viewPager.currentItem
+        return supportFragmentManager.findFragmentByTag("f$fragmentId")
     }
 
     // Adapter for ViewPager2
@@ -85,10 +117,14 @@ class AdminMainActivity : BaseActivity() {
 
         override fun createFragment(position: Int): Fragment {
             return when (position) {
-                0 -> AdminHomeFragment()
+                0 -> AdminUsersFragment()
                 1 -> AdminDevicesFragment()
                 else -> throw IllegalStateException("Invalid position $position")
             }
         }
+    }
+
+    interface SearchableFragment {
+        fun onSearch(query: String)
     }
 }

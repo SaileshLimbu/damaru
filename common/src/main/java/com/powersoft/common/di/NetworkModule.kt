@@ -2,6 +2,7 @@ package com.powersoft.common.di
 
 import com.powersoft.common.BuildConfig
 import com.powersoft.common.repository.UserRepo
+import com.powersoft.common.utils.HOST_URL
 import com.powersoft.common.webservice.ApiService
 import com.powersoft.common.webservice.HeaderInterceptor
 import com.powersoft.common.webservice.RequestInterceptor
@@ -39,8 +40,7 @@ open class NetworkModule {
             .build()
 
         return Retrofit.Builder()
-            .baseUrl("http://13.201.152.191:3000/")
-//            .baseUrl("https://2cdd-2400-1a00-b060-6840-5982-b610-8588-7cdb.ngrok-free.app")
+            .baseUrl("$HOST_URL/")
             .client(okHttpClient)
             .addConverterFactory(GsonConverterFactory.create())
             .build()

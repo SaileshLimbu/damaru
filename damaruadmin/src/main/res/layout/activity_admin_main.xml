@@ -4,9 +4,10 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:fitsSystemWindows="true"
     android:background="@drawable/background_primary"
-    tools:context=".ui.AdminMainActivity">
+    android:fitsSystemWindows="true"
+    tools:context=".ui.AdminMainActivity"
+    tools:ignore="ContentDescription">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/holder1"
@@ -16,8 +17,8 @@
         android:elevation="5dp"
         android:paddingStart="@dimen/padding_large"
         android:paddingTop="32dp"
-        android:paddingBottom="32dp"
         android:paddingEnd="@dimen/padding_large"
+        android:paddingBottom="32dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
@@ -30,17 +31,31 @@
             app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
+            android:id="@+id/tvTitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/padding_medium"
             android:fontFamily="@font/quicksand_medium"
-            android:text="@string/text_nav_home"
+            android:text="@string/text_nav_users"
             android:textColor="@color/black"
             android:textSize="20sp"
             android:textStyle="bold"
             app:layout_constraintBottom_toBottomOf="@id/imgLogout"
             app:layout_constraintStart_toEndOf="@id/imgLogo"
             app:layout_constraintTop_toTopOf="@id/imgLogout" />
+
+        <ImageView
+            android:id="@+id/imgSearch"
+            android:layout_width="@dimen/icon_size"
+            android:layout_height="@dimen/icon_size"
+            android:layout_marginEnd="@dimen/margin_small"
+            android:clickable="true"
+            android:focusable="true"
+            android:padding="@dimen/padding_small"
+            android:src="@drawable/ic_search"
+            app:layout_constraintEnd_toStartOf="@id/imgLogout"
+            app:layout_constraintTop_toTopOf="parent"
+            app:tint="@color/primary" />
 
         <ImageView
             android:id="@+id/imgLogout"
@@ -54,6 +69,50 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:tint="@color/primary" />
+
+        <RelativeLayout
+            android:id="@+id/viewSearch"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:orientation="horizontal"
+            android:visibility="gone"
+            tools:visibility="visible"
+            android:background="@drawable/drawable_bg_border"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:backgroundTint="@color/grey"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <EditText
+                android:id="@+id/etSearch"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:autofillHints="none"
+                android:inputType="text"
+                android:paddingStart="@dimen/padding_small"
+                android:paddingEnd="@dimen/padding_small"
+                android:fontFamily="@font/quicksand_medium"
+                android:background="@color/transparent"
+                android:imeOptions="actionDone"
+                android:hint="@string/search"
+                android:layout_toStartOf="@+id/tvCancle"
+                android:drawablePadding="@dimen/padding_small"
+                android:drawableStart="@drawable/ic_search"/>
+
+            <TextView
+                android:id="@+id/tvCancle"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_alignParentEnd="true"
+                android:fontFamily="@font/adlam_display"
+                android:textColor="@color/black"
+                android:gravity="center"
+                android:layout_centerVertical="true"
+                android:layout_marginEnd="@dimen/margin_small"
+                android:text="@string/cancle"/>
+
+        </RelativeLayout>
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <androidx.viewpager2.widget.ViewPager2
@@ -61,7 +120,7 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         app:layout_constraintBottom_toTopOf="@id/bottomNavigationView"
-        app:layout_constraintTop_toBottomOf="@+id/holder1"/>
+        app:layout_constraintTop_toTopOf="parent"/>
 
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottomNavigationView"
@@ -69,10 +128,10 @@
         android:layout_height="56dp"
         android:layout_alignParentBottom="true"
         app:backgroundTint="@color/white"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
         app:itemIconTint="@color/nav_item_icon_color"
         app:itemTextColor="@color/nav_item_text_color"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
         app:menu="@menu/bottom_nav_menu" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

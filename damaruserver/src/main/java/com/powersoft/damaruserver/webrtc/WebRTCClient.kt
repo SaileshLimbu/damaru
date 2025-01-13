@@ -2,11 +2,11 @@ package com.powersoft.damaruserver.webrtc
 
 import android.content.Context
 import android.content.Intent
-import android.media.projection.MediaProjection
 import android.util.Log
 import com.google.gson.Gson
 import com.powersoft.common.model.DataModel
 import com.powersoft.common.model.DataModelType
+import com.powersoft.common.model.GestureAction
 import com.powersoft.common.model.GestureCommand
 import com.powersoft.common.utils.AspectRatioUtils
 import com.powersoft.common.utils.WebRTCUtils
@@ -73,12 +73,16 @@ class WebRTCClient @Inject constructor(
                             val message = convertBufferToString(p0)
 
                             val command = gson.fromJson(message, GestureCommand::class.java)
-                            val normalizedCommand = AspectRatioUtils.normalizeServerCoordinate(
-                                screen.widthPixels,
-                                screen.heightPixels,
-                                command
-                            )
-                            DeviceControlService.getInstance()?.performGesture(normalizedCommand)
+                            if (command.action == GestureAction.FLASH) {
+                                ScreenRefresher(context).flashScreen()
+                            }else {
+                                val normalizedCommand = AspectRatioUtils.normalizeServerCoordinate(
+                                    screen.widthPixels,
+                                    screen.heightPixels,
+                                    command
+                                )
+                                DeviceControlService.getInstance()?.performGesture(normalizedCommand)
+                            }
                         }
                     }
                 })
@@ -100,25 +104,11 @@ class WebRTCClient @Inject constructor(
         return String(bytes, StandardCharsets.UTF_8)
     }
 
-    fun startScreenCapturing(intent: Intent) {
-        val metrics = context.resources.displayMetrics
-        val screenWidthPixels = metrics.widthPixels
-        val screenHeightPixels = metrics.heightPixels
-
-        val surfaceTextureHelper = SurfaceTextureHelper.create(
-            Thread.currentThread().name, webRTCManager.getEglBase().eglBaseContext
-        )
-
-        val screenCapturer = ScreenCapturerAndroid(intent, object : MediaProjection.Callback() {
-            override fun onStop() {
-                super.onStop()
-                Log.e(TAG, "onStop: Screen capture Stopped")
-                startScreenCapturing(intent)
-            }
-        })
+    fun startScreenCapturing(context:Context, intent: Intent) {
         val videoSource = webRTCManager.createVideoSource()
-        screenCapturer.initialize(surfaceTextureHelper, context, videoSource.capturerObserver)
-        screenCapturer.startCapture(screenWidthPixels, screenHeightPixels, 30)
+        val screenCaptureManager = ScreenCaptureManager(context, intent, videoSource)
+
+        screenCaptureManager.startScreenCapturing()
 
         localVideoTrack = webRTCManager.createVideoTrack(videoSource)
         localStream = webRTCManager.getMyPeerConnectionFactory().createLocalMediaStream(localStreamId)

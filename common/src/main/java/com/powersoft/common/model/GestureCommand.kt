@@ -7,7 +7,8 @@ enum class GestureAction {
     PINCH_ZOOM,
     BACK,
     HOME,
-    RECENT
+    RECENT,
+    FLASH,
 }
 
 data class GestureCommand(

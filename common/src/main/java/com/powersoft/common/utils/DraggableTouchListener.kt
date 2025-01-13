@@ -1,4 +1,4 @@
-package com.powersoft.damaru.utils
+package com.powersoft.common.utils
 
 import android.annotation.SuppressLint
 import android.view.MotionEvent

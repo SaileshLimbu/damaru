@@ -1,6 +1,8 @@
 package com.powersoft.common.webrtc
 
 import android.content.Context
+import android.util.Log
+import com.powersoft.common.webrtc.WebRTCClient.Companion.TAG
 import org.webrtc.DefaultVideoDecoderFactory
 import org.webrtc.DefaultVideoEncoderFactory
 import org.webrtc.EglBase
@@ -12,7 +14,7 @@ import java.util.UUID
 import javax.inject.Inject
 
 class WebRTCManager @Inject constructor(context: Context) {
-    private val eglBase: EglBase = EglBase.create(null, EglBase.CONFIG_PLAIN);
+    private val eglBase: EglBase = EglBase.create()
 
     private val peerConnectionFactory: PeerConnectionFactory
 
@@ -38,7 +40,7 @@ class WebRTCManager @Inject constructor(context: Context) {
     fun getMyPeerConnectionFactory() = peerConnectionFactory
 
     fun createVideoSource(): VideoSource {
-        return peerConnectionFactory.createVideoSource(false)
+        return peerConnectionFactory.createVideoSource(true)
     }
 
     fun createPeerConnection(
@@ -58,6 +60,7 @@ class WebRTCManager @Inject constructor(context: Context) {
         try {
             eglBase.release()
             peerConnectionFactory.dispose()
+            Log.e(TAG, "Clearing EglBase and PeerConnectionFactory", )
         }catch (e: Exception){
             //ignore
         }

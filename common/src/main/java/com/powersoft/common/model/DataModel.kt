@@ -3,7 +3,7 @@ package com.powersoft.common.model
 import com.google.gson.annotations.SerializedName
 
 enum class DataModelType{
-    StartStreaming, Disconnect, Offer, Answer, IceCandidate
+    StartStreaming, Disconnect, Offer, Answer, IceCandidate, Connect
 }
 
 data class DataModel(
