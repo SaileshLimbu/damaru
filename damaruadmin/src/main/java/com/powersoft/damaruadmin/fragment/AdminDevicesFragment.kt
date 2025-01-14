@@ -129,7 +129,7 @@ class AdminDevicesFragment : Fragment(R.layout.fragment_devices), RecyclerViewIt
                     message = getString(R.string.are_you_sure_you_want_to_delete_this_emulator),
                     positiveButtonText = getString(com.powersoft.common.R.string.delete),
                     negativeButtonText = getString(com.powersoft.common.R.string.cancle), onPositiveButtonClick = {
-                        vm.deleteUser(data.deviceId, object : ResponseCallback {
+                        vm.deleteEmulator(data.deviceId, object : ResponseCallback {
                             override fun onResponse(any: Any, errorMessage: String?) {
                                 if (errorMessage != null) {
                                     AlertHelper.showAlertDialog(requireActivity(), getString(R.string.error), errorMessage)

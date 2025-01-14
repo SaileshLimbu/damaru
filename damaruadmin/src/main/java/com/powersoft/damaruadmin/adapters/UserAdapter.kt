@@ -43,6 +43,7 @@ class UserAdapter(
             binding.apply {
                 tvUsername.text = user.name
                 tvUserEmail.text = user.email
+                tvPin.text = user.pin
                 tvTotalDevices.text = "${user.emulatorCount}"
                 tvTotalAccounts.text = "${user.accountsCount}"
 

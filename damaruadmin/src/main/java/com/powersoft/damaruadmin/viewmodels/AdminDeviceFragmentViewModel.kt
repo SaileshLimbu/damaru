@@ -40,7 +40,7 @@ class AdminDeviceFragmentViewModel @Inject constructor(
         }
     }
 
-    fun deleteUser(id: String, responseCallback: ResponseCallback) {
+    fun deleteEmulator(id: String, responseCallback: ResponseCallback) {
             viewModelScope.launch {
                 when (val response = repo.deleteEmulatorTask(id)) {
                     is ResponseWrapper.Success -> {
