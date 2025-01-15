@@ -16,13 +16,14 @@ class AddEmulatorViewModel @Inject constructor(
     private val gson : Gson
 ) : BaseViewModel() {
 
-    fun addEmulator(name: String, id: String, responseCallback: ResponseCallback) {
+    fun addEmulator(name: String, id: String, details : String, responseCallback: ResponseCallback) {
         showLoader()
         viewModelScope.launch {
             try {
                 val map = mapOf(
                     "device_name" to name,
-                    "device_id" to id
+                    "device_id" to id,
+                    "details" to details
                 )
                 val response = apiService.addEmulator(gson.toJson(map).toRequestBody())
                 if (response.status) {

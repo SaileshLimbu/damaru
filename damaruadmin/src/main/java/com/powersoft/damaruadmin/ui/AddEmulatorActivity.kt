@@ -61,7 +61,7 @@ class AddEmulatorActivity @Inject constructor() : BaseActivity() {
 //                        }
 //                    })
 //            } else {
-                viewModel.addEmulator(binding.etName.text.toString(), binding.etId.text.toString(),
+                viewModel.addEmulator(binding.etName.text.toString(), binding.etId.text.toString(), binding.etDetails.text.toString(),
                     object : ResponseCallback {
                         override fun onResponse(any: Any, errorMessage: String?) {
                             if (errorMessage != null) {

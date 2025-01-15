@@ -26,7 +26,9 @@ data class DeviceEntity(
     @SerializedName("userId")
     val userId: String?,
     @SerializedName("email")
-    val email: String?
+    val email: String?,
+    @SerializedName("details")
+    val details: String?
 )
 
 enum class Status{
