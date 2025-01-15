@@ -44,4 +44,5 @@
     <string name="link_account">Link Account</string>
     <string name="accounts_linked_success">Accounts successfully linked to this device</string>
     <string name="no_linked_accounts">No linked accounts</string>
+    <string name="dummy_emulator_info">Login Details\nEmail: testuser@damaru.com\nPassword: password123\nPIN: 34225</string>
 </resources>

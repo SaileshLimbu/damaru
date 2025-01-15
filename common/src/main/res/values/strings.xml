@@ -30,6 +30,7 @@
     <string name="text_remaining_days">28 days</string>
     <string name="accounts">Accounts</string>
     <string name="text_add_account">Add Account</string>
+    <string name="text_update">Update</string>
     <string name="tap_to_select">Tap to select</string>
     <string name="select">Select</string>
     <string name="no_data_found">No data found</string>
@@ -48,6 +49,6 @@
     <string name="expired">EXPIRED</string>
     <string name="extend">Extend</string>
     <string name="assigned_to">Assigned To :</string>
-
+    <string name="edit">Edit</string>
 
 </resources>
