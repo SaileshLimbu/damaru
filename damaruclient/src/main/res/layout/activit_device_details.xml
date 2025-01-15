@@ -123,17 +123,20 @@
             android:orientation="vertical"
             android:padding="8dp">
 
-            <TextView
+            <EditText
                 android:id="@+id/noteDetail"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:background="@android:color/transparent"
+                android:enabled="false"
+                android:hint="@string/n_a"
                 android:fontFamily="@font/quicksand_medium"
                 android:text="@string/dummy_emulator_info"
                 android:textColor="@color/black"
                 android:textSize="12sp" />
 
             <com.google.android.material.button.MaterialButton
-                android:id="@+id/btnEdit"
+                android:id="@+id/btnEditDetails"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:background="@android:color/transparent"

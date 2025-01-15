@@ -57,9 +57,12 @@ interface ApiService {
     @DELETE("emulators/{id}")
     suspend fun deleteEmulator(@Path("id") id: String): ResponseData<Any>
 
+    @PUT("emulators/{id}")
+    suspend fun editEmulator(@Path("id") id: String, @Body requestBody: RequestBody): ResponseData<Any>
+
     @GET("accounts/{id}")
     suspend fun getHisEmulator(@Path("id") accountId : String): ResponseData<List<DeviceEntity>>
 
     @GET("emulators/connection-log")
-    suspend fun getActivityLogs(@Query("deviceId") deviceId: String, @Query("accountId") accountId: String): ResponseData<List<String>>//ResponseData<List<LogsEntity>>
+    suspend fun getActivityLogs(@Query("deviceId") deviceId: String, @Query("accountId") accountId: String):ResponseData<List<LogsEntity>>
 }

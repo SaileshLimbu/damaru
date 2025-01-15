@@ -109,4 +109,20 @@ class DeviceRepo @Inject constructor(private val apiService: ApiService, private
             ResponseWrapper.error("Something went wrong (Code 635)")
         }
     }
+
+    suspend fun editEmulatorTask(details: String, deviceId: String): ResponseWrapper<Any> {
+        return try {
+            val params = mapOf(
+                "details" to details
+            )
+            val response = apiService.editEmulator(deviceId, gson.toJson(params).toRequestBody())
+            if (response.status) {
+                ResponseWrapper.Success(Any())
+            } else {
+                ResponseWrapper.error(response.message)
+            }
+        } catch (e: Exception) {
+            ResponseWrapper.error("Something went wrong (Code 732)")
+        }
+    }
 }

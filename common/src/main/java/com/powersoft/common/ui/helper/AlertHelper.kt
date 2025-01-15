@@ -53,13 +53,11 @@ object AlertHelper {
 
     fun showToast(context: Context, message: String, duration: Int = Toast.LENGTH_SHORT) {
         val toast = Toast.makeText(context, message, duration)
-        toast.setGravity(Gravity.BOTTOM, 0, 100)
         toast.show()
     }
 
     fun showToast(context: Context, @StringRes messageRes: Int, duration: Int = Toast.LENGTH_SHORT) {
         val toast = Toast.makeText(context, messageRes, duration)
-        toast.setGravity(Gravity.BOTTOM, 0, 100)
         toast.show()
     }
 

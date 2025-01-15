@@ -9,6 +9,7 @@ import com.powersoft.common.model.AccountEntity
 import com.powersoft.common.model.PickerEntity
 import com.powersoft.common.model.ResponseWrapper
 import com.powersoft.common.repository.AccountsRepo
+import com.powersoft.common.repository.DeviceRepo
 import com.powersoft.common.ui.helper.ResponseCallback
 import com.powersoft.common.utils.Logg
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -20,6 +21,7 @@ import javax.inject.Inject
 @HiltViewModel
 class DeviceDetailsViewModel @Inject constructor(
     private val accountRepo: AccountsRepo,
+    private val deviceRepo: DeviceRepo,
     private val gson: Gson
 ) : BaseViewModel() {
 
@@ -92,6 +94,29 @@ class DeviceDetailsViewModel @Inject constructor(
                 when (response) {
                     is ResponseWrapper.Success -> {
                         responseCallback.onResponse(response.data ?: Any(), null)
+                    }
+
+                    is ResponseWrapper.Error -> {
+                        responseCallback.onResponse(Any(), response.message)
+                    }
+
+                    is ResponseWrapper.Loading -> {
+
+                    }
+                }
+            }
+        }
+    }
+
+    fun editDeviceDetails(details: String, deviceId: String, responseCallback: ResponseCallback) {
+        showLoader()
+        viewModelScope.launch {
+            val response = deviceRepo.editEmulatorTask(details, deviceId)
+            withContext(Dispatchers.Main) {
+                hideLoader()
+                when (response) {
+                    is ResponseWrapper.Success -> {
+                        responseCallback.onResponse(response.data, null)
                     }
 
                     is ResponseWrapper.Error -> {

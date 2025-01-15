@@ -6,6 +6,7 @@ import android.os.Handler
 import android.os.Looper
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.gson.Gson
@@ -90,7 +91,29 @@ class DeviceDetailsActivity : BaseActivity() {
         binding.mynametv.text = deviceEntity.deviceName
         binding.tvCreatedAt.text = "Subscribed on : ${deviceEntity.createdAt}"
         binding.tvExpiresIn.text = "Expires In : ${deviceEntity.expiresAt} days"
+        binding.noteDetail.setText(if (deviceEntity.details.isNullOrEmpty()) "" else deviceEntity.details)
 
+        binding.btnEditDetails.setOnClickListener {
+            if (binding.btnEditDetails.text == "SAVE") {
+                vm.editDeviceDetails(binding.noteDetail.text.toString(), deviceEntity.deviceId, object : ResponseCallback {
+                    override fun onResponse(any: Any, errorMessage: String?) {
+                        binding.noteDetail.isEnabled = false
+                        binding.btnEditDetails.text = "Edit"
+                        binding.btnEditDetails.icon = ContextCompat.getDrawable(this@DeviceDetailsActivity, com.powersoft.common.R.drawable.ic_edit)
+                        if (errorMessage != null) {
+                            AlertHelper.showToast(this@DeviceDetailsActivity, errorMessage)
+                        } else {
+                            setResult(RESULT_OK)
+                        }
+                    }
+                })
+            } else {
+                binding.noteDetail.isEnabled = true
+                binding.noteDetail.requestFocus()
+                binding.btnEditDetails.text = "SAVE"
+                binding.btnEditDetails.icon = ContextCompat.getDrawable(this, R.drawable.ic_save)
+            }
+        }
 
         binding.recyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {

@@ -3,7 +3,6 @@ package com.powersoft.common.viewmodels
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
-import com.powersoft.common.BuildConfig
 import com.powersoft.common.base.BaseViewModel
 import com.powersoft.common.model.LogsEntity
 import com.powersoft.common.model.ResponseWrapper
@@ -25,15 +24,13 @@ class LogsActivityViewModel @Inject constructor(
     fun getDeviceLogs(deviceId : String, accountId : String) {
         viewModelScope.launch(Dispatchers.IO) {
             _allLogs.postValue(ResponseWrapper.loading())
-            var responseWrapper = try {
+            val responseWrapper = try {
                 val response = apiService.getActivityLogs(deviceId, accountId)
                 if (response.status) {
                     if (response.data.isNullOrEmpty()) {
-                        ResponseWrapper.error("No Devices")
+                        ResponseWrapper.error("No Logs")
                     } else {
-                        ResponseWrapper.success(response.data.map {
-                            LogsEntity(it, "", "2024-02-02 23:12:34")
-                        })
+                        ResponseWrapper.success(response.data)
                     }
                 } else {
                     ResponseWrapper.error(response.message)
@@ -41,28 +38,28 @@ class LogsActivityViewModel @Inject constructor(
             } catch (e: Exception) {
                 ResponseWrapper.error("Something went wrong (Code 34523)")
             }
-            if(BuildConfig.DEBUG){
-                responseWrapper = ResponseWrapper.success(listOf(
-                    LogsEntity("<b>theone</b> logged into device <b>Samsung S24 Ultra</b>", "", "2024-02-02 23:12:34"),
-                    LogsEntity("<b>theone</b> logged into device <b>Samsung S24 Ultra</b>", "", "2024-02-02 23:12:34"),
-                    LogsEntity("<b>theone</b> logged into device <b>Samsung S24 Ultra</b>", "", "2024-02-02 23:12:34"),
-                    LogsEntity("<b>theone</b> logged into device <b>Samsung S24 Ultra</b>", "", "2024-02-02 23:12:34"),
-                    LogsEntity("<b>theone</b> logged into device <b>Samsung S24 Ultra</b>", "", "2024-02-02 23:12:34"),
-                    LogsEntity("<b>theone</b> logged into device <b>Samsung S24 Ultra</b>", "", "2024-02-02 23:12:34"),
-                    LogsEntity("<b>theone</b> logged into device <b>Samsung S24 Ultra</b>", "", "2024-02-02 23:12:34"),
-                    LogsEntity("<b>theone</b> logged into device <b>Samsung S24 Ultra</b>", "", "2024-02-02 23:12:34"),
-                    LogsEntity("<b>theone</b> logged into device <b>Samsung S24 Ultra</b>", "", "2024-02-02 23:12:34"),
-                    LogsEntity("<b>theone</b> logged into device <b>Samsung S24 Ultra</b>", "", "2024-02-02 23:12:34"),
-                    LogsEntity("<b>theone</b> logged into device <b>Samsung S24 Ultra</b>", "", "2024-02-02 23:12:34"),
-                    LogsEntity("<b>theone</b> logged into device <b>Samsung S24 Ultra</b>", "", "2024-02-02 23:12:34"),
-                    LogsEntity("<b>theone</b> logged into device <b>Samsung S24 Ultra</b>", "", "2024-02-02 23:12:34"),
-                    LogsEntity("<b>theone</b> logged into device <b>Samsung S24 Ultra</b>", "", "2024-02-02 23:12:34"),
-                    LogsEntity("<b>theone</b> logged into device <b>Samsung S24 Ultra</b>", "", "2024-02-02 23:12:34"),
-                    LogsEntity("<b>theone</b> logged into device <b>Samsung S24 Ultra</b>", "", "2024-02-02 23:12:34"),
-                    LogsEntity("<b>theone</b> logged into device <b>Samsung S24 Ultra</b>", "", "2024-02-02 23:12:34"),
-                    LogsEntity("<b>theone</b> logged into device <b>Samsung S24 Ultra</b>", "", "2024-02-02 23:12:34")
-                ))
-            }
+//            if(BuildConfig.DEBUG){
+//                responseWrapper = ResponseWrapper.success(listOf(
+//                    LogsEntity("<b>theone</b> logged into device <b>Samsung S24 Ultra</b>", "", "2024-02-02 23:12:34"),
+//                    LogsEntity("<b>theone</b> logged into device <b>Samsung S24 Ultra</b>", "", "2024-02-02 23:12:34"),
+//                    LogsEntity("<b>theone</b> logged into device <b>Samsung S24 Ultra</b>", "", "2024-02-02 23:12:34"),
+//                    LogsEntity("<b>theone</b> logged into device <b>Samsung S24 Ultra</b>", "", "2024-02-02 23:12:34"),
+//                    LogsEntity("<b>theone</b> logged into device <b>Samsung S24 Ultra</b>", "", "2024-02-02 23:12:34"),
+//                    LogsEntity("<b>theone</b> logged into device <b>Samsung S24 Ultra</b>", "", "2024-02-02 23:12:34"),
+//                    LogsEntity("<b>theone</b> logged into device <b>Samsung S24 Ultra</b>", "", "2024-02-02 23:12:34"),
+//                    LogsEntity("<b>theone</b> logged into device <b>Samsung S24 Ultra</b>", "", "2024-02-02 23:12:34"),
+//                    LogsEntity("<b>theone</b> logged into device <b>Samsung S24 Ultra</b>", "", "2024-02-02 23:12:34"),
+//                    LogsEntity("<b>theone</b> logged into device <b>Samsung S24 Ultra</b>", "", "2024-02-02 23:12:34"),
+//                    LogsEntity("<b>theone</b> logged into device <b>Samsung S24 Ultra</b>", "", "2024-02-02 23:12:34"),
+//                    LogsEntity("<b>theone</b> logged into device <b>Samsung S24 Ultra</b>", "", "2024-02-02 23:12:34"),
+//                    LogsEntity("<b>theone</b> logged into device <b>Samsung S24 Ultra</b>", "", "2024-02-02 23:12:34"),
+//                    LogsEntity("<b>theone</b> logged into device <b>Samsung S24 Ultra</b>", "", "2024-02-02 23:12:34"),
+//                    LogsEntity("<b>theone</b> logged into device <b>Samsung S24 Ultra</b>", "", "2024-02-02 23:12:34"),
+//                    LogsEntity("<b>theone</b> logged into device <b>Samsung S24 Ultra</b>", "", "2024-02-02 23:12:34"),
+//                    LogsEntity("<b>theone</b> logged into device <b>Samsung S24 Ultra</b>", "", "2024-02-02 23:12:34"),
+//                    LogsEntity("<b>theone</b> logged into device <b>Samsung S24 Ultra</b>", "", "2024-02-02 23:12:34")
+//                ))
+//            }
             _allLogs.postValue(responseWrapper)
         }
     }
