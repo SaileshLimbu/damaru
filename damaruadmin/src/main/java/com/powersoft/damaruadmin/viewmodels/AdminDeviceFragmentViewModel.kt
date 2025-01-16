@@ -17,6 +17,7 @@ import com.powersoft.damaruadmin.webservices.ApiServiceImpl
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 @HiltViewModel
@@ -54,6 +55,29 @@ class AdminDeviceFragmentViewModel @Inject constructor(
                     is ResponseWrapper.Loading -> {
                     }
                 }
+        }
+    }
+
+    fun editDeviceDetails(details: String, deviceId: String, responseCallback: ResponseCallback) {
+        showLoader()
+        viewModelScope.launch {
+            val response = repo.editEmulatorTask(details, deviceId)
+            withContext(Dispatchers.Main) {
+                hideLoader()
+                when (response) {
+                    is ResponseWrapper.Success -> {
+                        responseCallback.onResponse(response.data, null)
+                    }
+
+                    is ResponseWrapper.Error -> {
+                        responseCallback.onResponse(Any(), response.message)
+                    }
+
+                    is ResponseWrapper.Loading -> {
+
+                    }
+                }
+            }
         }
     }
 

@@ -35,4 +35,8 @@
     <string name="no_emulators">No Emulators</string>
     <string name="users">Customers</string>
     <string name="details">Details</string>
+    <string name="edit_device_details">Edit Device Details</string>
+    <string name="device_details">Device Details</string>
+    <string name="save">Save</string>
+    <string name="enter_device_details">Enter device details</string>
 </resources>

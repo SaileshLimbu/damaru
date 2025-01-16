@@ -135,8 +135,12 @@ class DeviceListAdapter(
                         tvDeviceName.text = device.deviceName
                         tvStatus.text = "Available"//device.state.toString().capitalizeFirstLetter()
                         tvStatus.visibility(shouldShowStatus && device.state == State.AVAILABLE)
-                        btnDelete.visibility(!shouldShowStatus)
-                        btnExtend.visibility(!shouldShowStatus)
+//                        btnDelete.visibility(!shouldShowStatus)
+//                        btnExtend.visibility(!shouldShowStatus)
+                        if(shouldShowStatus){
+                            btnExtend.text = "Edit"
+                            btnExtend.icon = ContextCompat.getDrawable(root.context, R.drawable.ic_edit)
+                        }
                         lvlAssignedTo.visibility(shouldShowStatus && !(device.email.isNullOrEmpty()))
                         tvAssignedTo.visibility(shouldShowStatus && !(device.email.isNullOrEmpty()))
                         tvAssignedTo.text = device.email

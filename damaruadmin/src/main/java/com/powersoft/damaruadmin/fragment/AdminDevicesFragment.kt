@@ -1,6 +1,8 @@
 package com.powersoft.damaruadmin.fragment
 
 import android.content.Intent
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -8,6 +10,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity.RESULT_OK
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
@@ -25,6 +28,8 @@ import com.powersoft.common.ui.helper.ResponseCallback
 import com.powersoft.common.utils.hide
 import com.powersoft.common.utils.show
 import com.powersoft.damaruadmin.R
+import com.powersoft.damaruadmin.databinding.AlertEditBinding
+import com.powersoft.damaruadmin.databinding.AlertExtendBinding
 import com.powersoft.damaruadmin.databinding.FragmentDevicesBinding
 import com.powersoft.damaruadmin.ui.AddEmulatorActivity
 import com.powersoft.damaruadmin.ui.AdminMainActivity
@@ -88,7 +93,7 @@ class AdminDevicesFragment : Fragment(R.layout.fragment_devices), RecyclerViewIt
             }
         })
 
-        actViewModel.deviceUpdate.observe(viewLifecycleOwner){
+        actViewModel.deviceUpdate.observe(viewLifecycleOwner) {
             vm.getAllDevices()
         }
 
@@ -125,32 +130,78 @@ class AdminDevicesFragment : Fragment(R.layout.fragment_devices), RecyclerViewIt
     private fun createDeviceAdapter(): DeviceListAdapter {
         return DeviceListAdapter(object : RecyclerViewItemClickListener<DeviceEntity> {
             override fun onItemClick(viewId: Int, position: Int, data: DeviceEntity) {
-                AlertHelper.showAlertDialog(requireContext(), title = getString(R.string.delete_emulator) + " ??",
-                    message = getString(R.string.are_you_sure_you_want_to_delete_this_emulator),
-                    positiveButtonText = getString(com.powersoft.common.R.string.delete),
-                    negativeButtonText = getString(com.powersoft.common.R.string.cancle), onPositiveButtonClick = {
-                        vm.deleteEmulator(data.deviceId, object : ResponseCallback {
-                            override fun onResponse(any: Any, errorMessage: String?) {
-                                if (errorMessage != null) {
-                                    AlertHelper.showAlertDialog(requireActivity(), getString(R.string.error), errorMessage)
-                                } else {
-                                    deviceAdapter.removeItem(position)
-                                    Handler(Looper.getMainLooper()).postDelayed({
-                                        if (deviceAdapter.currentList.isEmpty()) {
-                                            b.errorView.tvError.text = getString(R.string.no_emulators)
-                                            b.errorView.root.show()
+                when (viewId) {
+                    R.id.btnDelete -> {
+                        AlertHelper.showAlertDialog(requireContext(), title = getString(R.string.delete_emulator) + " ??",
+                            message = getString(R.string.are_you_sure_you_want_to_delete_this_emulator),
+                            positiveButtonText = getString(com.powersoft.common.R.string.delete),
+                            negativeButtonText = getString(com.powersoft.common.R.string.cancle), onPositiveButtonClick = {
+                                vm.deleteEmulator(data.deviceId, object : ResponseCallback {
+                                    override fun onResponse(any: Any, errorMessage: String?) {
+                                        if (errorMessage != null) {
+                                            AlertHelper.showAlertDialog(requireActivity(), getString(R.string.error), errorMessage)
+                                        } else {
+                                            deviceAdapter.removeItem(position)
+                                            Handler(Looper.getMainLooper()).postDelayed({
+                                                if (deviceAdapter.currentList.isEmpty()) {
+                                                    b.errorView.tvError.text = getString(R.string.no_emulators)
+                                                    b.errorView.root.show()
+                                                }
+                                            }, 300)
+                                            actViewModel.refreshUser()
                                         }
-                                    }, 300)
-                                    actViewModel.refreshUser()
-                                }
-                            }
-                        })
-                    })
+                                    }
+                                })
+                            })
+                    }
+
+                    else -> {
+                        showEditAlert(data)
+                    }
+                }
             }
         }, DeviceListAdapter.Companion.TYPE.LIST, shouldShowStatus = true)
     }
 
     override fun onItemClick(viewId: Int, position: Int, data: DeviceEntity) {
 
+    }
+
+    private fun showEditAlert(device: DeviceEntity) {
+        val alertDialog = AlertDialog.Builder(requireActivity(), android.R.style.Theme_Material_Dialog_Alert)
+        val alertBinding = AlertEditBinding.inflate(layoutInflater)
+        alertDialog.setView(alertBinding.root)
+        val dialog = alertDialog.create()
+        dialog.show()
+        dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+
+        alertBinding.btnClose2.setOnClickListener {
+            dialog.dismiss()
+        }
+
+        alertBinding.btnClose.setOnClickListener {
+            dialog.dismiss()
+        }
+
+        alertBinding.tvDeviceName.text = device.deviceName
+        alertBinding.tvDeviceId.text = device.deviceId
+        alertBinding.tvAssignedTo.text = device.email ?: "N/A"
+        alertBinding.txtInputLayout.editText?.setText(device.details)
+
+        alertBinding.btnExtend.setOnClickListener {
+            dialog.dismiss()
+            vm.editDeviceDetails(alertBinding.etDetails.text.toString(), device.deviceId,
+                object : ResponseCallback {
+                    override fun onResponse(any: Any, errorMessage: String?) {
+                        if (errorMessage != null) {
+                            AlertHelper.showAlertDialog(
+                                requireActivity(), getString(R.string.error), errorMessage,
+                            )
+                        } else {
+                            vm.getAllDevices()
+                        }
+                    }
+                })
+        }
     }
 }
