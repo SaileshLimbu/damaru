@@ -4,7 +4,7 @@ import android.content.Intent
 import com.powersoft.common.R
 import com.powersoft.common.repository.UserRepo
 import com.powersoft.common.ui.PinActivity
-import com.powersoft.common.ui.helper.AlertHelper
+import com.powersoft.common.utils.AlertUtils
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
@@ -22,7 +22,7 @@ class PinActivityImpl : PinActivity() {
             startActivity(Intent(this@PinActivityImpl, MainActivity::class.java))
             return
         } else {
-            AlertHelper.showAlertDialog(
+            AlertUtils.showMessage(
                 this@PinActivityImpl, getString(R.string.error), errorMessage
             )
         }

@@ -9,7 +9,6 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity.RESULT_OK
-import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
@@ -23,8 +22,8 @@ import com.powersoft.common.model.ResponseWrapper
 import com.powersoft.common.model.State
 import com.powersoft.common.model.UserEntity
 import com.powersoft.common.ui.PickerActivity
-import com.powersoft.common.ui.helper.AlertHelper
 import com.powersoft.common.ui.helper.ResponseCallback
+import com.powersoft.common.utils.AlertUtils
 import com.powersoft.common.utils.hide
 import com.powersoft.common.utils.show
 import com.powersoft.damaruadmin.R
@@ -75,12 +74,12 @@ class AdminUsersFragment : Fragment(R.layout.fragment_home), RecyclerViewItemCli
                     }.toList(), userIdToAssign!!, object : ResponseCallback {
                         override fun onResponse(any: Any, errorMessage: String?) {
                             if (errorMessage != null) {
-                                AlertHelper.showAlertDialog(requireActivity(), title = getString(R.string.error), message = errorMessage)
+                                AlertUtils.showMessage(requireActivity(), title = getString(R.string.error), message = errorMessage)
                             } else {
                                 userIdToAssign = null
                                 vm.getAllDevices()
                                 vm.getAllMyUsers()
-                                AlertHelper.showSnackbar(b.root, getString(R.string.linked_success))
+                                AlertUtils.showToast(requireActivity(), R.string.linked_success)
                             }
                         }
                     })
@@ -167,7 +166,7 @@ class AdminUsersFragment : Fragment(R.layout.fragment_home), RecyclerViewItemCli
                 }
 
                 is ResponseWrapper.Error -> {
-                    AlertHelper.showToast(requireContext(), it.message)
+                    AlertUtils.showMessage(requireContext(), "Error", it.message)
                 }
 
                 is ResponseWrapper.Loading -> {
@@ -185,26 +184,28 @@ class AdminUsersFragment : Fragment(R.layout.fragment_home), RecyclerViewItemCli
                     }
 
                     R.id.btnDelete -> {
-                        AlertHelper.showAlertDialog(requireContext(), title = getString(R.string.delete_user) + " ??",
+                        AlertUtils.showConfirmDialog(
+                            requireContext(), title = getString(R.string.delete_user) + " ??",
                             message = getString(R.string.are_you_sure_you_want_to_delete_this_user),
                             positiveButtonText = getString(com.powersoft.common.R.string.delete),
-                            negativeButtonText = getString(com.powersoft.common.R.string.cancle), onPositiveButtonClick = {
-                                vm.deleteUser(data.id, object : ResponseCallback {
-                                    override fun onResponse(any: Any, errorMessage: String?) {
-                                        if (errorMessage != null) {
-                                            AlertHelper.showAlertDialog(requireActivity(), getString(R.string.error), errorMessage)
-                                        } else {
-                                            userAdapter.removeItem(position)
-                                            Handler(Looper.getMainLooper()).postDelayed({
-                                                if (userAdapter.currentList.isEmpty()) {
-                                                    b.errorView.tvError.text = getString(R.string.no_users)
-                                                    b.errorView.root.show()
-                                                }
-                                            }, 300)
-                                        }
+                            negativeButtonText = getString(com.powersoft.common.R.string.cancle)
+                        ) {
+                            vm.deleteUser(data.id, object : ResponseCallback {
+                                override fun onResponse(any: Any, errorMessage: String?) {
+                                    if (errorMessage != null) {
+                                        AlertUtils.showMessage(requireActivity(), getString(R.string.error), errorMessage)
+                                    } else {
+                                        userAdapter.removeItem(position)
+                                        Handler(Looper.getMainLooper()).postDelayed({
+                                            if (userAdapter.currentList.isEmpty()) {
+                                                b.errorView.tvError.text = getString(R.string.no_users)
+                                                b.errorView.root.show()
+                                            }
+                                        }, 300)
                                     }
-                                })
+                                }
                             })
+                        }
                     }
 
                     R.id.btnAssign -> {

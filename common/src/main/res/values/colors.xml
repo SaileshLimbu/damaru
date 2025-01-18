@@ -37,4 +37,5 @@
     <color name="greenLight">#56C500</color>
     <color name="redTransparent">#88FF0000</color>
     <color name="grey">#D8DDE2</color>
+    <color name="blue">#3F51B5</color>
 </resources>

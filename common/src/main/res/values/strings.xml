@@ -10,7 +10,7 @@
     <string name="enter_your_new_pin">Enter your new PIN</string>
     <string name="re_enter_your_pin">Re-enter your PIN</string>
     <string name="pin_does_not_matches">Pin does not matches</string>
-    <string name="enter_your_pin">Enter Your PIN</string>
+    <string name="enter_your_pin">Enter Your NEW PIN</string>
     <string name="login_label">Please sign in to continue.</string>
     <string name="_1">1</string>
     <string name="_2">2</string>
@@ -50,5 +50,12 @@
     <string name="extend">Extend</string>
     <string name="assigned_to">Assigned To :</string>
     <string name="edit">Edit</string>
+    <string name="ok">Ok</string>
+    <string name="change_pin_for_your_account">Change PIN for your account</string>
+    <string name="choose_your_option">Choose your option</string>
+    <string name="close">Close</string>
+    <string name="save">Save</string>
+    <string name="edit_device_details">Edit Device Details</string>
+    <string name="enter_device_details">Enter device details</string>
 
 </resources>

@@ -7,7 +7,7 @@ import androidx.fragment.app.Fragment
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import androidx.viewpager2.widget.ViewPager2
 import com.powersoft.common.repository.UserRepo
-import com.powersoft.common.ui.helper.AlertHelper
+import com.powersoft.common.utils.AlertUtils
 import com.powersoft.common.utils.PrefsHelper
 import com.powersoft.common.utils.visibility
 import com.powersoft.damaru.R
@@ -42,11 +42,13 @@ class MainActivity : AppCompatActivity() {
             when (item.itemId) {
                 R.id.tabHome -> {
                     binding.viewPager.currentItem = 0
+                    binding.tvTitle.text = "Devices"
                     true
                 }
 
                 R.id.tabAccounts -> {
                     binding.viewPager.currentItem = 1
+                    binding.tvTitle.text = "Accounts"
                     true
                 }
 
@@ -67,16 +69,16 @@ class MainActivity : AppCompatActivity() {
         binding.bottomNavigationView.visibility(userRepo.seasonEntity.value?.isRootUser == true)
 
         binding.imgLogout.setOnClickListener {
-            AlertHelper.showAlertDialog(this@MainActivity, getString(com.powersoft.common.R.string.logout), getString(com.powersoft.common.R.string.are_you_sure_you_want_to_logout), getString(com.powersoft.common.R.string.yes), getString(com.powersoft.common.R.string.no),
-                onPositiveButtonClick = {
-                    prefsHelper.clear()
-                    userRepo.logout()
-                    startActivity(
-                        Intent(applicationContext, LoginActivityImpl::class.java).setFlags(
-                            Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-                        )
+            AlertUtils.showConfirmDialog(this@MainActivity, getString(com.powersoft.common.R.string.logout),
+                getString(com.powersoft.common.R.string.are_you_sure_you_want_to_logout)) {
+                prefsHelper.clear()
+                userRepo.logout()
+                startActivity(
+                    Intent(applicationContext, LoginActivityImpl::class.java).setFlags(
+                        Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
                     )
-                })
+                )
+            }
         }
     }
 

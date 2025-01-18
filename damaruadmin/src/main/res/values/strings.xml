@@ -10,14 +10,14 @@
     <string name="error">Error</string>
     <string name="assign_device">Assign</string>
     <string name="delete_user">Delete User</string>
-    <string name="are_you_sure_you_want_to_delete_this_user">Are you sure you want to delete this user?</string>
+    <string name="are_you_sure_you_want_to_delete_this_user">Are you sure.\nYou want to delete this user?</string>
     <string name="linked_success">Devices linked to this user.</string>
-    <string name="unlink_this_device">Unlink Device from this User?</string>
-    <string name="are_you_sure_unlink_device">Are you sure you want to unlink this device from this user ?</string>
+    <string name="unlink_this_device">Unlink Device</string>
+    <string name="are_you_sure_unlink_device">Are you sure you.\nYou want to unlink this device from this user?</string>
     <string name="delete">Delete</string>
     <string name="no_devices_assigned">No Devices Assigned</string>
-    <string name="extend_expiry">Extend Expiry ??</string>
-    <string name="do_you_want_to_extend_expiry">Do you want extend expiry day of this device ??</string>
+    <string name="extend_expiry">Extend Expiry</string>
+    <string name="do_you_want_to_extend_expiry">Do you want extend expiry day of this device?</string>
     <string name="extend">Extend</string>
     <string name="no_of_days">No. of days</string>
     <string name="close">Close</string>
@@ -35,7 +35,6 @@
     <string name="no_emulators">No Emulators</string>
     <string name="users">Customers</string>
     <string name="details">Details</string>
-    <string name="edit_device_details">Edit Device Details</string>
     <string name="device_details">Device Details</string>
     <string name="save">Save</string>
     <string name="enter_device_details">Enter device details</string>

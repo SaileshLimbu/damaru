@@ -12,8 +12,9 @@ import com.powersoft.common.model.GestureAction
 import com.powersoft.common.model.GestureCommand
 import com.powersoft.common.socket.SocketClient
 import com.powersoft.common.socket.SocketListener
-import com.powersoft.common.ui.helper.AlertHelper
+import com.powersoft.common.utils.AlertUtils
 import com.powersoft.common.utils.AspectRatioUtils
+import com.powersoft.common.utils.DraggableTouchListener
 import com.powersoft.common.utils.GestureDetector
 import com.powersoft.common.utils.hide
 import com.powersoft.common.utils.show
@@ -21,7 +22,6 @@ import com.powersoft.common.webrtc.MyPeerObserver
 import com.powersoft.common.webrtc.WebRTCClient
 import com.powersoft.common.webrtc.WebRTCListener
 import com.powersoft.damaru.databinding.ActivityDeviceControlBinding
-import com.powersoft.common.utils.DraggableTouchListener
 import com.powersoft.damaru.viewmodels.DeviceControlViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import org.webrtc.IceCandidate
@@ -75,16 +75,16 @@ class DeviceControlActivity : AppCompatActivity(), SocketListener, WebRTCListene
 
         binding.btnDisconnect.setOnTouchListener(
             DraggableTouchListener {
-                AlertHelper.showAlertDialog(this@DeviceControlActivity,
+                AlertUtils.showConfirmDialog(
+                    this@DeviceControlActivity,
                     "Disconnect",
                     "Are you sure you want to disconnect?",
                     "Ok",
-                    "Cancel",
-                    onPositiveButtonClick = {
-                        dispose()
-                        finish()
-                    }
-                )
+                    "Cancel"
+                ) {
+                    dispose()
+                    finish()
+                }
             }
         )
     }

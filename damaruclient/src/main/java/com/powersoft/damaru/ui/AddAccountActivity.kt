@@ -7,8 +7,8 @@ import com.google.gson.Gson
 import com.powersoft.common.base.BaseActivity
 import com.powersoft.common.base.BaseViewModel
 import com.powersoft.common.model.AccountEntity
-import com.powersoft.common.ui.helper.AlertHelper
 import com.powersoft.common.ui.helper.ResponseCallback
+import com.powersoft.common.utils.AlertUtils
 import com.powersoft.common.utils.hide
 import com.powersoft.damaru.R
 import com.powersoft.damaru.databinding.ActivityAddAccountBinding
@@ -54,7 +54,7 @@ class AddAccountActivity : BaseActivity() {
                     object : ResponseCallback {
                         override fun onResponse(any: Any, errorMessage: String?) {
                             if (errorMessage != null) {
-                                AlertHelper.showAlertDialog(
+                                AlertUtils.showMessage(
                                     this@AddAccountActivity, getString(R.string.error), errorMessage
                                 )
                             } else {
@@ -68,7 +68,7 @@ class AddAccountActivity : BaseActivity() {
                     object : ResponseCallback {
                         override fun onResponse(any: Any, errorMessage: String?) {
                             if (errorMessage != null) {
-                                AlertHelper.showAlertDialog(
+                                AlertUtils.showMessage(
                                     this@AddAccountActivity, getString(R.string.error), errorMessage
                                 )
                             } else {

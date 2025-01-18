@@ -7,7 +7,7 @@ import androidx.recyclerview.widget.GridLayoutManager
 import com.powersoft.common.base.BaseActivity
 import com.powersoft.common.base.BaseViewModel
 import com.powersoft.common.model.ResponseWrapper
-import com.powersoft.common.ui.helper.AlertHelper
+import com.powersoft.common.utils.AlertUtils
 import com.powersoft.damaru.R
 import com.powersoft.damaru.adapters.DeviceUserAdapter
 import com.powersoft.damaru.adapters.User
@@ -52,7 +52,7 @@ class AccountUsersActivity : BaseActivity() {
         viewModel.liveData.observe(this) {
             when(it){
                 is ResponseWrapper.Error -> {
-                    AlertHelper.showSnackbar(b.root, it.message)
+                    AlertUtils.showMessage(this@AccountUsersActivity, "Error", it.message)
 
                 }
                 is ResponseWrapper.Loading -> TODO()

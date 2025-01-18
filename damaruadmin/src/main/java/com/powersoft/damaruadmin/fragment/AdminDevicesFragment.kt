@@ -12,24 +12,22 @@ import android.view.ViewGroup
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity.RESULT_OK
-import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.powersoft.common.adapter.DeviceListAdapter
+import com.powersoft.common.databinding.AlertEditBinding
 import com.powersoft.common.listeners.RecyclerViewItemClickListener
 import com.powersoft.common.model.DeviceEntity
 import com.powersoft.common.model.ResponseWrapper
 import com.powersoft.common.repository.UserRepo
-import com.powersoft.common.ui.helper.AlertHelper
 import com.powersoft.common.ui.helper.ResponseCallback
+import com.powersoft.common.utils.AlertUtils
 import com.powersoft.common.utils.hide
 import com.powersoft.common.utils.show
 import com.powersoft.damaruadmin.R
-import com.powersoft.damaruadmin.databinding.AlertEditBinding
-import com.powersoft.damaruadmin.databinding.AlertExtendBinding
 import com.powersoft.damaruadmin.databinding.FragmentDevicesBinding
 import com.powersoft.damaruadmin.ui.AddEmulatorActivity
 import com.powersoft.damaruadmin.ui.AdminMainActivity
@@ -132,27 +130,29 @@ class AdminDevicesFragment : Fragment(R.layout.fragment_devices), RecyclerViewIt
             override fun onItemClick(viewId: Int, position: Int, data: DeviceEntity) {
                 when (viewId) {
                     R.id.btnDelete -> {
-                        AlertHelper.showAlertDialog(requireContext(), title = getString(R.string.delete_emulator) + " ??",
+                        AlertUtils.showConfirmDialog(
+                            requireContext(), title = getString(R.string.delete_emulator) + " ??",
                             message = getString(R.string.are_you_sure_you_want_to_delete_this_emulator),
                             positiveButtonText = getString(com.powersoft.common.R.string.delete),
-                            negativeButtonText = getString(com.powersoft.common.R.string.cancle), onPositiveButtonClick = {
-                                vm.deleteEmulator(data.deviceId, object : ResponseCallback {
-                                    override fun onResponse(any: Any, errorMessage: String?) {
-                                        if (errorMessage != null) {
-                                            AlertHelper.showAlertDialog(requireActivity(), getString(R.string.error), errorMessage)
-                                        } else {
-                                            deviceAdapter.removeItem(position)
-                                            Handler(Looper.getMainLooper()).postDelayed({
-                                                if (deviceAdapter.currentList.isEmpty()) {
-                                                    b.errorView.tvError.text = getString(R.string.no_emulators)
-                                                    b.errorView.root.show()
-                                                }
-                                            }, 300)
-                                            actViewModel.refreshUser()
-                                        }
+                            negativeButtonText = getString(com.powersoft.common.R.string.cancle)
+                        ) {
+                            vm.deleteEmulator(data.deviceId, object : ResponseCallback {
+                                override fun onResponse(any: Any, errorMessage: String?) {
+                                    if (errorMessage != null) {
+                                        AlertUtils.showMessage(requireActivity(), getString(R.string.error), errorMessage)
+                                    } else {
+                                        deviceAdapter.removeItem(position)
+                                        Handler(Looper.getMainLooper()).postDelayed({
+                                            if (deviceAdapter.currentList.isEmpty()) {
+                                                b.errorView.tvError.text = getString(R.string.no_emulators)
+                                                b.errorView.root.show()
+                                            }
+                                        }, 300)
+                                        actViewModel.refreshUser()
                                     }
-                                })
+                                }
                             })
+                        }
                     }
 
                     else -> {
@@ -194,7 +194,7 @@ class AdminDevicesFragment : Fragment(R.layout.fragment_devices), RecyclerViewIt
                 object : ResponseCallback {
                     override fun onResponse(any: Any, errorMessage: String?) {
                         if (errorMessage != null) {
-                            AlertHelper.showAlertDialog(
+                            AlertUtils.showMessage(
                                 requireActivity(), getString(R.string.error), errorMessage,
                             )
                         } else {

@@ -11,7 +11,7 @@ import androidx.viewpager2.widget.ViewPager2
 import com.powersoft.common.base.BaseActivity
 import com.powersoft.common.base.BaseViewModel
 import com.powersoft.common.repository.UserRepo
-import com.powersoft.common.ui.helper.AlertHelper
+import com.powersoft.common.utils.AlertUtils
 import com.powersoft.common.utils.PrefsHelper
 import com.powersoft.common.utils.hide
 import com.powersoft.common.utils.hideKeyboard
@@ -20,19 +20,20 @@ import com.powersoft.common.utils.showKeyboard
 import com.powersoft.damaruadmin.R
 import com.powersoft.damaruadmin.databinding.ActivityAdminMainBinding
 import com.powersoft.damaruadmin.fragment.AdminDevicesFragment
-import com.powersoft.damaruadmin.viewmodels.AdminMainActivityViewModel
 import com.powersoft.damaruadmin.fragment.AdminUsersFragment
+import com.powersoft.damaruadmin.viewmodels.AdminMainActivityViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
 @AndroidEntryPoint
 class AdminMainActivity : BaseActivity() {
-    private val viewModel : AdminMainActivityViewModel by viewModels()
+    private val viewModel: AdminMainActivityViewModel by viewModels()
     private lateinit var binding: ActivityAdminMainBinding
     private lateinit var viewPagerAdapter: ViewPagerAdapter
 
     @Inject
     lateinit var prefsHelper: PrefsHelper
+
     @Inject
     lateinit var userRepo: UserRepo
 
@@ -78,16 +79,20 @@ class AdminMainActivity : BaseActivity() {
         })
 
         binding.imgLogout.setOnClickListener {
-            AlertHelper.showAlertDialog(this@AdminMainActivity, getString(com.powersoft.common.R.string.logout), getString(com.powersoft.common.R.string.are_you_sure_you_want_to_logout), getString(com.powersoft.common.R.string.yes), getString(com.powersoft.common.R.string.no),
-                onPositiveButtonClick = {
-                    prefsHelper.clear()
-                    userRepo.logout()
-                    startActivity(
-                        Intent(applicationContext, LoginActivityImpl::class.java).setFlags(
-                            Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-                        )
+            AlertUtils.showConfirmDialog(
+                this@AdminMainActivity, getString(com.powersoft.common.R.string.logout),
+                getString(com.powersoft.common.R.string.are_you_sure_you_want_to_logout),
+                getString(com.powersoft.common.R.string.yes),
+                getString(com.powersoft.common.R.string.no)
+            ) {
+                prefsHelper.clear()
+                userRepo.logout()
+                startActivity(
+                    Intent(applicationContext, LoginActivityImpl::class.java).setFlags(
+                        Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
                     )
-                })
+                )
+            }
         }
 
         binding.imgSearch.setOnClickListener {
@@ -97,14 +102,14 @@ class AdminMainActivity : BaseActivity() {
 
         binding.etSearch.addTextChangedListener {
             val currentFragment = getCurrentFragment()
-            if (currentFragment is AdminUsersFragment){
+            if (currentFragment is AdminUsersFragment) {
                 currentFragment.onSearch(it.toString())
-            }else if (currentFragment is AdminDevicesFragment){
+            } else if (currentFragment is AdminDevicesFragment) {
                 currentFragment.onSearch(it.toString())
             }
         }
 
-        binding.tvCancle.setOnClickListener{
+        binding.tvCancle.setOnClickListener {
             this@AdminMainActivity.hideKeyboard()
             binding.etSearch.text.clear()
             binding.viewSearch.hide()

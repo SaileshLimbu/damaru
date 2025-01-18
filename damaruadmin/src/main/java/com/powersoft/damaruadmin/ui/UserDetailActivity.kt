@@ -21,8 +21,8 @@ import com.powersoft.common.model.State
 import com.powersoft.common.model.UserEntity
 import com.powersoft.common.repository.UserRepo
 import com.powersoft.common.ui.PickerActivity
-import com.powersoft.common.ui.helper.AlertHelper
 import com.powersoft.common.ui.helper.ResponseCallback
+import com.powersoft.common.utils.AlertUtils
 import com.powersoft.common.utils.hide
 import com.powersoft.common.utils.show
 import com.powersoft.common.utils.visibility
@@ -69,11 +69,11 @@ class UserDetailActivity : BaseActivity() {
                     }.toList(), user.id, object : ResponseCallback {
                         override fun onResponse(any: Any, errorMessage: String?) {
                             if (errorMessage != null) {
-                                AlertHelper.showAlertDialog(this@UserDetailActivity, title = getString(R.string.error), message = errorMessage)
+                                AlertUtils.showMessage(this@UserDetailActivity, title = getString(R.string.error), message = errorMessage)
                             } else {
                                 setResult(RESULT_OK, Intent().putExtra("deviceUpdate", true))
                                 vm.getAllDevices()
-                                AlertHelper.showSnackbar(binding.root, getString(R.string.linked_success))
+                                AlertUtils.showToast(this@UserDetailActivity, R.string.linked_success)
                             }
                         }
                     })
@@ -103,24 +103,26 @@ class UserDetailActivity : BaseActivity() {
         binding.extendedFAB.visibility(!user.isSuperAdmin)
 
         binding.btnDelete.setOnClickListener {
-            AlertHelper.showAlertDialog(this@UserDetailActivity, title = getString(R.string.delete_user) + " ??",
+            AlertUtils.showConfirmDialog(
+                this@UserDetailActivity, title = getString(R.string.delete_user) + " ??",
                 message = getString(R.string.are_you_sure_you_want_to_delete_this_user),
                 positiveButtonText = getString(com.powersoft.common.R.string.delete),
-                negativeButtonText = getString(com.powersoft.common.R.string.cancle), onPositiveButtonClick = {
-                    vm.deleteUser(user.id, object : ResponseCallback {
-                        override fun onResponse(any: Any, errorMessage: String?) {
-                            if (errorMessage == null) {
-                                setResult(RESULT_OK)
-                                finish()
-                            } else {
-                                AlertHelper.showAlertDialog(
-                                    this@UserDetailActivity, getString(R.string.error),
-                                    message = errorMessage,
-                                )
-                            }
+                negativeButtonText = getString(com.powersoft.common.R.string.cancle)
+            ) {
+                vm.deleteUser(user.id, object : ResponseCallback {
+                    override fun onResponse(any: Any, errorMessage: String?) {
+                        if (errorMessage == null) {
+                            setResult(RESULT_OK)
+                            finish()
+                        } else {
+                            AlertUtils.showMessage(
+                                this@UserDetailActivity, getString(R.string.error),
+                                message = errorMessage,
+                            )
                         }
-                    })
+                    }
                 })
+            }
         }
 
         binding.btnEdit.setOnClickListener {
@@ -180,27 +182,26 @@ class UserDetailActivity : BaseActivity() {
         return DeviceListAdapter(object : RecyclerViewItemClickListener<DeviceEntity> {
             override fun onItemClick(viewId: Int, position: Int, data: DeviceEntity) {
                 if (viewId == R.id.btnDelete) {
-                    AlertHelper.showAlertDialog(
+                    AlertUtils.showConfirmDialog(
                         this@UserDetailActivity, title = getString(R.string.unlink_this_device),
                         message = getString(R.string.are_you_sure_unlink_device),
                         positiveButtonText = getString(R.string.delete),
-                        negativeButtonText = getString(com.powersoft.common.R.string.cancle),
-                        onPositiveButtonClick = {
-                            vm.unlinkDevice(user.id, listOf(data.deviceId),
-                                object : ResponseCallback {
-                                    override fun onResponse(any: Any, errorMessage: String?) {
-                                        if (errorMessage != null) {
-                                            AlertHelper.showAlertDialog(
-                                                this@UserDetailActivity, getString(R.string.error), errorMessage,
-                                            )
-                                        } else {
-                                            setResult(RESULT_OK, Intent().putExtra("deviceUpdate", true))
-                                            vm.getAllDevices()
-                                        }
+                        negativeButtonText = getString(com.powersoft.common.R.string.cancle)
+                    ) {
+                        vm.unlinkDevice(user.id, listOf(data.deviceId),
+                            object : ResponseCallback {
+                                override fun onResponse(any: Any, errorMessage: String?) {
+                                    if (errorMessage != null) {
+                                        AlertUtils.showMessage(
+                                            this@UserDetailActivity, getString(R.string.error), errorMessage,
+                                        )
+                                    } else {
+                                        setResult(RESULT_OK, Intent().putExtra("deviceUpdate", true))
+                                        vm.getAllDevices()
                                     }
-                                })
-                        }
-                    )
+                                }
+                            })
+                    }
                 } else if (viewId == com.powersoft.common.R.id.btnExtend) {
                     showExtendAlert(data)
                 }
@@ -239,7 +240,7 @@ class UserDetailActivity : BaseActivity() {
 
         alertBinding.btnExtend.setOnClickListener {
             if (alertBinding.etDays.text.toString().isEmpty()) {
-                AlertHelper.showToast(this@UserDetailActivity, getString(R.string.please_enter_no_of_days_to_extend))
+                AlertUtils.showMessage(this@UserDetailActivity, "Error", getString(R.string.please_enter_no_of_days_to_extend))
                 return@setOnClickListener
             }
             dialog.dismiss()
@@ -247,7 +248,7 @@ class UserDetailActivity : BaseActivity() {
                 object : ResponseCallback {
                     override fun onResponse(any: Any, errorMessage: String?) {
                         if (errorMessage != null) {
-                            AlertHelper.showAlertDialog(
+                            AlertUtils.showMessage(
                                 this@UserDetailActivity, getString(R.string.error), errorMessage,
                             )
                         } else {

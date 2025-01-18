@@ -5,7 +5,7 @@ import android.os.Bundle
 import com.powersoft.common.BuildConfig
 import com.powersoft.common.model.LoginEntity
 import com.powersoft.common.ui.LoginActivity
-import com.powersoft.common.ui.helper.AlertHelper
+import com.powersoft.common.utils.AlertUtils
 import com.powersoft.damaru.R
 
 class LoginActivityImpl : LoginActivity() {
@@ -23,7 +23,7 @@ class LoginActivityImpl : LoginActivity() {
                     .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP)
             )
         } else {
-            AlertHelper.showAlertDialog(this@LoginActivityImpl, getString(R.string.error), errorMessage)
+            AlertUtils.showMessage(this@LoginActivityImpl, getString(R.string.error), errorMessage)
         }
     }
 
@@ -34,9 +34,9 @@ class LoginActivityImpl : LoginActivity() {
             //superadmin@damaru.com
             //superAdmin@123
             //SuperAdmin, AndroidUser
-            b.etUsername.setText("donotfucking@delete.com")
-            b.etPassword.setText("Test@123")
-            b.etPin.setText("00000")
+//            b.etUsername.setText("donotfucking@delete.com")
+//            b.etPassword.setText("Test@123")
+//            b.etPin.setText("00000")
         }
     }
 }

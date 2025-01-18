@@ -43,6 +43,7 @@ class MainActivity : AppCompatActivity() {
         ) { result ->
             if (result.resultCode == Activity.RESULT_OK && result.data != null) {
                 startScreenCaptureService(result.data!!)
+                super.onBackPressed()
             }
         }
         startScreenCapture()

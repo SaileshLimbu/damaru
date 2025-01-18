@@ -5,7 +5,7 @@ import android.os.Bundle
 import com.powersoft.common.BuildConfig
 import com.powersoft.common.model.LoginEntity
 import com.powersoft.common.ui.LoginActivity
-import com.powersoft.common.ui.helper.AlertHelper
+import com.powersoft.common.utils.AlertUtils
 
 class LoginActivityImpl : LoginActivity() {
     override fun onLoginResponse(any: Any, errorMessage: String?) {
@@ -22,7 +22,7 @@ class LoginActivityImpl : LoginActivity() {
                     .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP)
             )
         } else {
-            AlertHelper.showAlertDialog(this@LoginActivityImpl, getString(com.powersoft.common.R.string.error), errorMessage)
+            AlertUtils.showMessage(this@LoginActivityImpl, getString(com.powersoft.common.R.string.error), errorMessage)
         }
     }
 

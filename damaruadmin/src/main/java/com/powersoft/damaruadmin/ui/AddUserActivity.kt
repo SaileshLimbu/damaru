@@ -7,8 +7,8 @@ import com.google.gson.Gson
 import com.powersoft.common.base.BaseActivity
 import com.powersoft.common.base.BaseViewModel
 import com.powersoft.common.model.UserEntity
-import com.powersoft.common.ui.helper.AlertHelper
 import com.powersoft.common.ui.helper.ResponseCallback
+import com.powersoft.common.utils.AlertUtils
 import com.powersoft.common.utils.visibility
 import com.powersoft.damaruadmin.R
 import com.powersoft.damaruadmin.databinding.ActivityAddUserBinding
@@ -55,10 +55,12 @@ class AddUserActivity : BaseActivity() {
                     object : ResponseCallback {
                         override fun onResponse(any: Any, errorMessage: String?) {
                             if (errorMessage != null) {
-                                AlertHelper.showAlertDialog(this@AddUserActivity, getString(R.string.error), errorMessage)
+                                AlertUtils.showMessage(this@AddUserActivity, getString(R.string.error), errorMessage)
                             } else {
-                                setResult(RESULT_OK, Intent().putExtra("edited_name", binding.etName.text.toString())
-                                    .putExtra("edited_email", binding.etEmail.text.toString()))
+                                setResult(
+                                    RESULT_OK, Intent().putExtra("edited_name", binding.etName.text.toString())
+                                        .putExtra("edited_email", binding.etEmail.text.toString())
+                                )
                                 finish()
                             }
                         }
@@ -69,7 +71,7 @@ class AddUserActivity : BaseActivity() {
                     object : ResponseCallback {
                         override fun onResponse(any: Any, errorMessage: String?) {
                             if (errorMessage != null) {
-                                AlertHelper.showAlertDialog(this@AddUserActivity, getString(R.string.error), errorMessage)
+                                AlertUtils.showMessage(this@AddUserActivity, getString(R.string.error), errorMessage)
                             } else {
                                 setResult(RESULT_OK)
                                 finish()

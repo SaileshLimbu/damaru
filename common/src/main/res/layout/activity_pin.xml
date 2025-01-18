@@ -37,12 +37,25 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="50dp"
         android:text="@string/enter_your_pin"
-        android:textColor="@color/colorPrimaryVariant"
+        android:textColor="@color/black"
+        android:fontFamily="@font/adlam_display"
         android:textSize="18sp"
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/lockIcon" />
+
+    <TextView
+        android:id="@+id/noteDetail"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/quicksand"
+        android:text="@string/change_pin_for_your_account"
+        android:textColor="@color/black"
+        android:textSize="14sp"
+        app:layout_constraintTop_toBottomOf="@id/pinPrompt"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
 
     <LinearLayout
         android:id="@+id/pinInput"
@@ -114,9 +127,11 @@
             android:layout_gravity="center"
             android:layout_marginTop="12dp"
             android:layout_marginBottom="12dp"
-            android:background="@drawable/keypad_button"
+            android:background="@color/transparent"
             android:text="@string/_1"
-            android:textColor="@color/white"
+            android:textSize="20sp"
+            android:fontFamily="@font/quicksand"
+            android:textColor="@color/black"
             android:textStyle="bold" />
 
         <Button
@@ -127,9 +142,11 @@
             android:layout_gravity="center"
             android:layout_marginTop="12dp"
             android:layout_marginBottom="12dp"
-            android:background="@drawable/keypad_button"
+            android:background="@color/transparent"
             android:text="@string/_2"
-            android:textColor="@color/white"
+            android:textSize="20sp"
+            android:fontFamily="@font/quicksand"
+            android:textColor="@color/black"
             android:textStyle="bold" />
 
         <Button
@@ -140,9 +157,11 @@
             android:layout_gravity="center"
             android:layout_marginTop="12dp"
             android:layout_marginBottom="12dp"
-            android:background="@drawable/keypad_button"
+            android:background="@color/transparent"
             android:text="@string/_3"
-            android:textColor="@color/white"
+            android:textSize="20sp"
+            android:fontFamily="@font/quicksand"
+            android:textColor="@color/black"
             android:textStyle="bold" />
 
         <Button
@@ -153,9 +172,11 @@
             android:layout_gravity="center"
             android:layout_marginTop="12dp"
             android:layout_marginBottom="12dp"
-            android:background="@drawable/keypad_button"
+            android:background="@color/transparent"
             android:text="@string/_4"
-            android:textColor="@color/white"
+            android:textSize="20sp"
+            android:fontFamily="@font/quicksand"
+            android:textColor="@color/black"
             android:textStyle="bold" />
 
         <Button
@@ -166,9 +187,11 @@
             android:layout_gravity="center"
             android:layout_marginTop="12dp"
             android:layout_marginBottom="12dp"
-            android:background="@drawable/keypad_button"
+            android:background="@color/transparent"
             android:text="@string/_5"
-            android:textColor="@color/white"
+            android:textSize="20sp"
+            android:fontFamily="@font/quicksand"
+            android:textColor="@color/black"
             android:textStyle="bold" />
 
         <Button
@@ -179,9 +202,11 @@
             android:layout_gravity="center"
             android:layout_marginTop="12dp"
             android:layout_marginBottom="12dp"
-            android:background="@drawable/keypad_button"
+            android:background="@color/transparent"
             android:text="@string/_6"
-            android:textColor="@color/white"
+            android:textSize="20sp"
+            android:fontFamily="@font/quicksand"
+            android:textColor="@color/black"
             android:textStyle="bold" />
 
         <Button
@@ -192,9 +217,11 @@
             android:layout_gravity="center"
             android:layout_marginTop="12dp"
             android:layout_marginBottom="12dp"
-            android:background="@drawable/keypad_button"
+            android:background="@color/transparent"
             android:text="@string/_7"
-            android:textColor="@color/white"
+            android:textSize="20sp"
+            android:fontFamily="@font/quicksand"
+            android:textColor="@color/black"
             android:textStyle="bold" />
 
         <Button
@@ -205,9 +232,11 @@
             android:layout_gravity="center"
             android:layout_marginTop="12dp"
             android:layout_marginBottom="12dp"
-            android:background="@drawable/keypad_button"
+            android:background="@color/transparent"
             android:text="@string/_8"
-            android:textColor="@color/white"
+            android:textSize="20sp"
+            android:fontFamily="@font/quicksand"
+            android:textColor="@color/black"
             android:textStyle="bold" />
 
         <Button
@@ -218,9 +247,11 @@
             android:layout_gravity="center"
             android:layout_marginTop="12dp"
             android:layout_marginBottom="12dp"
-            android:background="@drawable/keypad_button"
+            android:background="@color/transparent"
             android:text="@string/_9"
-            android:textColor="@color/white"
+            android:textSize="20sp"
+            android:fontFamily="@font/quicksand"
+            android:textColor="@color/black"
             android:textStyle="bold" />
 
         <View
@@ -239,9 +270,11 @@
             android:layout_gravity="center"
             android:layout_marginTop="12dp"
             android:layout_marginBottom="12dp"
-            android:background="@drawable/keypad_button"
+            android:background="@color/transparent"
             android:text="@string/_0"
-            android:textColor="@color/white"
+            android:textSize="20sp"
+            android:fontFamily="@font/quicksand"
+            android:textColor="@color/black"
             android:textStyle="bold" />
 
         <ImageButton

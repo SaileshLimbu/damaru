@@ -1,6 +1,5 @@
 package com.powersoft.damaru.fragments
 
-import android.app.AlertDialog
 import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -10,16 +9,17 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.GridLayoutManager
 import com.google.gson.Gson
+import com.powersoft.common.adapter.DeviceListAdapter
 import com.powersoft.common.listeners.RecyclerViewItemClickListener
 import com.powersoft.common.model.DeviceEntity
+import com.powersoft.common.model.OptionItem
 import com.powersoft.common.model.ResponseWrapper
 import com.powersoft.common.model.Status
 import com.powersoft.common.repository.UserRepo
-import com.powersoft.common.ui.helper.AlertHelper
+import com.powersoft.common.utils.AlertUtils
 import com.powersoft.common.utils.hide
 import com.powersoft.common.utils.show
 import com.powersoft.damaru.R
-import com.powersoft.common.adapter.DeviceListAdapter
 import com.powersoft.damaru.databinding.FragmentHomeBinding
 import com.powersoft.damaru.ui.DeviceControlActivity
 import com.powersoft.damaru.ui.DeviceDetailsActivity
@@ -66,11 +66,11 @@ class HomeFragment : Fragment(R.layout.fragment_home), RecyclerViewItemClickList
                     deviceAdapter.submitList(it.data)
                     b.loader.root.hide()
                     b.errorView.root.hide()
-
                     b.swipeRefresh.isRefreshing = false
                 }
 
                 is ResponseWrapper.Error -> {
+                    deviceAdapter.submitList(emptyList())
                     b.loader.root.hide()
                     b.errorView.tvError.text = it.message
                     b.errorView.root.show()
@@ -88,15 +88,19 @@ class HomeFragment : Fragment(R.layout.fragment_home), RecyclerViewItemClickList
         b.swipeRefresh.setOnRefreshListener { vm.getMyEmulators() }
     }
 
+    override fun onResume() {
+        super.onResume()
+        vm.getMyEmulators()
+    }
+
     override fun onItemClick(viewId: Int, position: Int, data: DeviceEntity) {
         val accountId = userRepo.seasonEntity.value?.accountId
         val token = userRepo.seasonEntity.value?.accessToken
         if (userRepo.seasonEntity.value?.isRootUser == true) {
-            val dialog: AlertDialog.Builder = AlertDialog.Builder(activity)
-            dialog.setTitle("Options")
-            dialog.setItems(arrayOf("Connect to device", "Device Details")) { dialogInterface, itemPos ->
-                dialogInterface.dismiss()
-                when (itemPos) {
+            AlertUtils.showOptionDialog(activity, "Options", arrayOf(
+                OptionItem("Connect to device", R.drawable.ic_connect_device),
+                OptionItem("Device Details", R.drawable.ic_details))){
+                when (it) {
                     0 -> {
                         if (data.status == Status.online) {
                             val intent = Intent(context, DeviceControlActivity::class.java)
@@ -105,8 +109,7 @@ class HomeFragment : Fragment(R.layout.fragment_home), RecyclerViewItemClickList
                                 .putExtra(DeviceControlActivity.TOKEN, token)
                             startActivity(intent)
                         } else {
-                            dialogInterface.dismiss()
-                            AlertHelper.showAlertDialog(requireActivity(), "Oops!!!", "Emulator is offline")
+                            AlertUtils.showMessage(requireActivity(), "Oops!!!", "Emulator is offline")
                         }
                     }
 
@@ -118,7 +121,6 @@ class HomeFragment : Fragment(R.layout.fragment_home), RecyclerViewItemClickList
                     }
                 }
             }
-            dialog.show()
         } else {
             if (data.status == Status.online) {
                 val intent = Intent(context, DeviceControlActivity::class.java)
@@ -127,7 +129,7 @@ class HomeFragment : Fragment(R.layout.fragment_home), RecyclerViewItemClickList
                     .putExtra(DeviceControlActivity.TOKEN, token)
                 startActivity(intent)
             } else {
-                AlertHelper.showAlertDialog(requireActivity(), "Oops!!!", "Emulator is offline")
+                AlertUtils.showMessage(requireActivity(), "Oops!!!", "Emulator is offline")
             }
         }
     }

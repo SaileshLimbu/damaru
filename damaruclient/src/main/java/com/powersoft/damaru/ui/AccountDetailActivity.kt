@@ -6,6 +6,7 @@ import android.os.Bundle
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.gson.Gson
 import com.powersoft.common.adapter.DeviceListAdapter
@@ -14,13 +15,14 @@ import com.powersoft.common.base.BaseViewModel
 import com.powersoft.common.listeners.RecyclerViewItemClickListener
 import com.powersoft.common.model.AccountEntity
 import com.powersoft.common.model.DeviceEntity
+import com.powersoft.common.model.OptionItem
 import com.powersoft.common.model.PickerEntity
 import com.powersoft.common.model.ResponseWrapper
 import com.powersoft.common.repository.UserRepo
 import com.powersoft.common.ui.LogsActivity
 import com.powersoft.common.ui.PickerActivity
-import com.powersoft.common.ui.helper.AlertHelper
 import com.powersoft.common.ui.helper.ResponseCallback
+import com.powersoft.common.utils.AlertUtils
 import com.powersoft.common.utils.hide
 import com.powersoft.common.utils.show
 import com.powersoft.common.utils.visibility
@@ -35,6 +37,7 @@ class AccountDetailActivity : BaseActivity() {
     private lateinit var binding: ActivityAccountDetailBinding
     private val vm: AccountDetailViewModel by viewModels()
     private lateinit var account: AccountEntity
+    private val linkedDeviceAdapter by lazy { createLinkedDeviceAdapter() }
 
     @Inject
     lateinit var gson: Gson
@@ -65,9 +68,9 @@ class AccountDetailActivity : BaseActivity() {
                         override fun onResponse(any: Any, errorMessage: String?) {
                             vm.getLinkedDevices(account.id)
                             if (errorMessage != null) {
-                                AlertHelper.showAlertDialog(this@AccountDetailActivity, title = getString(R.string.error), message = errorMessage)
+                                AlertUtils.showMessage(this@AccountDetailActivity, title = getString(R.string.error), message = errorMessage)
                             } else {
-                                AlertHelper.showSnackbar(binding.root, getString(R.string.linked_success))
+                               AlertUtils.showToast(this@AccountDetailActivity, R.string.linked_success)
                             }
                         }
                     })
@@ -114,7 +117,7 @@ class AccountDetailActivity : BaseActivity() {
                         setResult(RESULT_OK)
                         finish()
                     } else {
-                        AlertHelper.showAlertDialog(
+                        AlertUtils.showMessage(
                             this@AccountDetailActivity, getString(R.string.error),
                             message = errorMessage,
                         )
@@ -130,6 +133,9 @@ class AccountDetailActivity : BaseActivity() {
         binding.btnChangePin.setOnClickListener {
             changePinResultLauncher.launch(Intent(applicationContext, ChangePinActivity::class.java).putExtra("account", gson.toJson(account)))
         }
+
+        binding.recyclerView.layoutManager = LinearLayoutManager(this)
+        binding.recyclerView.adapter = linkedDeviceAdapter
 
         binding.recyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
@@ -151,26 +157,25 @@ class AccountDetailActivity : BaseActivity() {
         }
 
         binding.btnDelete.setOnClickListener {
-            AlertHelper.showAlertDialog(
-                this@AccountDetailActivity, title = getString(R.string.delete_account) + " ??",
+            AlertUtils.showConfirmDialog(
+                this@AccountDetailActivity, title = getString(R.string.delete_account) + "?",
                 message = getString(R.string.are_you_sure_you_want_to_delete_this_account),
                 positiveButtonText = getString(R.string.delete),
-                negativeButtonText = getString(com.powersoft.common.R.string.cancle),
-                onPositiveButtonClick = {
-                    vm.deleteAccount(account.id, object : ResponseCallback {
-                        override fun onResponse(any: Any, errorMessage: String?) {
-                            if (errorMessage != null) {
-                                AlertHelper.showAlertDialog(
-                                    this@AccountDetailActivity, getString(R.string.error), errorMessage
-                                )
-                            } else {
-                                setResult(RESULT_OK)
-                                finish()
-                            }
+                negativeButtonText = getString(com.powersoft.common.R.string.cancle)
+            ) {
+                vm.deleteAccount(account.id, object : ResponseCallback {
+                    override fun onResponse(any: Any, errorMessage: String?) {
+                        if (errorMessage != null) {
+                            AlertUtils.showMessage(
+                                this@AccountDetailActivity, getString(R.string.error), errorMessage
+                            )
+                        } else {
+                            setResult(RESULT_OK)
+                            finish()
                         }
-                    })
-                }
-            )
+                    }
+                })
+            }
         }
 
         binding.recyclerView.apply {
@@ -180,55 +185,14 @@ class AccountDetailActivity : BaseActivity() {
         vm.allLinkedDevices.observe(this) {
             when (it) {
                 is ResponseWrapper.Success -> {
-                    val deviceAdapter = DeviceListAdapter(object : RecyclerViewItemClickListener<DeviceEntity> {
-                        override fun onItemClick(viewId: Int, position: Int, data: DeviceEntity) {
-                            val dialog: AlertDialog.Builder = AlertDialog.Builder(this@AccountDetailActivity)
-                            dialog.setTitle("Options")
-                            dialog.setItems(arrayOf("Unlink Device", "Device Logs")) { dialogInterface, itemPos ->
-                                dialogInterface.dismiss()
-                                when (itemPos) {
-                                    0 -> {
-                                        AlertHelper.showAlertDialog(
-                                            this@AccountDetailActivity, title = getString(R.string.unlink_this_device),
-                                            message = getString(R.string.are_you_sure_unlink_device),
-                                            positiveButtonText = getString(R.string.delete),
-                                            negativeButtonText = getString(com.powersoft.common.R.string.cancle),
-                                            onPositiveButtonClick = {
-                                                vm.unlinkDevice(data.deviceId, userRepo.seasonEntity.value?.userId.toString(), listOf(account.id),
-                                                    object : ResponseCallback {
-                                                        override fun onResponse(any: Any, errorMessage: String?) {
-                                                            if (errorMessage != null) {
-                                                                AlertHelper.showAlertDialog(
-                                                                    this@AccountDetailActivity, getString(R.string.error), errorMessage,
-                                                                )
-                                                            } else {
-                                                                setResult(RESULT_OK)
-                                                                vm.getLinkedDevices(account.id)
-                                                            }
-                                                        }
-                                                    })
-                                            }
-                                        )
-                                    }
-
-                                    else -> {
-                                        LogsActivity.start(this@AccountDetailActivity, account.id, data.deviceId)
-                                    }
-                                }
-                            }
-                            dialog.show()
-                        }
-
-                    })
-                    deviceAdapter.submitList(it.data)
-                    binding.recyclerView.adapter = deviceAdapter
-
+                    linkedDeviceAdapter.submitList(it.data)
                     binding.loader.root.hide()
                     binding.errorView.root.hide()
                     binding.extendedFAB.show()
                 }
 
                 is ResponseWrapper.Error -> {
+                    linkedDeviceAdapter.submitList(emptyList())
                     binding.loader.root.hide()
                     binding.errorView.tvError.text = it.message
                     binding.errorView.root.show()
@@ -249,7 +213,7 @@ class AccountDetailActivity : BaseActivity() {
                 }
 
                 is ResponseWrapper.Error -> {
-                    AlertHelper.showAlertDialog(
+                    AlertUtils.showMessage(
                         this@AccountDetailActivity, title = getString(R.string.error),
                         message = it.message
                     )
@@ -269,5 +233,46 @@ class AccountDetailActivity : BaseActivity() {
             this@AccountDetailActivity, vm.getFilteredList(),
             true, linkDeviceResultLauncher
         )
+    }
+
+    private fun createLinkedDeviceAdapter(): DeviceListAdapter {
+        return DeviceListAdapter(object : RecyclerViewItemClickListener<DeviceEntity> {
+            override fun onItemClick(viewId: Int, position: Int, data: DeviceEntity) {
+                AlertUtils.showOptionDialog(this@AccountDetailActivity, "Options", arrayOf(
+                    OptionItem("Unlink Device", R.drawable.ic_unlink),
+                    OptionItem("Device Logs", R.drawable.ic_logs)
+                )){
+                    when (it) {
+                        0 -> {
+                            AlertUtils.showConfirmDialog(
+                                this@AccountDetailActivity, title = getString(R.string.unlink_this_device),
+                                message = getString(R.string.are_you_sure_unlink_device),
+                                positiveButtonText = getString(R.string.delete),
+                                negativeButtonText = getString(com.powersoft.common.R.string.cancle)
+                            ) {
+                                vm.unlinkDevice(data.deviceId, userRepo.seasonEntity.value?.userId.toString(), listOf(account.id),
+                                    object : ResponseCallback {
+                                        override fun onResponse(any: Any, errorMessage: String?) {
+                                            if (errorMessage != null) {
+                                                AlertUtils.showMessage(
+                                                    this@AccountDetailActivity, getString(R.string.error), errorMessage,
+                                                )
+                                            } else {
+                                                setResult(RESULT_OK)
+                                                vm.getLinkedDevices(account.id)
+                                            }
+                                        }
+                                    })
+                            }
+                        }
+
+                        else -> {
+                            LogsActivity.start(this@AccountDetailActivity, account.id, data.deviceId)
+                        }
+                    }
+                }
+            }
+
+        })
     }
 }

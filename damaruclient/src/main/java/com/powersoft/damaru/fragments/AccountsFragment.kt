@@ -16,8 +16,8 @@ import com.powersoft.common.listeners.RecyclerViewItemClickListener
 import com.powersoft.common.model.AccountEntity
 import com.powersoft.common.model.ResponseWrapper
 import com.powersoft.common.repository.UserRepo
-import com.powersoft.common.ui.helper.AlertHelper
 import com.powersoft.common.ui.helper.ResponseCallback
+import com.powersoft.common.utils.AlertUtils
 import com.powersoft.common.utils.hide
 import com.powersoft.common.utils.show
 import com.powersoft.common.utils.visibility
@@ -127,20 +127,22 @@ class AccountsFragment : Fragment(R.layout.fragment_accounts) {
                 when (viewId) {
                     R.id.imgDelete -> {
                         context?.let { context ->
-                            AlertHelper.showAlertDialog(context, title = getString(R.string.delete_account) + " ??",
+                            AlertUtils.showConfirmDialog(
+                                context, title = getString(R.string.delete_account) + "?",
                                 message = getString(R.string.are_you_sure_you_want_to_delete_this_account),
                                 positiveButtonText = getString(R.string.delete),
-                                negativeButtonText = getString(com.powersoft.common.R.string.cancle), onPositiveButtonClick = {
-                                    vm.deleteAccount(data.id, object : ResponseCallback {
-                                        override fun onResponse(any: Any, errorMessage: String?) {
-                                            if (errorMessage == null) {
-                                                accountsAdapter.removeItem(position)
-                                            } else {
-                                                AlertHelper.showAlertDialog(context, getString(R.string.error), errorMessage)
-                                            }
+                                negativeButtonText = getString(com.powersoft.common.R.string.cancle)
+                            ) {
+                                vm.deleteAccount(data.id, object : ResponseCallback {
+                                    override fun onResponse(any: Any, errorMessage: String?) {
+                                        if (errorMessage == null) {
+                                            accountsAdapter.removeItem(position)
+                                        } else {
+                                            AlertUtils.showMessage(context, getString(R.string.error), errorMessage)
                                         }
-                                    })
+                                    }
                                 })
+                            }
                         }
                     }
 

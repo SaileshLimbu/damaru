@@ -3,7 +3,7 @@
     <item
         android:id="@+id/tabHome"
         android:icon="@drawable/ic_home"
-        android:title="@string/text_nav_users" />
+        android:title="@string/devices" />
     <item
         android:id="@+id/tabAccounts"
         android:icon="@drawable/ic_more"

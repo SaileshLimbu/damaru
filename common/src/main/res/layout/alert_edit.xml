@@ -13,7 +13,7 @@
         app:cardCornerRadius="16dp"
         app:cardElevation="12dp"
         android:layout_margin="12dp"
-        app:contentPaddingBottom="32dp"
+        app:contentPaddingBottom="16dp"
         android:layout_gravity="center"
         app:contentPaddingLeft="12dp"
         app:contentPaddingRight="12dp"
@@ -42,7 +42,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
-                android:layout_marginTop="48dp"
+                android:layout_marginTop="16dp"
                 android:layout_marginEnd="16dp"
                 android:fontFamily="@font/adlam_display"
                 android:text="@string/edit_device_details"
@@ -107,28 +107,28 @@
                 android:layout_marginEnd="16dp"
                 android:hint="@string/enter_device_details"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/lvlAssignedTo"
-                app:startIconDrawable="@drawable/ic_device">
+                app:layout_constraintTop_toBottomOf="@+id/lvlAssignedTo">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/etDetails"
                     style="@style/CustomTextInputEditText"
                     android:inputType="textMultiLine"
                     android:minHeight="120dp"
-                    android:paddingStart="24dp"
-                    android:paddingEnd="24dp"
-                    android:paddingBottom="16dp" />
+                    android:gravity="top"
+                    android:padding="8dp"/>
             </com.google.android.material.textfield.TextInputLayout>
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnClose2"
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="32dp"
-                android:layout_marginTop="44dp"
+                style="@style/CustomMaterialButton"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="16dp"
                 android:text="@string/close"
-                android:textAllCaps="false"
+                app:icon="@null"
                 android:textColor="@color/white"
+                android:paddingStart="16dp"
+                android:paddingEnd="16dp"
                 app:backgroundTint="@color/red"
                 app:layout_constraintEnd_toStartOf="@+id/btnExtend"
                 app:layout_constraintHorizontal_chainStyle="spread"
@@ -138,9 +138,9 @@
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnExtend"
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="32dp"
-                android:layout_marginEnd="32dp"
+                style="@style/CustomMaterialButton"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp"
                 android:text="@string/save"
                 android:textAllCaps="false"
                 android:textColor="@color/white"

@@ -20,8 +20,8 @@ import com.powersoft.common.model.ResponseWrapper
 import com.powersoft.common.repository.UserRepo
 import com.powersoft.common.ui.LogsActivity
 import com.powersoft.common.ui.PickerActivity
-import com.powersoft.common.ui.helper.AlertHelper
 import com.powersoft.common.ui.helper.ResponseCallback
+import com.powersoft.common.utils.AlertUtils
 import com.powersoft.common.utils.hide
 import com.powersoft.common.utils.show
 import com.powersoft.damaru.R
@@ -55,9 +55,9 @@ class DeviceDetailsActivity : BaseActivity() {
                         override fun onResponse(any: Any, errorMessage: String?) {
                             vm.getLinkedAccounts(deviceEntity.deviceId)
                             if (errorMessage != null) {
-                                AlertHelper.showAlertDialog(this@DeviceDetailsActivity, title = getString(R.string.error), message = errorMessage)
+                                AlertUtils.showMessage(this@DeviceDetailsActivity, title = getString(R.string.error), message = errorMessage)
                             } else {
-                                AlertHelper.showSnackbar(binding.root, getString(R.string.accounts_linked_success))
+                                AlertUtils.showToast(this@DeviceDetailsActivity,R.string.accounts_linked_success)
                             }
                         }
                     })
@@ -91,27 +91,29 @@ class DeviceDetailsActivity : BaseActivity() {
         binding.mynametv.text = deviceEntity.deviceName
         binding.tvCreatedAt.text = "Subscribed on : ${deviceEntity.createdAt}"
         binding.tvExpiresIn.text = "Expires In : ${deviceEntity.expiresAt} days"
-        binding.noteDetail.setText(if (deviceEntity.details.isNullOrEmpty()) "" else deviceEntity.details)
+        binding.noteDetail.text = if (deviceEntity.details.isNullOrEmpty()) "" else deviceEntity.details
+        binding.noteDetail.setOnClickListener {
+            if(!deviceEntity.details.isNullOrEmpty()){
+                AlertUtils.showMessage(this@DeviceDetailsActivity,
+                    "Device Info",
+                    deviceEntity.details)
+            }
+        }
 
         binding.btnEditDetails.setOnClickListener {
-            if (binding.btnEditDetails.text == "SAVE") {
-                vm.editDeviceDetails(binding.noteDetail.text.toString(), deviceEntity.deviceId, object : ResponseCallback {
+            AlertUtils.showEditAlert(this@DeviceDetailsActivity,
+                deviceEntity.deviceName,
+                binding.noteDetail.text.toString()){ updatedDetails ->
+                vm.editDeviceDetails(updatedDetails, deviceEntity.deviceId, object : ResponseCallback {
                     override fun onResponse(any: Any, errorMessage: String?) {
-                        binding.noteDetail.isEnabled = false
-                        binding.btnEditDetails.text = "Edit"
-                        binding.btnEditDetails.icon = ContextCompat.getDrawable(this@DeviceDetailsActivity, com.powersoft.common.R.drawable.ic_edit)
                         if (errorMessage != null) {
-                            AlertHelper.showToast(this@DeviceDetailsActivity, errorMessage)
+                            AlertUtils.showMessage(this@DeviceDetailsActivity, "Error!!", errorMessage)
                         } else {
+                            binding.noteDetail.text = updatedDetails
                             setResult(RESULT_OK)
                         }
                     }
                 })
-            } else {
-                binding.noteDetail.isEnabled = true
-                binding.noteDetail.requestFocus()
-                binding.btnEditDetails.text = "SAVE"
-                binding.btnEditDetails.icon = ContextCompat.getDrawable(this, R.drawable.ic_save)
             }
         }
 
@@ -183,33 +185,32 @@ class DeviceDetailsActivity : BaseActivity() {
             object : RecyclerViewItemClickListener<AccountEntity> {
                 override fun onItemClick(viewId: Int, position: Int, data: AccountEntity) {
                     if (viewId == R.id.imgDelete) {
-                        AlertHelper.showAlertDialog(
+                        AlertUtils.showConfirmDialog(
                             this@DeviceDetailsActivity, title = getString(R.string.unlink_this_account),
                             message = getString(R.string.are_you_sure_unlink_account),
                             positiveButtonText = getString(R.string.delete),
-                            negativeButtonText = getString(com.powersoft.common.R.string.cancle),
-                            onPositiveButtonClick = {
-                                vm.unlinkAccount(vm.deviceId, userRepo.seasonEntity.value?.userId.toString(), listOf(data.id),
-                                    object : ResponseCallback {
-                                        override fun onResponse(any: Any, errorMessage: String?) {
-                                            if (errorMessage != null) {
-                                                AlertHelper.showAlertDialog(
-                                                    this@DeviceDetailsActivity, getString(R.string.error), errorMessage,
-                                                )
-                                            } else {
-                                                accountsAdapter.removeItem(position)
-                                                vm.getLinkedAccounts(deviceEntity.deviceId)
-                                                Handler(Looper.getMainLooper()).postDelayed({
-                                                    if (accountsAdapter.currentList.isEmpty()) {
-                                                        binding.errorView.tvError.text = getString(R.string.no_linked_accounts)
-                                                        binding.errorView.root.show()
-                                                    }
-                                                }, 300)
-                                            }
+                            negativeButtonText = getString(com.powersoft.common.R.string.cancle)
+                        ) {
+                            vm.unlinkAccount(vm.deviceId, userRepo.seasonEntity.value?.userId.toString(), listOf(data.id),
+                                object : ResponseCallback {
+                                    override fun onResponse(any: Any, errorMessage: String?) {
+                                        if (errorMessage != null) {
+                                            AlertUtils.showMessage(
+                                                this@DeviceDetailsActivity, getString(R.string.error), errorMessage,
+                                            )
+                                        } else {
+                                            accountsAdapter.removeItem(position)
+                                            vm.getLinkedAccounts(deviceEntity.deviceId)
+                                            Handler(Looper.getMainLooper()).postDelayed({
+                                                if (accountsAdapter.currentList.isEmpty()) {
+                                                    binding.errorView.tvError.text = getString(R.string.no_linked_accounts)
+                                                    binding.errorView.root.show()
+                                                }
+                                            }, 300)
                                         }
-                                    })
-                            }
-                        )
+                                    }
+                                })
+                        }
                     } else if (viewId == R.id.imgLogs) {
                         LogsActivity.start(this@DeviceDetailsActivity, data.id, deviceEntity.deviceId)
                     }

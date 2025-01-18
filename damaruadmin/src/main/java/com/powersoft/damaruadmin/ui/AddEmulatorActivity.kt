@@ -4,8 +4,8 @@ import android.os.Bundle
 import androidx.activity.viewModels
 import com.powersoft.common.base.BaseActivity
 import com.powersoft.common.base.BaseViewModel
-import com.powersoft.common.ui.helper.AlertHelper
 import com.powersoft.common.ui.helper.ResponseCallback
+import com.powersoft.common.utils.AlertUtils
 import com.powersoft.damaruadmin.R
 import com.powersoft.damaruadmin.databinding.ActivityAddEmulatorBinding
 import com.powersoft.damaruadmin.viewmodels.AddEmulatorViewModel
@@ -43,9 +43,9 @@ class AddEmulatorActivity @Inject constructor() : BaseActivity() {
 
         binding.btnSubmit.setOnClickListener {
             if (binding.etName.text.toString().isEmpty()) {
-                AlertHelper.showToast(applicationContext, getString(R.string.please_enter_emulator_name))
+                AlertUtils.showMessage(applicationContext, "Error", getString(R.string.please_enter_emulator_name))
             } else if (binding.etId.text.toString().isEmpty()) {
-                AlertHelper.showToast(applicationContext, getString(R.string.please_enter_emulator_id))
+                AlertUtils.showMessage(applicationContext, "Error!!", getString(R.string.please_enter_emulator_id))
             } else {
 //            if (user != null) {
 //                vm.editUser(user?.id!!, binding.etName.text.toString(), binding.etEmail.text.toString(),
@@ -65,7 +65,7 @@ class AddEmulatorActivity @Inject constructor() : BaseActivity() {
                     object : ResponseCallback {
                         override fun onResponse(any: Any, errorMessage: String?) {
                             if (errorMessage != null) {
-                                AlertHelper.showAlertDialog(this@AddEmulatorActivity, getString(R.string.error), errorMessage)
+                                AlertUtils.showMessage(this@AddEmulatorActivity, getString(R.string.error), errorMessage)
                             } else {
                                 setResult(RESULT_OK)
                                 finish()

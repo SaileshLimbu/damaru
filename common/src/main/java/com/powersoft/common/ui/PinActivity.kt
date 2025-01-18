@@ -6,8 +6,8 @@ import com.powersoft.common.R
 import com.powersoft.common.base.BaseActivity
 import com.powersoft.common.base.BaseViewModel
 import com.powersoft.common.databinding.ActivityPinBinding
-import com.powersoft.common.ui.helper.AlertHelper
 import com.powersoft.common.ui.helper.ResponseCallback
+import com.powersoft.common.utils.AlertUtils
 import com.powersoft.common.utils.hide
 import com.powersoft.common.viewmodels.PinViewModel
 import dagger.hilt.android.AndroidEntryPoint
@@ -120,7 +120,7 @@ abstract class PinActivity : BaseActivity() {
                 enteredPin.clear()
                 binding.pinPrompt.text = getString(R.string.enter_your_new_pin)
                 updatePinDots()
-                AlertHelper.showSnackbar(binding.root, getString(R.string.pin_does_not_matches))
+                AlertUtils.showMessage(this, "Error", getString(R.string.pin_does_not_matches))
             }
         }
         return
