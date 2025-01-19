@@ -11,7 +11,7 @@ import com.powersoft.damaru.R
 class LoginActivityImpl : LoginActivity() {
     override fun onLoginResponse(any: Any, errorMessage: String?) {
         if (errorMessage == null) {
-            if (any is LoginEntity && any.firstLogin) {
+            if (any is LoginEntity && any.firstLogin && any.isRootUser) {
                 startActivity(
                     Intent(applicationContext, PinActivityImpl::class.java)
                         .putExtra("resetPin", true)

@@ -65,6 +65,7 @@
     </com.google.android.material.textfield.TextInputLayout>
 
     <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/viewPin"
         android:layout_marginTop="32dp"
         android:hint="@string/pin"
         style="@style/CustomTextInputLayout"
@@ -72,7 +73,8 @@
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/etPin"
-            android:inputType="textPassword"
+            android:inputType="numberPassword"
+            android:maxLength="5"
             style="@style/CustomTextInputEditText"/>
 
     </com.google.android.material.textfield.TextInputLayout>

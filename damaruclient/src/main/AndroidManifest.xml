@@ -35,9 +35,7 @@
             android:theme="@style/Theme.ProjectZ" />
         <activity android:name=".ui.MainActivity" />
         <activity android:name=".ui.LoginActivityImpl" />
-        <activity android:name=".ui.AccountUsersActivity" />
         <activity android:name=".ui.DeviceControlActivity" />
-        <activity android:name=".ui.AddUserActivity" />
         <activity android:name="com.powersoft.damaru.ui.DeviceDetailsActivity" />
         <activity android:name="com.powersoft.damaru.ui.AddAccountActivity" />
         <activity android:name="com.powersoft.damaru.ui.AccountDetailActivity" />

@@ -2,10 +2,11 @@ package com.powersoft.damaruadmin.ui
 
 import android.content.Intent
 import android.os.Bundle
-import com.powersoft.common.BuildConfig
+import android.provider.Settings
 import com.powersoft.common.model.LoginEntity
 import com.powersoft.common.ui.LoginActivity
 import com.powersoft.common.utils.AlertUtils
+import com.powersoft.common.utils.hide
 
 class LoginActivityImpl : LoginActivity() {
     override fun onLoginResponse(any: Any, errorMessage: String?) {
@@ -29,11 +30,11 @@ class LoginActivityImpl : LoginActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        if (BuildConfig.DEBUG) {
+        b.viewPin.hide()
+        if (Settings.Secure.getString(contentResolver, Settings.Secure.ANDROID_ID) == "9815d69e0c489f25") {
             //SuperAdmin, AndroidUser
             b.etUsername.setText("superadmin@damaru.com")
             b.etPassword.setText("hello@123")
-            b.etPin.setText("05007")
         }
     }
 }
