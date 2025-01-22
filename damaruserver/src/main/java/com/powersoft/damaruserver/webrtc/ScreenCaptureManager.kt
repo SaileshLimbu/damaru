@@ -38,9 +38,7 @@ class ScreenCaptureManager(
         screenCapturer = ScreenCapturerAndroid(intent, object : MediaProjection.Callback() {
             override fun onStop() {
                 super.onStop()
-                Log.e(TAG, "onStop: Screen capture Stopped")
                 captureAttempts++
-                restartScreenCapturing()
             }
         })
 
@@ -66,7 +64,6 @@ class ScreenCaptureManager(
             override fun run() {
                 if (!isFrameAvailable) {
                     Log.e(TAG, "Frame availability timed out. Restarting screen capture.")
-                    restartScreenCapturing()
                 }
                 isFrameAvailable = false
             }
@@ -92,7 +89,6 @@ class ScreenCaptureManager(
                 super.onStop()
                 Log.e(TAG, "onStop: Screen capture Stopped")
                 captureAttempts++
-                restartScreenCapturing()
             }
         })
 

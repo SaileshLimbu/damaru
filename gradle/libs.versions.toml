@@ -24,9 +24,9 @@ navigationFragmentKtx = "2.8.4"
 navigationUiKtx = "2.8.4"
 crypto = "1.1.0-alpha06"
 coroutines = "1.9.0"
-junit = "4.13.2"
-junitVersion = "1.2.1"
-espressoCore = "3.6.1"
+google-services = "4.4.1"
+firebase-crashlytics-plugin = "2.9.9"
+firebase-bom = "32.7.2"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -57,13 +57,14 @@ security-crypto = { group = "androidx.security", name = "security-crypto", versi
 
 coroutine-core = { group = "org.jetbrains.kotlinx", name="kotlinx-coroutines-core",  version.ref = "coroutines" }
 coroutine-android = { group = "org.jetbrains.kotlinx", name="kotlinx-coroutines-android",  version.ref = "coroutines" }
-junit = { group = "junit", name = "junit", version.ref = "junit" }
-androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
-androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }
+firebase-bom = { group = "com.google.firebase", name = "firebase-bom", version.ref = "firebase-bom" }
+firebase-crashlytics = { group = "com.google.firebase", name = "firebase-crashlytics-ktx" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp-version" }
 hilt = { id = "com.google.dagger.hilt.android", version.ref = "hilt" }
+google-services = { id = "com.google.gms.google-services", version.ref = "google-services" }
+firebase-crashlytics = { id = "com.google.firebase.crashlytics", version.ref = "firebase-crashlytics-plugin" }
 

@@ -4,6 +4,8 @@ plugins {
     alias(libs.plugins.ksp)
     alias(libs.plugins.hilt)
     id("kotlin-kapt")
+    alias(libs.plugins.google.services)
+    alias(libs.plugins.firebase.crashlytics)
 }
 
 android {
@@ -45,6 +47,9 @@ dependencies {
     implementation(libs.webrtc)
     implementation(libs.gson)
     implementation(libs.security.crypto)
+
+    implementation(platform(libs.firebase.bom))
+    implementation(libs.firebase.crashlytics)
 
     implementation(libs.hilt.android)
     ksp(libs.hilt.compiler)

@@ -105,16 +105,20 @@ class DeviceControlActivity : AppCompatActivity(), SocketListener, WebRTCListene
         val screen = resources.displayMetrics
         val screenWidth = screen.widthPixels
         val screenHeight = screen.heightPixels
-        gestureDetector = GestureDetector { command ->
-            val normalizedCommand = AspectRatioUtils.normalizeControllerCoordinates(
-                screenWidth,
-                screenHeight,
-                command,
+
+        binding.surfaceView.setOnTouchListener { _, event ->
+            val x: Float = event.x
+            val y: Float = event.y
+
+            val normalizedCommand = AspectRatioUtils.normalizeControllerCoordinates(screenWidth, screenHeight,
+                GestureCommand(GestureAction.PINCH_ZOOM, startX = x, startY = y),
                 screenHeight - binding.surfaceView.height
-            )
-            sendCommand(normalizedCommand)
+                )
+
+            sendCommand(GestureCommand(GestureAction.PINCH_ZOOM, event.action, startX = normalizedCommand.startX, startY = normalizedCommand.startY))
+            true
         }
-        binding.surfaceView.setOnTouchListener { _, event -> gestureDetector.onTouch(event) }
+
         binding.apply {
             navBack.setOnClickListener {
                 val command = GestureCommand(GestureAction.BACK)

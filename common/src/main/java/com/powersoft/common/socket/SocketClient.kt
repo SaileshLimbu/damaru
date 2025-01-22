@@ -50,6 +50,9 @@ class SocketClient @Inject constructor(private val gson: Gson) {
 
         socket.on(Socket.EVENT_DISCONNECT) {
             //if Socket is closed by client then don't connect it again
+            it.forEach {
+                Log.e(TAG, "Socket Closed: $it" )
+            }
             if (forceCloseSocketByClient) return@on
             if (!socket.isActive) {
                 CoroutineScope(Dispatchers.IO).launch {

@@ -19,12 +19,9 @@ import com.powersoft.damaruserver.service.ScreenCaptureForegroundService
 import com.powersoft.damaruserver.utils.ScreenRefresher
 import org.webrtc.DataChannel
 import org.webrtc.IceCandidate
-import org.webrtc.MediaConstraints
 import org.webrtc.MediaStream
 import org.webrtc.PeerConnection
-import org.webrtc.ScreenCapturerAndroid
 import org.webrtc.SessionDescription
-import org.webrtc.SurfaceTextureHelper
 import org.webrtc.VideoTrack
 import java.nio.charset.StandardCharsets
 import javax.inject.Inject
@@ -75,7 +72,7 @@ class WebRTCClient @Inject constructor(
                             val command = gson.fromJson(message, GestureCommand::class.java)
                             if (command.action == GestureAction.FLASH) {
                                 ScreenRefresher(context).flashScreen()
-                            }else {
+                            } else {
                                 val normalizedCommand = AspectRatioUtils.normalizeServerCoordinate(
                                     screen.widthPixels,
                                     screen.heightPixels,
@@ -93,7 +90,7 @@ class WebRTCClient @Inject constructor(
         localStream.addTrack(localVideoTrack)
         peerConnection?.addTrack(localVideoTrack, listOf(localStreamId))
 
-        peerConnection?.setVideoBitrate(1_500_000, 8_000_000)
+        peerConnection?.setVideoBitrate(500_000, 2_000_000)
 
         peerConnectionList[clientId] = peerConnection
     }
@@ -104,7 +101,7 @@ class WebRTCClient @Inject constructor(
         return String(bytes, StandardCharsets.UTF_8)
     }
 
-    fun startScreenCapturing(context:Context, intent: Intent) {
+    fun startScreenCapturing(context: Context, intent: Intent) {
         val videoSource = webRTCManager.createVideoSource()
         val screenCaptureManager = ScreenCaptureManager(context, intent, videoSource)
 
@@ -114,14 +111,6 @@ class WebRTCClient @Inject constructor(
         localStream = webRTCManager.getMyPeerConnectionFactory().createLocalMediaStream(localStreamId)
     }
 
-    /**
-     * This function is exclusively used by the server app.
-     * It processes the received offer from the client app to establish a WebRTC connection.
-     * The function performs the following steps:
-     * 1. Creates an Answer response based on the received Offer.
-     * 2. Sets the Answer as the localDescription on the peerConnection.
-     * 3. Sends the generated Answer back to the client app via a socket connection.
-     */
     fun createAnswer(clientId: String) {
         val peerConnection = peerConnectionList[clientId]
         peerConnection?.createAnswer(object : MySdpObserver() {
@@ -169,7 +158,6 @@ class WebRTCClient @Inject constructor(
      * Handles the received OFFER or ANSWER from the socket.
      * Adds the received session description to the PeerConnection.
      */
-
     fun setRemoteDescription(target: String, sdp: SessionDescription) {
         val peerConnection = peerConnectionList[target]
         peerConnection?.setRemoteDescription(MySdpObserver(), sdp)
@@ -183,7 +171,7 @@ class WebRTCClient @Inject constructor(
         val peerConnection = peerConnectionList[target]
         if (peerConnection?.remoteDescription != null) {
             peerConnection.addIceCandidate(iceCandidate)
-        }else{
+        } else {
             Log.e(TAG, "Please wait for remoteDescription before adding IceCandidate")
         }
     }
@@ -214,7 +202,7 @@ class WebRTCClient @Inject constructor(
             close()
             dispose()
         }
-        peerConnectionList[target] = null
+        peerConnectionList.remove(target)
         println(peerConnectionList)
     }
 

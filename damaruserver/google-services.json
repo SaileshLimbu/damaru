@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "652968396992",
+    "project_id": "damaru-499e4",
+    "storage_bucket": "damaru-499e4.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:652968396992:android:f3095cc4478fea627a8525",
+        "android_client_info": {
+          "package_name": "com.powersoft.damaruserver"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDZvtu6_j06sV6EQxCkdEiZ8px6ozaCeXA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -2,4 +2,5 @@
     <string name="app_name">Server</string>
     <string name="damaru_desc_remote_control_service">Service for remote control</string>
     <string name="token">eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIyYThmNjZiNi1hOGE5LTQ4MzYtYWU4Ni02Njg4ZmRkYzRiZGIiLCJlbWFpbCI6ImVtdWxhdG9yQWRtaW5AZGFtYXJ1LmNvbSIsInJvbGUiOiJFbXVsYXRvckFkbWluIiwiaWF0IjoxNzM3MTM0NDIxLCJleHAiOjE3Mzk3MjY0MjF9.4n4ZGetr2LnBpTFx5wcRTwKyl4KZnrpwTeM7gbGV6-o</string>
+<!--    <string name="token">eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkMTMwNzNlNy1mMjY0LTQzNGYtOGFlOS0yMmU1MzkyOTg3YzMiLCJlbWFpbCI6ImVtdWxhdG9yQWRtaW5AZGFtYXJ1LmNvbSIsInJvbGUiOiJFbXVsYXRvckFkbWluIiwiaWF0IjoxNzM3Mjk5NzEyLCJleHAiOjE3Mzk4OTE3MTJ9.-Pqfp5orSGAK7AuDUapgi-c-xz_W2fHdh9k9HKGJ_fk</string>-->
 </resources>

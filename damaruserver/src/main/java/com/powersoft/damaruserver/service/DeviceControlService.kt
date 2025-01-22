@@ -3,10 +3,16 @@ package com.powersoft.damaruserver.service
 import android.accessibilityservice.AccessibilityService
 import android.accessibilityservice.GestureDescription
 import android.graphics.Path
+import android.os.Handler
+import android.os.Looper
+import android.os.SystemClock
 import android.util.Log
+import android.view.MotionEvent
 import android.view.accessibility.AccessibilityEvent
 import com.powersoft.common.model.GestureAction
 import com.powersoft.common.model.GestureCommand
+import com.powersoft.damaruserver.dispatcher.Dispatcher
+import com.powersoft.damaruserver.dispatcher.InjectInterface
 
 class DeviceControlService : AccessibilityService() {
 
@@ -15,6 +21,10 @@ class DeviceControlService : AccessibilityService() {
         private var instance: DeviceControlService? = null
         fun getInstance(): DeviceControlService? = instance
     }
+
+    @Volatile
+    private var injectInterface: InjectInterface = Dispatcher(this)
+
 
     override fun onCreate() {
         super.onCreate()
@@ -64,23 +74,6 @@ class DeviceControlService : AccessibilityService() {
         dispatchGesture(gesture, null, null)
     }
 
-    private fun performFling(x: Float, y: Float, velocity: Float) {
-        // Scale the velocity to a reasonable scroll distance
-        val scaledVelocity = velocity * 0.5f
-        val scrollDistance = (scaledVelocity / 1000f) * 100L
-
-        val path = Path().apply {
-            moveTo(x, y)
-            lineTo(x, y - scrollDistance)  // Negative because positive velocity means upward fling
-        }
-
-        val gesture = GestureDescription.Builder()
-            .addStroke(GestureDescription.StrokeDescription(path, 0, 100L))
-            .build()
-
-        dispatchGesture(gesture, null, null)
-    }
-
     private fun performSwipe(startX: Float, startY: Float, endX: Float, endY: Float) {
         val path = Path().apply {
             moveTo(startX, startY)
@@ -94,6 +87,23 @@ class DeviceControlService : AccessibilityService() {
         dispatchGesture(gesture, null, null)
     }
 
+    private fun update(x: Float, y: Float, action: Int) {
+            var motionEvent: MotionEvent
+
+            Handler(Looper.getMainLooper()).postDelayed({
+                if (x.toInt() >= 0 && y.toInt() >= 0) {
+                    motionEvent = MotionEvent.obtain(
+                        SystemClock.uptimeMillis(), SystemClock.uptimeMillis(),
+                        action, x, y, 0
+                    )
+                    injectInterface.dispatch(
+                        motionEvent
+                    )
+                    motionEvent.recycle()
+
+                }
+            }, 1)
+    }
 
     fun performGesture(command: GestureCommand) {
         Log.d(TAG, "performGesture: $command")
@@ -101,11 +111,11 @@ class DeviceControlService : AccessibilityService() {
             GestureAction.TAP -> performTap(command.startX!!, command.startY!!)
             GestureAction.LONG_PRESS -> performLongPress(command.startX!!, command.startY!!)
             GestureAction.SWIPE -> performSwipe(command.startX!!, command.startY!!, command.endX!!, command.endY!!)
-            GestureAction.PINCH_ZOOM -> Unit
+            GestureAction.PINCH_ZOOM -> update(command.startX!!, command.startY!!, command.event!!)
             GestureAction.BACK -> performGlobalAction(GLOBAL_ACTION_BACK)
             GestureAction.HOME -> performGlobalAction(GLOBAL_ACTION_HOME)
             GestureAction.RECENT -> performGlobalAction(GLOBAL_ACTION_RECENTS)
-            GestureAction.FLASH ->Unit
+            GestureAction.FLASH -> Unit
         }
     }
 }
