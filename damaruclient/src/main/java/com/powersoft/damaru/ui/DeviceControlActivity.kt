@@ -15,7 +15,6 @@ import com.powersoft.common.socket.SocketListener
 import com.powersoft.common.utils.AlertUtils
 import com.powersoft.common.utils.AspectRatioUtils
 import com.powersoft.common.utils.DraggableTouchListener
-import com.powersoft.common.utils.GestureDetector
 import com.powersoft.common.utils.hide
 import com.powersoft.common.utils.show
 import com.powersoft.common.webrtc.MyPeerObserver
@@ -46,7 +45,6 @@ class DeviceControlActivity : AppCompatActivity(), SocketListener, WebRTCListene
     lateinit var gson: Gson
 
     private lateinit var binding: ActivityDeviceControlBinding
-    private lateinit var gestureDetector: GestureDetector
 
     companion object {
         const val TAG = "DAMARU"
@@ -92,7 +90,7 @@ class DeviceControlActivity : AppCompatActivity(), SocketListener, WebRTCListene
     override fun onResume() {
         super.onResume()
         binding.surfaceView.init(webrtcClient.getEglBase().eglBaseContext, null)
-        sendCommand(GestureCommand(GestureAction.FLASH))
+        sendCommand(GestureCommand(GestureAction.FLASH, 0 ,0f,0f))
     }
 
     override fun onPause() {
@@ -110,26 +108,30 @@ class DeviceControlActivity : AppCompatActivity(), SocketListener, WebRTCListene
             val x: Float = event.x
             val y: Float = event.y
 
-            val normalizedCommand = AspectRatioUtils.normalizeControllerCoordinates(screenWidth, screenHeight,
-                GestureCommand(GestureAction.PINCH_ZOOM, startX = x, startY = y),
-                screenHeight - binding.surfaceView.height
-                )
+            val normalizedCommand = AspectRatioUtils.normalizeControllerCoordinates(
+                screenWidth,
+                screenHeight,
+                x,
+                y,
+                screenHeight - binding.surfaceView.height,
+                screenWidth - binding.surfaceView.width
+            )
 
-            sendCommand(GestureCommand(GestureAction.PINCH_ZOOM, event.action, startX = normalizedCommand.startX, startY = normalizedCommand.startY))
+            sendCommand(GestureCommand(GestureAction.EVENT, event.action, startX = normalizedCommand.first, startY = normalizedCommand.second))
             true
         }
 
         binding.apply {
             navBack.setOnClickListener {
-                val command = GestureCommand(GestureAction.BACK)
+                val command = GestureCommand(GestureAction.BACK, 0 ,0f,0f)
                 sendCommand(command)
             }
             navHome.setOnClickListener {
-                val command = GestureCommand(GestureAction.HOME)
+                val command = GestureCommand(GestureAction.HOME, 0 ,0f,0f)
                 sendCommand(command)
             }
             navRecent.setOnClickListener {
-                val command = GestureCommand(GestureAction.RECENT)
+                val command = GestureCommand(GestureAction.RECENT, 0 ,0f,0f)
                 sendCommand(command)
             }
         }

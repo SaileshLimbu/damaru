@@ -24,19 +24,17 @@ import javax.inject.Inject
 
 @AndroidEntryPoint
 class ScreenCaptureForegroundService : Service(), SocketListener, WebRTCListener {
-
     @Inject
     lateinit var socketClient: SocketClient
-
     @Inject
     lateinit var webRTCClient: WebRTCClient
-
     @Inject
     lateinit var gson: Gson
 
     private lateinit var notificationManager: NotificationManager
-
     private lateinit var deviceId: String
+    private var isScreenCaptureStarted = false
+    private var captureData: Intent? = null
 
     override fun onCreate() {
         super.onCreate()
@@ -45,15 +43,19 @@ class ScreenCaptureForegroundService : Service(), SocketListener, WebRTCListener
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        if (intent != null && ACTION_START_CAPTURE == intent.action) {
-            val data = intent.getParcelableExtra<Intent>(EXTRA_RESULT_DATA)
+        if (intent?.action == ACTION_START_CAPTURE) {
+            captureData = intent.getParcelableExtra(EXTRA_RESULT_DATA)
             deviceId = intent.getStringExtra(EXTRA_DEVICE_ID) ?: DeviceUtils.getDeviceId(this)
-            if (data != null) {
-                socketClient.init(deviceId, this, getString(R.string.token), true)
-                webRTCClient.startScreenCapturing(this, data)
-            }
+            socketClient.init(deviceId, this, getString(R.string.token), true)
         }
         return START_STICKY
+    }
+
+    private fun startScreenCapture() {
+        if (!isScreenCaptureStarted && captureData != null) {
+            webRTCClient.startScreenCapturing(this, captureData!!)
+            isScreenCaptureStarted = true
+        }
     }
 
     override fun onDestroy() {
@@ -82,11 +84,15 @@ class ScreenCaptureForegroundService : Service(), SocketListener, WebRTCListener
         when (type) {
             DataModelType.Disconnect -> {
                 Log.d(TAG, "Connection ended by ${model.username}")
-                model.username?.let { webRTCClient.disposePeerConnection(it) }
+                model.username?.let {
+                    val isStillHaveConnection = webRTCClient.disposePeerConnection(it)
+                    isScreenCaptureStarted = isStillHaveConnection
+                }
             }
 
             DataModelType.Offer -> {
                 model.username?.let {
+                    if (!isScreenCaptureStarted) startScreenCapture()
                     //After receiving offer create and answer and send them
                     Log.d(TAG, "onNewMessageReceived: OFFER received from $it")
                     webRTCClient.createPeerConnection(this, clientId = it, deviceId)

@@ -22,20 +22,23 @@ import org.webrtc.IceCandidate
 import org.webrtc.MediaStream
 import org.webrtc.PeerConnection
 import org.webrtc.SessionDescription
+import org.webrtc.VideoSource
 import org.webrtc.VideoTrack
 import java.nio.charset.StandardCharsets
+import java.util.Collections
 import javax.inject.Inject
-
 
 class WebRTCClient @Inject constructor(
     private val context: Context,
     private val gson: Gson,
     private val webRTCManager: WebRTCManager
 ) {
-    private var peerConnectionList = mutableMapOf<String, PeerConnection?>()
-    private lateinit var webRTCListener: WebRTCListener
-    private lateinit var localVideoTrack: VideoTrack
-    private lateinit var localStream: MediaStream
+    private var peerConnectionList = Collections.synchronizedMap(mutableMapOf<String, PeerConnection?>())
+    private var webRTCListener: WebRTCListener? = null
+    private var localVideoTrack: VideoTrack? = null
+    private var localStream: MediaStream? = null
+    private var screenCaptureManager: ScreenCaptureManager? = null
+    private var videoSource: VideoSource? = null
 
     private val localStreamId = "local_stream"
     private val mediaConstraint = WebRTCUtils.getMediaConstraints()
@@ -87,10 +90,10 @@ class WebRTCClient @Inject constructor(
         })
         Log.d(TAG, "Peer Connection Created")
 
-        localStream.addTrack(localVideoTrack)
+        localStream?.addTrack(localVideoTrack)
         peerConnection?.addTrack(localVideoTrack, listOf(localStreamId))
 
-        peerConnection?.setVideoBitrate(500_000, 2_000_000)
+        peerConnection?.setVideoBitrate(MIN_BITRATE, MAX_BITRATE)
 
         peerConnectionList[clientId] = peerConnection
     }
@@ -102,12 +105,12 @@ class WebRTCClient @Inject constructor(
     }
 
     fun startScreenCapturing(context: Context, intent: Intent) {
-        val videoSource = webRTCManager.createVideoSource()
-        val screenCaptureManager = ScreenCaptureManager(context, intent, videoSource)
+        videoSource = webRTCManager.createVideoSource()
+        screenCaptureManager = ScreenCaptureManager(context, intent, videoSource!!)
 
-        screenCaptureManager.startScreenCapturing()
+        screenCaptureManager?.startScreenCapturing()
 
-        localVideoTrack = webRTCManager.createVideoTrack(videoSource)
+        localVideoTrack = webRTCManager.createVideoTrack(videoSource!!)
         localStream = webRTCManager.getMyPeerConnectionFactory().createLocalMediaStream(localStreamId)
     }
 
@@ -119,7 +122,7 @@ class WebRTCClient @Inject constructor(
                 peerConnection.setLocalDescription(object : MySdpObserver() {
                     override fun onSetSuccess() {
                         super.onSetSuccess()
-                        webRTCListener.onTransferEventToSocket(
+                        webRTCListener?.onTransferEventToSocket(
                             DataModelType.Answer,
                             DataModel(
                                 username = clientId,
@@ -180,7 +183,7 @@ class WebRTCClient @Inject constructor(
      * Send the ICE candidate received from webRTC to target user
      */
     fun sendIceCandidate(candidate: IceCandidate, clientId: String, deviceId: String) {
-        webRTCListener.onTransferEventToSocket(
+        webRTCListener?.onTransferEventToSocket(
             DataModelType.IceCandidate,
             DataModel(
                 username = clientId,
@@ -195,15 +198,30 @@ class WebRTCClient @Inject constructor(
         senders.forEach { removeTrack(it) }
     }
 
-    fun disposePeerConnection(target: String) {
-        val peerConnection = peerConnectionList[target]
-        peerConnection?.apply {
+    /**
+     * @return if we still have active connections
+     */
+    fun disposePeerConnection(target: String) : Boolean {
+        peerConnectionList[target]?.apply {
             removeStreamsTracks()
             close()
             dispose()
         }
         peerConnectionList.remove(target)
-        println(peerConnectionList)
+
+        if (peerConnectionList.isEmpty()){
+            screenCaptureManager?.stopCapture()
+            screenCaptureManager = null
+            localStream?.removeTrack(localVideoTrack)
+            videoSource?.dispose()
+            videoSource = null
+            localStream?.dispose()
+            localStream = null
+            localVideoTrack?.dispose()
+            localVideoTrack = null
+        }
+
+        return peerConnectionList.isNotEmpty()
     }
 
     fun disposeServer() {
@@ -213,6 +231,8 @@ class WebRTCClient @Inject constructor(
     }
 
     companion object {
-        const val TAG = "DAMARU"
+        private const val TAG = "WebRTCClient"
+        private const val MIN_BITRATE = 200_000
+        private const val MAX_BITRATE = 2_000_000
     }
 }

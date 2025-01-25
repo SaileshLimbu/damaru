@@ -60,7 +60,7 @@ class WebRTCManager @Inject constructor(context: Context) {
         try {
             eglBase.release()
             peerConnectionFactory.dispose()
-            Log.e(TAG, "Clearing EglBase and PeerConnectionFactory", )
+            Log.d(TAG, "Clearing EglBase and PeerConnectionFactory", )
         }catch (e: Exception){
             //ignore
         }

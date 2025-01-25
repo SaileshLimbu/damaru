@@ -151,7 +151,6 @@ class Dispatcher26 extends DispatcherBase {
 
 
     public boolean dispatch(MotionEvent motionEvent) {
-        Log.i("Dispatcher", "dispatch: " + motionEvent);
         DeviceControlService a = DeviceControlService.Companion.getInstance();
         int i = 0;
         if (a == null) {

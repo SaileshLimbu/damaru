@@ -32,5 +32,12 @@ object WebRTCUtils {
                 .setPassword("iHgZlyrJTFn8ZXJC")
                 .createIceServer()
         )
+//        return listOf(
+//            IceServer.builder("stun:damaru.cloud:3478").createIceServer(),
+//            IceServer.builder("turn:damaru.cloud:3478")
+//                .setUsername("damaru")
+//                .setPassword("1@#Damaru")
+//                .createIceServer()
+//        )
     }
 }
