@@ -1,6 +1,6 @@
 # Demo 🎥
 
-[Demo](https://github.com/SaileshLimbu/damaru/blob/theone/demo.gif)
+[Demo](https://github.com/SaileshLimbu/damaru/raw/theone/demo.gif)
 
 
 # Damaru – Screen Sharing & Remote Control Suite
